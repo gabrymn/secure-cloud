@@ -1,6 +1,8 @@
 <?php
 
-    require '../resources/api.php';
+    require_once '../../back-end/class/system.php';
+    require_once '../../back-end/class/sqlc.php';
+    require_once '../../back-end/class/response.php';
 
     if (isset($_SERVER['REQUEST_METHOD'])){
 
