@@ -1,1 +1,1 @@
-# secure-cloud-platform
+# secure-cloud
