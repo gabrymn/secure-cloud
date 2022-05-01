@@ -1,6 +1,6 @@
 <?php
 
-    echo "grande";exit;
+    echo "private area";exit;
 
 	if (isset($_COOKIE['PHPSESSID']))
 	{
