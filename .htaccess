@@ -1,7 +1,6 @@
-RewriteEngine on
-RewriteBase /cloud-secure
+#RewriteEngine on
+#RewriteBase /cloud-secure
 
-RewriteRule ^home$ www/src/front-end/public/index.php [L,NC]
 #RewriteRule ^h$ pages/index.php [L,NC]
 #RewriteRule ^login$ pages/log.php [L,NC]
 #RewriteRule ^signup$ pages/reg.php [L,NC]
