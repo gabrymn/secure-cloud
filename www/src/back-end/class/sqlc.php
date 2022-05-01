@@ -1,5 +1,7 @@
 <?php
 
+    require_once "response.php";
+
     class sqlc 
     {
         private static $conn = null;
@@ -7,23 +9,23 @@
 
         private const QRY = 
         [
-            "INS_CRED" => "INSERT INTO PRSN_users (email, pass, logged_with) VALUES (?, ?, 'EMAIL')",
-            "LOGIN" => "SELECT * FROM PRSN_users WHERE email = ? AND logged_with = 'EMAIL'",
-            "ACC_REC" => "INSERT INTO PRSN_account_recovery (id_user, htkn, expires) VALUES (?, ?, ADDTIME(NOW(), 1000))",
-            "ID_FROM_EMAIL" => "SELECT id FROM PRSN_users WHERE email = ?",
-            "EMAIL_FROM_ID" => "SELECT email FROM PRSN_users WHERE id = ?",
+            "INS_CRED" => "INSERT INTO `secure-cloud`.`users` (email, pass, logged_with) VALUES (?, ?, 'EMAIL')",
+            "LOGIN" => "SELECT * FROM `secure-cloud`.`users` WHERE email = ? AND logged_with = 'EMAIL'",
+            "ACC_REC" => "INSERT INTO `secure-cloud`.`account_recovery` (id_user, htkn, expires) VALUES (?, ?, ADDTIME(NOW(), 1000))",
+            "ID_FROM_EMAIL" => "SELECT id FROM `secure-cloud`.`users` WHERE email = ?",
+            "EMAIL_FROM_ID" => "SELECT email FROM `secure-cloud`.`users` WHERE id = ?",
             "TKN_ROW" => "SELECT u.email, r.expires 
-            FROM PRSN_account_recovery AS r, PRSN_users AS u 
+            FROM `secure-cloud`.`account_recovery` AS r, `secure-cloud`.`users` AS u 
             WHERE u.id = r.id_user AND r.htkn = ? AND r.expires > NOW()",
-            "DEL_TKN" => "DELETE FROM PRSN_account_recovery WHERE htkn = ?",
-            "CH_PASS" => "UPDATE PRSN_users SET pass = ? WHERE email = ?",
-            "REM_DEL" => "DELETE FROM PRSN_remember WHERE htkn = ?",
-            "REM_SEL" => "SELECT * FROM PRSN_remember WHERE htkn = ? AND expires > NOW()",
-            "OAUTH2_INS" => "INSERT INTO PRSN_users (email, logged_with) VALUES (?, 'GOOGLE_OAUTH2')",
-            "OAUTH2_SEL" => "SELECT * FROM PRSN_users WHERE email = ?",
+            "DEL_TKN" => "DELETE FROM `secure-cloud`.`account_recovery` WHERE htkn = ?",
+            "CH_PASS" => "UPDATE `secure-cloud`.`users` SET pass = ? WHERE email = ?",
+            "REM_DEL" => "DELETE FROM `secure-cloud`.`remember` WHERE htkn = ?",
+            "REM_SEL" => "SELECT * FROM `secure-cloud`.`remember` WHERE htkn = ? AND expires > NOW()",
+            "OAUTH2_INS" => "INSERT INTO `secure-cloud`.`users` (email, logged_with) VALUES (?, 'GOOGLE_OAUTH2')",
+            "OAUTH2_SEL" => "SELECT * FROM `secure-cloud`.`users` WHERE email = ?",
         ];
 
-        public static function connect($address = "localhost", $name = "mywebs", $password = "", $dbname = "my_mywebs")
+        public static function connect($address = "localhost", $name = "tester", $password = "tester_password", $dbname = "secure-cloud")
         {
             self::$conn = new mysqli($address, $name, $password, $dbname);
             if (self::$conn->connect_error) 
@@ -35,9 +37,32 @@
             {
                 // Ogni x giorni le righe scadute dalle tabelle indicate devono essere eliminate
                 // per evitare di tenere in memoria dati inutili.
-                // Per adesso ogni connessione al database esegue la procedura
                 self::del_expired_rows();
+                return 1;
             }
+        }
+
+
+        public static function create_user_administrator($user, $host, $limits = array(0,0,0,0))
+        {
+            self::connect();
+            $qry = "CREATE USER '$user'@'$host' IDENTIFIED VIA mysql_native_password USING '***';GRANT ALL PRIVILEGES ON *.* TO '$user'@'$host' REQUIRE NONE WITH GRANT OPTION MAX_QUERIES_PER_HOUR $limits[0] MAX_CONNECTIONS_PER_HOUR $limits[1] MAX_UPDATES_PER_HOUR $limits[2] MAX_USER_CONNECTIONS $limits[3];";
+            $state = self::qry_exec($qry, false);
+            return $state;
+        }
+
+        public static function create_db($db_name='secure-cloud', $tables = array("env.sql", "remember.sql", "users.sql", "account_recovery.sql"))
+        {
+            self::connect();
+            self::qry_exec("CREATE DATABASE IF NOT EXISTS $db_name", false);
+            foreach ($tables as $table)
+            {
+                $db = file_get_contents("http://127.0.0.1/secure-cloud/www/src/back-end/db/{$table}");
+
+                $r = self::qry_exec($db, false);
+                if (!$r) response::server_error();
+            }
+            return 1;
         }
 
         private static function prep($qry)
@@ -47,14 +72,14 @@
         }
 
         private static function get_REM_INS_query(int $time){
-            return "INSERT INTO PRSN_remember (htkn, expires, id_user) VALUES (?, ADDTIME(NOW(), '20 0:0:0'), ?)";
+            return "INSERT INTO `secure-cloud`.`remember` (htkn, expires, id_user) VALUES (?, ADDTIME(NOW(), '20 0:0:0'), ?)";
         }
 
-        // elimina righe tabella 'remember_me' e 'account_recovery' scadute
+        // elimina righe tabella '`secure-cloud.remember`_me' e '`secure-cloud.account_recovery`' scadute
         public static function del_expired_rows(){
-            $qry = "DELETE FROM PRSN_remember WHERE expires <= NOW()";
+            $qry = "DELETE FROM `secure-cloud`.`remember` WHERE expires <= NOW()";
             self::qry_exec($qry, false);
-            $qry = "DELETE FROM PRSN_account_recovery WHERE expires <= NOW()";
+            $qry = "DELETE FROM `secure-cloud`.`account_recovery` WHERE expires <= NOW()";
             self::qry_exec($qry, false);
         }
 
@@ -108,7 +133,8 @@
             self::$stmt->bind_param("s", $email);
             self::$stmt->execute();
             $data = self::$stmt->get_result()->fetch_assoc();
-            if (password_verify($pass, $data['pass'])) return true;
+            if ($data === NULL) return 0;
+            if (password_verify($pass, $data['pass'])) return 1;
             else return 0;
         }
 
@@ -140,7 +166,7 @@
             return self::$stmt->execute();
         }
 
-        // [remember-me-query]: inserisce riga
+        // [`secure-cloud.remember`-me-query]: inserisce riga
         public static function rem_ins($htkn, $id_user, int $time){
             $query = self::get_REM_INS_query($time);
             self::prep($query);
@@ -148,7 +174,7 @@
             return self::$stmt->execute();
         }
 
-        // [remember-me-query]: seleziona riga che ha come hashedtoken ?
+        // [`secure-cloud.remember`-me-query]: seleziona riga che ha come hashedtoken ?
         public static function rem_sel($htkn){
             self::prep(self::QRY['REM_SEL']);
             self::$stmt->bind_param("s", $htkn);
@@ -157,7 +183,7 @@
             return isset($row['id_user']) ? $row : 0;
         }
 
-        // [remember-me-query]: rimuove riga che mantiene loggato l'utente
+        // [`secure-cloud.remember`-me-query]: rimuove riga che mantiene loggato l'utente
         public static function rem_del($htkn){
             self::prep(self::QRY['REM_DEL']);
             self::$stmt->bind_param("s", $htkn);

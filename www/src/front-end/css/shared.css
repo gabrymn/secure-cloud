@@ -6,9 +6,10 @@
 }
 
 body {
-    background-color: rgb(152, 152, 152);
+    background-color: rgb(43, 43, 43);
 }
 
 ::selection {
-    background-color: rgb(150,150,150);
+    color: rgb(255, 242, 0);
+    background-color: black;
 }

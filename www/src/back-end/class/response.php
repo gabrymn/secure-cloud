@@ -131,13 +131,12 @@
             http_response_code($code);
         }
 
-        public static function ssend($code, &$e, $value){
-            // style send => s.send
+        public static function print($code, &$e, $value){
             self::code($code);
             $e = $value;
         }
 
-        public static function add_html($html, $code = 200){
+        public static function html_ctx($html, $code = 200){
             self::ctype('HTML');
             self::code($code);
             echo $html;

@@ -41,6 +41,13 @@
 
 ?>
 
+<!------ START BOOTSTRAP FORM ---------->
+<link href="//maxcdn.bootstrapcdn.com/bootstrap/4.1.1/css/bootstrap.min.css" rel="stylesheet" id="bootstrap-css">
+<script src="//maxcdn.bootstrapcdn.com/bootstrap/4.1.1/js/bootstrap.min.js"></script>
+<script src="//cdnjs.cloudflare.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+<!------ END BOOTSTRAP FORM ---------->
+
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -62,13 +69,13 @@
         <div class="collapse navbar-collapse" id="navbarNav">
         <ul class="navbar-nav">
             <li class="nav-item">
-            <a class="nav-link active" aria-current="page" href="#">Crittografia</a>
+            <a class="nav-link active" aria-current="page" href="#">end-to-end</a>
             </li>
             <li class="nav-item">
-            <a class="nav-link" href="log.php">Accedi</a>
+            <a class="nav-link" href="log.php">Sign in</a>
             </li>
             <li class="nav-item">
-            <a class="nav-link" href="reg.php">Registrati</a>
+            <a class="nav-link" href="reg.php">Sign up</a>
             </li>
         </ul>
         </div>
