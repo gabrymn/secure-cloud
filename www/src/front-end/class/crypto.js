@@ -19,15 +19,15 @@ export default class AES {
         this.bit = key.toString().length * 4;
     }
 
-    encrypt = (cleartext) => {
-        const wordArray = CryptoJS.AES.encrypt(cleartext, this.key);
+    encrypt = (plaintext) => {
+        const wordArray = CryptoJS.AES.encrypt(plaintext, this.key);
         const ciphertext = wordArray.toString();   
         return ciphertext;
     }        
     
     decrypt = (ciphertext) => {
         const wordArray = CryptoJS.AES.decrypt(ciphertext, this.key);
-        const cleartext = wordArray.toString(CryptoJS.enc.Utf8);
-        return cleartext;
+        const plaintext = wordArray.toString(CryptoJS.enc.Utf8);
+        return plaintext;
     }
 }
