@@ -34,7 +34,6 @@ class IMG_URL {
 
     static READ_FILE() {
         if (this.files && this.files[0]) {
-
             var fr = new FileReader();
             fr.addEventListener("load", (event) => {
                 const filename = this.files[0].name;
@@ -45,7 +44,6 @@ class IMG_URL {
                 document.getElementById("inp").removeEventListener("change", IMG_URL.READ_FILE, false);
                 document.getElementById("inp").addEventListener("change", IMG_URL.READ_FILE, false);
             }); 
-
             fr.readAsDataURL(this.files[0]);
         }
     }
