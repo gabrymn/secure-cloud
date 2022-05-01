@@ -1,5 +1,9 @@
 <?php
-    
+
+    require_once 'token.php';
+    require_once 'request.php';
+    require_once 'email.php';
+
     class system 
     {
         // 6000 => 1h
@@ -37,7 +41,32 @@
                 foreach ($session_data as $key => $value)
                     $_SESSION[$key] = $value;
 
-            header("Location: private");
+            header("Location: pvt.php");
+        }
+
+        public static function redirect_otp_form($id_user){
+
+            session_start();
+            $_SESSION['ID_USER'] = $id_user;
+            $tkn = new token(6, "", "", array("0-9"));
+            $_SESSION['HOTP'] = array("value" => $tkn->val_hashed(), "exp" => time() + 60*5);
+
+            $email = "gabrieledevs@gmail.com";
+            $sub = "Verifica OTP";
+            $msg = "OTP code: " . $tkn->val();
+
+            if (send_email($email, $sub, $msg))
+                header("Location: otp-form.php");
+            exit;
+        }
+
+        public static function redirect_login_from_otp_form(){
+
+            session_start();
+            if (isset($_SESSION['OTP'])){
+                unset($_SESSION['OTP']);
+            }
+            header("Location: log.php");
         }
     }
 

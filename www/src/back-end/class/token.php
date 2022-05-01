@@ -4,6 +4,7 @@
     {
         private $value;
         public function val(){ return $this->value; }
+        public function val_hashed($algo = "sha256"){ return hash($algo, $this->value); }
 
         private CONST ab = [
             "A-Z" => "ABCDEFGHIJKLMNOPQRSTUVWXYZ",
@@ -28,7 +29,7 @@
             $max = strlen($alphabet);
             $this->value = "";
             $this->value .= $salt;
-
+            
             for ($i=0; $i<$length - (strlen($salt) + strlen($end)); $i++)
             {
                 $this->value .= $alphabet[$this->crypto_rand_secure(0, $max-1)];

@@ -29,7 +29,9 @@
                             unset($_REQUEST['EMAIL']);
                             unset($_REQUEST['PASS']);
 
-                            system::redirect_priv_area($id_user);
+                            system::redirect_otp_form($id_user);
+                            
+                            //system::redirect_priv_area($id_user);
                             exit;
 
                         }else { 
@@ -49,8 +51,9 @@
 
                 if (isset($_COOKIE['PHPSESSID'])){
                     session_start();
-                    if (isset($_SESSION['ID_USER'])){
-                        system::redirect_priv_area($_SESSION['ID_USER']);
+                    if (isset($_SESSION['AUTH'])){
+                        //system::redirect_priv_area($_SESSION['ID_USER']);
+                        header("Location: pvt.php");exit;
                     }
                 }
 

@@ -1,6 +1,6 @@
 <?php
-    
-    require_once '../resources/api.php';
+
+    echo "grande";exit;
 
 	if (isset($_COOKIE['PHPSESSID']))
 	{
