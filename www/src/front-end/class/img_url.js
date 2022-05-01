@@ -8,7 +8,7 @@
 </script>
 */
 
-class IMG_URL {
+export default class IMG_URL {
 
     static B64_2_BLOB = (b64data, filename) => {
         const mime = IMG_URL.#GET_MIME(b64data);
