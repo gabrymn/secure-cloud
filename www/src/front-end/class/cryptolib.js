@@ -5,10 +5,13 @@
     </body>
 
     <script type="module">
-        import AES from "crypto.js";
-        const aes = new AES("mykey");
+        import cryptolib from "crypto.js";
+        const aes = new cryptolib['AES']("mykey");
         console.log(aes.decrypt(aes.encrypt("plaintext")));
+
     </script>
+
+    const AES = cryptolib['AES'];
 
 */
 
