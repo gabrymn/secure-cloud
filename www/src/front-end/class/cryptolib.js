@@ -12,7 +12,9 @@
 
 */
 
-export default class AES {
+var cryptolib = [];
+
+cryptolib['AES'] = class AES {
 
     constructor(key) {
         this.key = key;
@@ -33,3 +35,14 @@ export default class AES {
         return plaintext;
     }
 }
+
+crypto_lib['HASH'] = class HASH {
+
+    static SHA256 = (data, compression = false) => {
+        if (compression) data = btoa(data); 
+        const hashed = CryptoJS.SHA256(data).toString(CryptoJS.enc.Hex);
+        return hashed;
+    }
+}
+
+export default crypto_lib;

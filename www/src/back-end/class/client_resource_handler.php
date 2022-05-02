@@ -12,14 +12,25 @@
             }
             case 'POST':
             {
-                if (isset($_POST['NAME']) && isset($_POST['DATA']) && count($_POST) === 2)
+                if (isset($_POST['NAME']) && isset($_POST['DATA']) && isset($_POST['H']) && count($_POST) === 3)
                 {
-                    var_dump($_POST);
                     $filename = $_POST['NAME'];
                     $filedata = $_POST['DATA'];
-                    file_put_contents($filename, $filedata);
-                    response::successful(200, false, array("name" => $filename, "data" => $filedata));
-                    exit;
+
+                    $client_hash = $_POST['H'];
+                    $server_hash = hash("sha256", $filename.$filedata);
+
+                    if ($client_hash === $server_hash)
+                    {
+                        file_put_contents($filename, $filedata);
+                        response::successful(200, false, array("name" => $filename, "data" => $filedata));
+                        exit;
+                    }
+                    else
+                    {
+                        // documento digitale manomesso
+                        response::server_error(500);
+                    }
                 }
                 break;
             }
