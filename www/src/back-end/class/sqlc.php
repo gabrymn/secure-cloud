@@ -2,20 +2,20 @@
 
     require_once "response.php";
 
-    class sqlc 
+    class sqlc
     {
         private static $conn = null;
         private static $stmt = null;
 
-        private const QRY = 
+        private const QRY =
         [
             "INS_CRED" => "INSERT INTO `secure-cloud`.`users` (email, pass, logged_with) VALUES (?, ?, 'EMAIL')",
             "LOGIN" => "SELECT * FROM `secure-cloud`.`users` WHERE email = ? AND logged_with = 'EMAIL'",
             "ACC_REC" => "INSERT INTO `secure-cloud`.`account_recovery` (id_user, htkn, expires) VALUES (?, ?, ADDTIME(NOW(), 1000))",
             "ID_FROM_EMAIL" => "SELECT id FROM `secure-cloud`.`users` WHERE email = ?",
             "EMAIL_FROM_ID" => "SELECT email FROM `secure-cloud`.`users` WHERE id = ?",
-            "TKN_ROW" => "SELECT u.email, r.expires 
-            FROM `secure-cloud`.`account_recovery` AS r, `secure-cloud`.`users` AS u 
+            "TKN_ROW" => "SELECT u.email, r.expires
+            FROM `secure-cloud`.`account_recovery` AS r, `secure-cloud`.`users` AS u
             WHERE u.id = r.id_user AND r.htkn = ? AND r.expires > NOW()",
             "DEL_TKN" => "DELETE FROM `secure-cloud`.`account_recovery` WHERE htkn = ?",
             "CH_PASS" => "UPDATE `secure-cloud`.`users` SET pass = ? WHERE email = ?",
@@ -28,7 +28,7 @@
         public static function connect($address = "localhost", $name = "tester", $password = "tester_password", $dbname = "secure-cloud")
         {
             self::$conn = new mysqli($address, $name, $password, $dbname);
-            if (self::$conn->connect_error) 
+            if (self::$conn->connect_error)
             {
                 self::$conn = null;
                 response::server_error(500, "Connection failed");
@@ -42,6 +42,10 @@
             }
         }
 
+        public static function init_db(){
+            self::create_db();
+        }
+
 
         public static function create_user_administrator($user, $host, $limits = array(0,0,0,0))
         {
@@ -53,7 +57,7 @@
 
         public static function create_db($db_name='secure-cloud', $tables = array("env.sql", "remember.sql", "users.sql", "account_recovery.sql"))
         {
-            self::connect();
+            self::connect("localhost", "root", "", "secure-cloud");
             self::qry_exec("CREATE DATABASE IF NOT EXISTS $db_name", false);
             foreach ($tables as $table)
             {
@@ -149,7 +153,7 @@
             self::$stmt->bind_param("s", $email);
             self::$stmt->execute();
             $data = self::$stmt->get_result()->fetch_assoc();
-            return isset($data['id']) ? intval($data['id']) : 0; 
+            return isset($data['id']) ? intval($data['id']) : 0;
         }
 
         public static function get_tkn_row($htkn){
