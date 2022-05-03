@@ -124,19 +124,19 @@
                                 <div class="form-group row">
                                     <label for="email_address" class="col-md-4 col-form-label text-md-right">E-Mail Address</label>
                                     <div class="col-md-6">
-                                        <input name="EMAIL" type="email" id="email_address" class="form-control" required autofocus>
+                                        <input name="EMAIL" type="email" id="EMAIL_" class="form-control" required autofocus>
                                     </div>
                                 </div>
                                 <div class="form-group row">
                                     <label for="password" class="col-md-4 col-form-label text-md-right">Password</label>
                                     <div class="col-md-6">
-                                        <input name="PASS1" type="password" id="password" class="form-control" required>
+                                        <input name="PASS1" type="password" id="PASS_1" class="form-control" required>
                                     </div>
                                 </div>
                                 <div class="form-group row">
                                     <label for="password" class="col-md-4 col-form-label text-md-right">Confirm</label>
                                     <div class="col-md-6">
-                                        <input name="PASS2" type="password" id="password" class="form-control" required>
+                                        <input name="PASS2" type="password" id="PASS_2" class="form-control" required>
                                     </div>
                                 </div>
                                 <div class="col-md-6 offset-md-4">
@@ -144,8 +144,8 @@
                                         Submit
                                     </button>
                                 </div>
+                            </form>
                         </div>
-                        </form>
                     </div>
                 </div>
             </div>
@@ -153,8 +153,12 @@
         </div>
     </main>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-ka7Sk0Gln4gmtz2MlQnikT1wXgYsOg+OMhuP+IlRH9sENBO0LRn5q+8nbTov4+1p" crossorigin="anonymous"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/crypto-js/3.1.2/rollups/aes.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/crypto-js/3.1.2/rollups/sha256.js"></script>
     <script src="../js/reg.js"></script>
     <script src="../js/shared.js"></script>
 </body>
 </html>
+
+
 

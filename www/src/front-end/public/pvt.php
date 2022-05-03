@@ -53,7 +53,23 @@
     import CLIENT_FILE from '../class/clientfile.js';
     import cryptolib from '../class/cryptolib.js'
 
+    $('document').ready(() => {
+        checkKey();
+    })
+
+    const checkKey = () => {
+        const k = localStorage.getItem("k");
+        if (k === null){
+            alert("Chiave mancante, e' necessario riaccedere");
+            window.location.href = "../../back-end/class/out.php";
+            return;
+        };
+    }
+
     $("#ID_FILE_UPLOADER").on('change', async (e) => {
+
+        checkKey();
+
         // upload file
         const file = {
             inf: e.target.files[0],
