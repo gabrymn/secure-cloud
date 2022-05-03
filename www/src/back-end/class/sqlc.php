@@ -23,7 +23,8 @@
             "REM_SEL" => "SELECT * FROM `secure-cloud`.`remember` WHERE htkn = ? AND expires > NOW()",
             "OAUTH2_INS" => "INSERT INTO `secure-cloud`.`users` (email, logged_with) VALUES (?, 'GOOGLE_OAUTH2')",
             "OAUTH2_SEL" => "SELECT * FROM `secure-cloud`.`users` WHERE email = ?",
-            "DEL_USER_WITH_EMAIL" => "DELETE FROM `secure-cloud`.`users` WHERE email = ?"
+            "DEL_USER_WITH_EMAIL" => "DELETE FROM `secure-cloud`.`users` WHERE email = ?",
+            "UPL_FILE" => "INSERT INTO `secure-cloud`.`uploads` (id_file, id_user, size, datet) VALUES (?, ?, ?, NOW())"
         ];
 
         public static function connect($address = "localhost", $name = "tester", $password = "tester_password", $dbname = "secure-cloud")
@@ -86,6 +87,12 @@
             self::qry_exec($qry, false);
             $qry = "DELETE FROM `secure-cloud`.`account_recovery` WHERE expires <= NOW()";
             self::qry_exec($qry, false);
+        }
+
+        public static function upl_file($id_file, $id_user, $size){
+            self::prep(self::QRY['UPL_FILE']);
+            self::$stmt->bind_param("sii", $id_file, $id_user, $size);
+            return self::$stmt->execute();
         }
 
         public static function get_email($id_user){

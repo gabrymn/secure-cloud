@@ -39,7 +39,7 @@ cryptolib['AES'] = class AES {
     }
 }
 
-crypto_lib['HASH'] = class HASH {
+cryptolib['HASH'] = class HASH {
 
     static SHA256 = (data, compression = false) => {
         if (compression) data = btoa(data); 
@@ -48,4 +48,4 @@ crypto_lib['HASH'] = class HASH {
     }
 }
 
-export default crypto_lib;
+export default cryptolib;

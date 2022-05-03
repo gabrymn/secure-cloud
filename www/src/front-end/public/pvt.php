@@ -42,6 +42,39 @@
 </head>
 <body>
     <input id="ID_FILE_UPLOADER" type="file">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/crypto-js/3.1.2/rollups/aes.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/crypto-js/3.1.2/rollups/sha256.js"></script>
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
 </body>
 </html>
+
+<script type="module">
+
+    import CLIENT_FILE from '../class/clientfile.js';
+    import cryptolib from '../class/cryptolib.js'
+
+    $("#ID_FILE_UPLOADER").on('change', async (e) => {
+        // upload file
+        const file = {
+            inf: e.target.files[0],
+            ctx: await CLIENT_FILE.TO_BASE64(e.target.files[0]).catch((error) => console.log("Error uploading your file."))
+        }
+        const fobj = new CLIENT_FILE(file.inf, file.ctx)
+        const aes = new cryptolib['AES']("getItem");
+        const hash = cryptolib['HASH'].SHA256;
+        const [NAM, CTX, IMP, SIZ] = fobj.ENCRYPT(aes, hash);
+
+        $.ajax({
+            type: 'POST',
+            url: "../../back-end/class/client_resource_handler.php",
+            data: {NAM:NAM, CTX:CTX, IMP:IMP, SIZ:SIZ},
+            success: (response) => {
+                console.log(response);
+            },
+            error: (xhr) => {
+                console.log(xhr);
+            }
+        });
+    });
+
+</script>

@@ -52,18 +52,3 @@ export default class FILE_URL {
 }
 
 
-export class EN_FILE {
-
-    constructor(fname, fdata){
-        this.fname = fname;
-        this.fdata = fdata;
-    }
-
-    get name() {
-        return this.fname;
-    }
-
-    get data() {
-        return this.fdata;
-    }
-}

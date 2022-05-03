@@ -1,6 +1,7 @@
 <?php
 
     require_once "response.php";
+    require_once "sqlc.php";
 
     if (isset($_SERVER['REQUEST_METHOD']))
     {
@@ -12,23 +13,34 @@
             }
             case 'POST':
             {
-                if (isset($_POST['NAME']) && isset($_POST['DATA']) && isset($_POST['H']) && count($_POST) === 3)
+                if (isset($_POST['NAM']) && isset($_POST['CTX']) && isset($_POST['SIZ']) && isset($_POST['IMP']) && count($_POST) === 4)
                 {
-                    $filename = $_POST['NAME'];
-                    $filedata = $_POST['DATA'];
-
-                    $client_hash = $_POST['H'];
+                    // upload file
+                    $filename = $_POST['NAM'];
+                    $filedata = $_POST['CTX'];
+                    $client_hash = $_POST['IMP'];
                     $server_hash = hash("sha256", $filename.$filedata);
 
                     if ($client_hash === $server_hash)
                     {
-                        file_put_contents($filename, $filedata);
-                        response::successful(200, false, array("name" => $filename, "data" => $filedata));
+                        session_start();
+                        sqlc::connect();
+    
+                        $id = $_SESSION['ID_USER'];
+                        $email = sqlc::get_email($id);
+                        $size = $_POST['SIZ'];
+                        
+                        $dir = md5("dir" . $id . $email);
+
+                        file_put_contents("../users/{$dir}/{$filename}", $filedata);
+                        sqlc::upl_file($server_hash, $id, $size);
+
+                        response::successful(201);
                         exit;
                     }
                     else
                     {
-                        // documento digitale manomesso
+                        // file alterato
                         response::server_error(500);
                     }
                 }
