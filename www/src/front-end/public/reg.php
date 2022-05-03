@@ -36,7 +36,7 @@
                                 response::print(400, $error, "Email already taken.");
                             }else{
                                 sqlc::insert_cred($email, password_hash($pass, PASSWORD_BCRYPT));
-                                if (!system::mk_dir($email)){
+                                if (!system::mk_dir($email, __BACKEND__)){
                                     sqlc::del_user_with_email($email);
                                     response::print(500, $error, "Internal server error, try again.");
                                 }

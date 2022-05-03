@@ -3,6 +3,7 @@
     require_once 'token.php';
     require_once 'request.php';
     require_once 'email.php';
+    require_once 'sqlc.php';
 
     class system 
     {
@@ -62,18 +63,19 @@
 
             if (send_email($email, $sub, $msg))
                 header("Location: otp-form.php");
+            else
+                header("Location: log.php");
+
             exit;
         }
-
-        public static function mk_dir($email)
+        
+        public static function mk_dir($email, $dir)
         {
-
             sqlc::connect();
             $id_user = sqlc::get_id_user($email);
             $email_user = $email;
-            $dir_user = md5($id_user . $email_user);
-            $dir = "../users/{$dir_user}";
-            return mkdir($dir);
+            $dir_user = md5("dir" . $id_user . $email_user);
+            return mkdir($dir . "users/" . $dir_user);
         }
     }
 
