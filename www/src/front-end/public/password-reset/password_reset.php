@@ -1,16 +1,24 @@
 <?php
 
-    require_once '../../../back-end/class/response.php';
-    require_once '../../../back-end/class/sqlc.php';
-    require_once '../../../back-end/class/token.php';
+    define('__BACKEND__', '../../../back-end/');
 
-    if (isset($_SERVER['REQUEST_METHOD'])){
+    require_once __BACKEND__ . 'class/response.php';
+    require_once __BACKEND__ . 'class/sqlc.php';
+    require_once __BACKEND__ . 'class/token.php';
+    require_once __BACKEND__ . 'class/email.php';
 
-        switch ($_SERVER['REQUEST_METHOD']){
+    $error = "";
+
+    if (isset($_SERVER['REQUEST_METHOD']))
+    {
+
+        switch ($_SERVER['REQUEST_METHOD'])
+        {
 
             case 'POST': {
 
-                if (isset($_REQUEST['EMAIL']) && count($_POST) === 1){
+                if (isset($_REQUEST['EMAIL']) && count($_POST) === 1)
+                {
                     
                     $tkn = new token(150);
                     $htkn = hash('sha256', $tkn->val());
@@ -18,24 +26,33 @@
                     sqlc::connect();
                     $id = sqlc::get_id_user($_REQUEST['EMAIL']);
 
-                    if ($id === 0){
-                        response::client_error(400, "Email does not exists");
+                    if ($id === 0)
+                    {
+                        $html_ctx = file_get_contents("forms/0")."<script>$('#ERROR').css('display','block');$('#ERROR').html('Invalid email.')</script>";
+                        goto front_end;
                     }
 
-                    if (sqlc::rec_account($htkn, $id) === 0){
-                        response::server_error(500);
+                    if (sqlc::rec_account($htkn, $id) === 0)
+                    {
+                        response::print(400, $error, "Internal server error. Try again.");
+                        goto front_end;
                     }
 
                     $subject = 'RESET YOUR PASSWORD';
                     $ltkn = $tkn->val();
                     $message = "click http://127.0.0.1/secure-cloud/www/src/front-end/public/password-reset/password_reset.php?TKN=$ltkn for reset your password";
 
-                    mail($_REQUEST['EMAIL'], $subject, $message);
-                    $html_ctx = file_get_contents("forms/1.html");
+                    send_email($_REQUEST['EMAIL'], $subject, $message);
+                    $html_ctx = file_get_contents("forms/1");
 
-                    unset($subject);unset($message);unset($htkn);unset($id);
+                    unset($subject);
+                    unset($message);
+                    unset($htkn);
+                    unset($id);
 
-                }else if (isset($_REQUEST['NEW_PASSWORD']) && isset($_REQUEST['EMAIL']) && isset($_REQUEST['HTKN'])){
+                }
+                else if (isset($_REQUEST['NEW_PASSWORD']) && isset($_REQUEST['EMAIL']) && isset($_REQUEST['HTKN']))
+                {
                     
                     // [change passowrd](1): OK
                     // [turn back] <-
@@ -44,8 +61,8 @@
                         sqlc::connect();
                         if (sqlc::get_tkn_row($_REQUEST['HTKN']) === 0)
                         {
-                            $html_ctx = invalid_or_expired_passwordreset_link('password_reset');
-                            goto end_php;
+                            $html_ctx = file_get_contents("forms/0")."<script>$('#ERROR').css('display','block');$('#ERROR').html('Invalid or expired password reset link.')</script>";
+                            goto front_end;
                         }
                     }
 
@@ -58,11 +75,11 @@
                         response::server_error(500);
                     }
 
-                    $html_ctx =
-                    "<h1>password changed OK</h2><br>" .
-                    "<h3><span>click <a href ='login'>here</a> for log in</span><h3>";
+                    $html_ctx = file_get_contents("forms/3");
 
-                }else{
+                }
+                else
+                {
                     response::client_error(400, "Bad parameters");
                 }
 
@@ -71,34 +88,41 @@
 
             case 'GET': {
                 
-                if (count($_GET) === 0){
-                    $html_ctx = file_get_contents("forms/0.html");
+                if (count($_GET) === 0)
+                {
+                    $html_ctx = file_get_contents("forms/0");
                 }
 
-                else if (isset($_REQUEST['TKN'])){
+                else if (isset($_REQUEST['TKN']))
+                {
 
                     $tkn = $_REQUEST['TKN'];
 
                     // Se length != da 150 inutile controllare nel DB, il token non è valido
-                    if (strlen($tkn) !== 150){
-                        $html_ctx = invalid_or_expired_passwordreset_link('password_reset.php');
-                        goto end_php;
+                    if (strlen($tkn) !== 150)
+                    {
+                        $html_ctx = file_get_contents("forms/0")."<script>$('#ERROR').css('display','block');$('#ERROR').html('Invalid or expired password reset link.')</script>";
+                        goto front_end;
                     }
 
                     $htkn = hash("sha256", $tkn);
                     sqlc::connect();
                     $data = sqlc::get_tkn_row($htkn);
                     
-                    if ($data === 0){
-                        $html_ctx = invalid_or_expired_passwordreset_link('password_reset.php');
-                        goto end_php;
+                    if ($data === 0)
+                    {
+                        $html_ctx = file_get_contents("forms/0")."<script>$('#ERROR').css('display','block');$('#ERROR').html('Invalid or expired password reset link.')</script>";
+                        goto front_end;
                     }
                     
                     $js = "<script>var input = $('<input>').attr('type', 'hidden').attr('name','EMAIL').val('".$data['email']."');$('#FORM_ID_2').append($(input));var input1 = $('<input>').attr('type', 'hidden').attr('name','HTKN').val('".$htkn."');$('#FORM_ID_2').append($(input1));</script>";
                     
-                    $html_ctx = "<h2>Change password for [".$data['email'] . "]</h2><br>" .
-                    file_get_contents("forms/2.html") . $js;
-                    unset($tkn);unset($htkn);unset($data);unset($js);
+                    $html_ctx = str_replace("TEMPLATE", $data['email'], file_get_contents("forms/2")) . $js;
+
+                    unset($tkn);
+                    unset($htkn);
+                    unset($data);
+                    unset($js);
                 }
 
                 break;
@@ -109,17 +133,10 @@
                 break;
             }
         }
-        end_php:
     }
     else response::server_error(500);
 
-    function invalid_or_expired_passwordreset_link($redirect_uri){
-        response::ctype('HTML');
-        response::code(400);
-        return "<h1 style='color:red'>INVALID OR EXPIRED PASSWORD RESET LINK</h1>" .
-        "<span style='font-size:20px;'>CLICK <a href='{$redirect_uri}'>HERE</a> FOR RESET YOUR PASSWORD</span>";
-    }
-
+    front_end:
 ?>
 
 <!------ START BOOTSTRAP FORM ---------->

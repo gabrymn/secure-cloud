@@ -1,7 +1,7 @@
 <?php
 
-    require_once '../resources/api.php';
-
+    require_once "sqlc.php";
+	
 	if (isset($_COOKIE['PHPSESSID']))
 	{
 		session_start();
@@ -17,6 +17,6 @@
         }
 	}
 
-	header("Location: login");
-
+	header("Location: ../../front-end/public/log.php");
+	exit;
 ?>

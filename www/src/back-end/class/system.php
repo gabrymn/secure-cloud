@@ -14,7 +14,7 @@
         // default remember for 20 days
         public static function remember($id_user, int $days = 20)
         {
-            if (!isset($_COOKIE['ALLOW'])) return false;
+            //if (!isset($_COOKIE['ALLOW'])) return false;
 
             $t_sql = self::ONE_DAY_SQL * $days;
             $t_cookie = self::ONE_DAY_COOKIE * $days;
@@ -32,10 +32,12 @@
             else return false;
         }
 
-        public static function redirect_priv_area($id_user, $session_data = array()){
+        public static function redirect_priv_area($id_user, $session_data = array())
+        {
 
             session_start();
             $_SESSION['ID_USER'] = $id_user;
+            $_SESSION['AUTH'] = 3;
 
             if (count($session_data) > 0)
                 foreach ($session_data as $key => $value)
@@ -44,29 +46,34 @@
             header("Location: pvt.php");
         }
 
-        public static function redirect_otp_form($id_user){
+        public static function redirect_otp_form($id_user)
+        {
 
             session_start();
             $_SESSION['ID_USER'] = $id_user;
-            $tkn = new token(6, "", "", array("0-9"));
-            $_SESSION['HOTP'] = array("value" => $tkn->val_hashed(), "exp" => time() + 60*5);
+            $otp = new token("OTP");
+            $_SESSION['HOTP'] = array("value" => $otp->hashed(), "exp" => time() + 60*5);
 
-            $email = "gabrieledevs@gmail.com";
+            sqlc::connect();
+
+            $email = sqlc::get_email($id_user);
             $sub = "Verifica OTP";
-            $msg = "OTP code: " . $tkn->val();
+            $msg = "OTP code: " . $otp->val();
 
             if (send_email($email, $sub, $msg))
                 header("Location: otp-form.php");
             exit;
         }
 
-        public static function redirect_login_from_otp_form(){
+        public static function mk_dir($email)
+        {
 
-            session_start();
-            if (isset($_SESSION['OTP'])){
-                unset($_SESSION['OTP']);
-            }
-            header("Location: log.php");
+            sqlc::connect();
+            $id_user = sqlc::get_id_user($email);
+            $email_user = $email;
+            $dir_user = md5($id_user . $email_user);
+            $dir = "../users/{$dir_user}";
+            return mkdir($dir);
         }
     }
 

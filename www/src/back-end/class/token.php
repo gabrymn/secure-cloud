@@ -4,16 +4,29 @@
     {
         private $value;
         public function val(){ return $this->value; }
-        public function val_hashed($algo = "sha256"){ return hash($algo, $this->value); }
+        public function hashed($algo = "sha256"){ return hash($algo, $this->value); }
 
         private CONST ab = [
             "A-Z" => "ABCDEFGHIJKLMNOPQRSTUVWXYZ",
             "a-z" => "abcdefghijklmnopqrstuvwxyz",
-            "0-9" => "0123456789"
+            "0-9" => "0123456789",
+            "1-9" => "123456789"
         ];
 
         public function __construct($length, $salt = "", $end = "", $alpha_names = array("A-Z","0-9"))
         {
+            if ($length === "OTP"){
+                $this->value = "";
+                for ($i=0; $i<6; $i++)
+                {
+                    if ($i === 0)
+                        $this->value .= self::ab["1-9"][self::crypto_rand_secure(0, strlen(self::ab["1-9"])-1)];
+                    else
+                        $this->value .= self::ab["0-9"][self::crypto_rand_secure(0, strlen(self::ab["0-9"])-1)];
+                }
+                return true;
+            }
+
             $alphabet = "";
             foreach ($alpha_names as $alpha_name)
             {
@@ -35,6 +48,7 @@
                 $this->value .= $alphabet[$this->crypto_rand_secure(0, $max-1)];
             }
             $this->value .= $end;
+            return true;
         }
 
         private function crypto_rand_secure($min, $max)

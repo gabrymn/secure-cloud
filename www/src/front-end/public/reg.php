@@ -1,8 +1,10 @@
 <?php
 
-    require_once '../../back-end/class/system.php';
-    require_once '../../back-end/class/sqlc.php';
-    require_once '../../back-end/class/response.php';
+    require_once 'backend-dir.php';
+
+    require_once __BACKEND__ . 'class/system.php';
+    require_once __BACKEND__ . 'class/sqlc.php';
+    require_once __BACKEND__ . 'class/response.php';
     
     $error = "";
 
@@ -29,15 +31,21 @@
                         }else{
                             $pass = $_POST['PASS1'];
                             sqlc::connect();
+
                             if (sqlc::get_id_user($email) > 0){
                                 response::print(400, $error, "Email already taken.");
+                            }else{
+                                sqlc::insert_cred($email, password_hash($pass, PASSWORD_BCRYPT));
+                                if (!system::mk_dir($email)){
+                                    sqlc::del_user_with_email($email);
+                                    response::print(500, $error, "Internal server error, try again.");
+                                }
+                                unset($_POST['EMAIL']);
+                                unset($_POST['PASS1']);
+                                unset($_POST['PASS2']);
+                                header("Location: log.php");
+                                exit;
                             }
-                            sqlc::insert_cred($email, password_hash($pass, PASSWORD_BCRYPT));
-                            unset($_POST['EMAIL']);
-                            unset($_POST['PASS1']);
-                            unset($_POST['PASS2']);
-                            header("Location: log.php");
-                            exit;
                         }
                     }
                 }

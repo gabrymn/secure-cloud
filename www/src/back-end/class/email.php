@@ -2,7 +2,8 @@
 
     require_once 'request.php';
 
-    function send_email($t, $sbjct, $msg){
+    function send_email($t, $sbjct, $msg)
+    {
 
         $sbjct = base64_encode($sbjct);
         $msg = base64_encode($msg);

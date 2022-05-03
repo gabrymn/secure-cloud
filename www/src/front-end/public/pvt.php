@@ -1,16 +1,20 @@
 <?php
 
-    echo "private area";exit;
+    require_once 'backend-dir.php';
 
+    require_once __BACKEND__ . 'class/sqlc.php';
+    require_once __BACKEND__ . 'class/response.php';
+    require_once __BACKEND__ . 'class/system.php';
+    
 	if (isset($_COOKIE['PHPSESSID']))
 	{
 		session_start();
-        if (isset($_SESSION['ID_USER']))
+        if (isset($_SESSION['ID_USER']) && isset($_SESSION['AUTH']))
         {
             sqlc::connect();
             $email = sqlc::get_email($_SESSION['ID_USER']);
             echo "<h1>Private area of: [ $email ]</h1><br>";
-            echo "<h3><a href='out'>logout</a></h3>";
+            echo "<h3><a href='../../back-end/class/out.php'>logout</a></h3>";
         }
         else
             response::client_error(403);

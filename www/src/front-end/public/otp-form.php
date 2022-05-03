@@ -1,7 +1,9 @@
 <?php
 
-    require_once '../../back-end/class/response.php';
-    require_once '../../back-end/class/system.php';
+    require_once 'backend-dir.php';
+
+    require_once __BACKEND__ . 'class/response.php';
+    require_once __BACKEND__ . 'class/system.php';
 
     $error = "";
 
@@ -22,7 +24,8 @@
 
                     if (time() > $exp)
                     {
-                        system::redirect_login_from_otp_form();
+                        unset($_SESSION['HOTP']);
+                        header("Location: log.php");
                         exit;
                     }
                     if ($hotp === $_SESSION['HOTP']['value'])
@@ -49,7 +52,8 @@
                     else if (isset($_SESSION['HOTP']) && isset($_SESSION['ID_USER'])){
                         $exp = $_SESSION['HOTP']['exp'];
                         if (time() > $exp){
-                            system::redirect_login_from_otp_form();
+                            unset($_SESSION['HOTP']);
+                            header("Location: log.php");
                             exit;
                         }
                     }

@@ -1,8 +1,10 @@
 <?php   
 
-    require_once '../../back-end/class/system.php';
-    require_once '../../back-end/class/sqlc.php';
-    require_once '../../back-end/class/response.php';
+    require_once 'backend-dir.php';
+
+    require_once __BACKEND__ . 'class/system.php';
+    require_once __BACKEND__ . 'class/sqlc.php';
+    require_once __BACKEND__ . 'class/response.php';
     //require_once '../resources/OAuth/google/vendor/autoload.php';
 
     $error = "";
@@ -21,7 +23,8 @@
 
                             $id_user = sqlc::get_id_user($_REQUEST['EMAIL']);
                             
-                            if (isset($_REQUEST['REM_ME']) && $_REQUEST['REM_ME']){
+                            if (isset($_REQUEST['REM_ME']) && $_REQUEST['REM_ME'])
+                            {
                                 system::remember($id_user); 
                                 unset($_REQUEST['REM_ME']);
                             }
@@ -53,7 +56,20 @@
                     session_start();
                     if (isset($_SESSION['AUTH'])){
                         //system::redirect_priv_area($_SESSION['ID_USER']);
-                        header("Location: pvt.php");exit;
+                        header("Location: pvt.php");
+                        exit;
+                    }
+
+                    if (isset($_SESSION['HOTP']) && isset($_SESSION['ID_USER'])){
+                        $exp = $_SESSION['HOTP']['exp'];
+                        if (time() < $exp){
+                            header("Location: otp-form.php");
+                            exit;
+                        }
+                        else
+                        {
+                            unset($_SESSION['HOTP']);
+                        }
                     }
                 }
 
@@ -151,7 +167,7 @@
                                     <div class="col-md-6 offset-md-4">
                                         <div class="checkbox">
                                             <label>
-                                                <input name="REM_ME" type="checkbox" checked="true" id="REM_ME"> <label for="REM_ME">Remember me</label>
+                                                <input name="REM_ME" type="checkbox" id="REM_ME"> <label for="REM_ME">Remember me</label>
                                             </label>
                                         </div>
                                     </div>

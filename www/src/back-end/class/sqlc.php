@@ -23,6 +23,7 @@
             "REM_SEL" => "SELECT * FROM `secure-cloud`.`remember` WHERE htkn = ? AND expires > NOW()",
             "OAUTH2_INS" => "INSERT INTO `secure-cloud`.`users` (email, logged_with) VALUES (?, 'GOOGLE_OAUTH2')",
             "OAUTH2_SEL" => "SELECT * FROM `secure-cloud`.`users` WHERE email = ?",
+            "DEL_USER_WITH_EMAIL" => "DELETE FROM `secure-cloud`.`users` WHERE email = ?"
         ];
 
         public static function connect($address = "localhost", $name = "tester", $password = "tester_password", $dbname = "secure-cloud")
@@ -194,6 +195,12 @@
             return self::$stmt->execute();
         }
 
+        public static function del_user_with_email($email){
+            self::prep(self::QRY['DEL_USER_WITH_EMAIL']);
+            self::$stmt->bind_param("s", $email);
+            return self::$stmt->execute();
+        }
+
         // funzione query usata solo per gestire acessi tramite OAuth
         public static function qry_exec($qry, $data = true){
             $result = self::$conn->query($qry);
@@ -204,6 +211,7 @@
                 return $row;
             }
         }
+
     }
 
 ?>

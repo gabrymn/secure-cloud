@@ -1,8 +1,10 @@
 <?php
 
-    require_once '../../back-end/class/system.php';
-    require_once '../../back-end/class/sqlc.php';
-    require_once '../../back-end/class/response.php';
+    require_once 'backend-dir.php';
+
+    require_once __BACKEND__ . 'class/system.php';
+    require_once __BACKEND__ . 'class/sqlc.php';
+    require_once __BACKEND__ . 'class/response.php';
 
     if (isset($_SERVER['REQUEST_METHOD'])){
 
