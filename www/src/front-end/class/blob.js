@@ -17,6 +17,8 @@ export default class FILE_URL {
         return blob;
     }
 
+    static GET_BLOB_URL = (blob) => URL.createObjectURL(blob)
+
     static #DATAURL_2_FILE = (dataurl, filename) => {
         var arr = dataurl.split(','), mime = arr[0].match(/:(.*?);/)[1],
             bstr = atob(arr[1]), n = bstr.length, u8arr = new Uint8Array(n);

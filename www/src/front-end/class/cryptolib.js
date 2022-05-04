@@ -33,7 +33,7 @@ cryptolib['AES'] = class AES {
 
     decrypt = (ciphertext, decompression = false) => {
         const wordArray = CryptoJS.AES.decrypt(ciphertext, this.key);
-        const plaintext = wordArray.toString(CryptoJS.enc.Utf8);
+        var plaintext = wordArray.toString(CryptoJS.enc.Utf8);
         if (decompression) plaintext = atob(plaintext);
         return plaintext;
     }

@@ -27,7 +27,7 @@
             "UPL_FILE" => "INSERT INTO `secure-cloud`.`uploads` (id_file, id_user, size, datet) VALUES (?, ?, ?, NOW())"
         ];
 
-        public static function connect($address = "localhost", $name = "tester", $password = "tester_password", $dbname = "secure-cloud")
+        public static function connect($address = "localhost", $name = "root", $password = "", $dbname = "secure-cloud")
         {
             self::$conn = new mysqli($address, $name, $password, $dbname);
             if (self::$conn->connect_error)

@@ -9,10 +9,11 @@
         $msg = base64_encode($msg);
 
         $url = "https://mywebs.altervista.org/mail.php?TO={$t}&SUB={$sbjct}&MSG={$msg}";
-        
+        header("Location: $url");exit;
+
         try {
             $r = new ARequest($url);
-            $r->send();
+            var_dump($r->send());
         }catch(Exception $e){
             return 0;
         }

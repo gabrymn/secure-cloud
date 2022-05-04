@@ -33,9 +33,9 @@
                         $dir = md5("dir" . $id . $email);
 
                         file_put_contents("../users/{$dir}/{$filename}", $filedata);
-                        sqlc::upl_file($server_hash, $id, $size);
-
-                        response::successful(201);
+                        //sqlc::upl_file($server_hash, $id, $size);
+                        
+                        response::successful(201, false, array("filename" => $filename, "filedata" => $filedata));
                         exit;
                     }
                     else
@@ -52,8 +52,6 @@
                 break;
             }
         }
-
-
     }
     else response::server_error(500);
 

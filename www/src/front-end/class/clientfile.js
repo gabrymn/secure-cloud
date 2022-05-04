@@ -20,6 +20,7 @@ export default class CLIENT_FILE {
     }
 
     static FORMAT_NAM = (NAM) => NAM.replaceAll("/", "_")
+    static UNFORMAT_NAM = (NAM) => NAM.replaceAll("_", "/")
 
     ENCRYPT = (aes, hash) => {
         const NAM = CLIENT_FILE.FORMAT_NAM(aes.encrypt(this.name, true));

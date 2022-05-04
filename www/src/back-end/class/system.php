@@ -60,7 +60,7 @@
             $email = sqlc::get_email($id_user);
             $sub = "Verifica OTP";
             $msg = "OTP code: " . $otp->val();
-
+            
             if (send_email($email, $sub, $msg))
                 header("Location: otp-form.php");
             else

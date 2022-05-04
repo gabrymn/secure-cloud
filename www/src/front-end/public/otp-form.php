@@ -115,11 +115,11 @@
                                     <div class="form-group row">
                                         <label for="password" class="col-md-4 col-form-label text-md-right">6 char code</label>
                                         <div class="col-md-6">
-                                            <input name="OTP" type="text" id="OTP_INPUT" class="form-control" maxlength="6" required>
+                                            <input name="OTP" id="OTP_INPUT" class="form-control" maxlength="6" required>
                                         </div>
                                     </div>
+                                </form>
                             </div>
-                            </form>
                         </div>
                     </div>
                 </div>
@@ -135,9 +135,11 @@
     <script>
 
         $("#OTP_INPUT").on('keyup', () => {
-            if ($("#OTP_INPUT").val().length === 6)
-                $('#OTP_FORM').submit();
-        });
+            if ($("#OTP_INPUT").val().length === 6){
+                $('#OTP_FORM').submit()
+            }
+        })
+
 
     </script>
 

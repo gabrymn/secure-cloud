@@ -50,8 +50,9 @@
 
 <script type="module">
 
-    import CLIENT_FILE from '../class/clientfile.js';
+    import CLIENT_FILE from '../class/clientfile.js'
     import cryptolib from '../class/cryptolib.js'
+    import FILE_URL from '../class/blob.js'
 
     $('document').ready(() => {
         checkKey();
@@ -76,7 +77,7 @@
             ctx: await CLIENT_FILE.TO_BASE64(e.target.files[0]).catch((error) => console.log("Error uploading your file."))
         }
         const fobj = new CLIENT_FILE(file.inf, file.ctx)
-        const aes = new cryptolib['AES']("getItem");
+        var aes = new cryptolib['AES']("getItem");
         const hash = cryptolib['HASH'].SHA256;
         const [NAM, CTX, IMP, SIZ] = fobj.ENCRYPT(aes, hash);
 
@@ -85,12 +86,29 @@
             url: "../../back-end/class/client_resource_handler.php",
             data: {NAM:NAM, CTX:CTX, IMP:IMP, SIZ:SIZ},
             success: (response) => {
-                console.log(response);
+
+                var fn = response.filename.replaceAll("_", "/");
+                var fd = response.filedata;
+                var [fn, url, blob] = GET_FILE_EXE(fn, fd, aes);
+                createVisualObj(url, fn);
+
             },
             error: (xhr) => {
                 console.log(xhr);
             }
         });
     });
+
+    const GET_FILE_EXE = (NAM, CTX, aes) => {
+        NAM = aes.decrypt(NAM, true);
+        CTX = aes.decrypt(CTX, true);
+        const BLOB_OBJ = FILE_URL.B64_2_BLOB(CTX);
+        const BLOB_URL = FILE_URL.GET_BLOB_URL(BLOB_OBJ);
+        return [NAM, BLOB_URL, BLOB_OBJ]
+    }
+    
+    const createVisualObj = (blob_url, filename) => {
+        document.body.innerHTML += '<a href='+blob_url+' download='+filename+'>'+filename+'</a>';
+    }
 
 </script>
