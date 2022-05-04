@@ -9,6 +9,22 @@
         {
             case 'GET':
             {
+                if (isset($_GET['DATA']) && count($_GET) === 1)
+                {
+                    session_start();
+                    $id_user = $_SESSION['ID_USER'];
+                    sqlc::connect();
+                    $email = sqlc::get_email($id_user);
+                    $rep = md5("dir" . $id_user . $email);
+                    $files = scandir("../users/$rep");
+                    response::successful(200, false, array("files" => $files, "rep" => $rep));
+                }
+                else if (isset($_GET['FILE']) && isset($_GET['REP']) && count($_GET) === 2)
+                {
+                    $ctx = file_get_contents("../users/" . $_GET['REP'] . "/" . $_GET['FILE']);
+                    response::successful(200, false, array("ctx" => $ctx));
+                }
+
                 break;
             }
             case 'POST':
@@ -35,7 +51,7 @@
                         file_put_contents("../users/{$dir}/{$filename}", $filedata);
                         //sqlc::upl_file($server_hash, $id, $size);
                         
-                        response::successful(201, false, array("filename" => $filename, "filedata" => $filedata));
+                        response::successful(201);
                         exit;
                     }
                     else

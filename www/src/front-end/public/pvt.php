@@ -1,7 +1,6 @@
 <?php
 
     require_once 'backend-dir.php';
-
     require_once __BACKEND__ . 'class/sqlc.php';
     require_once __BACKEND__ . 'class/response.php';
     require_once __BACKEND__ . 'class/system.php';
@@ -13,11 +12,10 @@
         {
             sqlc::connect();
             $email = sqlc::get_email($_SESSION['ID_USER']);
-            echo "<h1>Private area of: [ $email ]</h1><br>";
+            echo "<h1>Private area of: [ $email ]</h1>";
             echo "<h3><a href='../../back-end/class/out.php'>logout</a></h3>";
         }
-        else
-            response::client_error(403);
+        else response::client_error(403);
 	}
     else if (isset($_COOKIE['logged']) && isset($_COOKIE['rm_tkn'])){
         if ($_COOKIE['logged']){
@@ -28,8 +26,7 @@
             if ($data) system::redirect_priv_area($data['id_user']);
         }
     }
-	else
-        response::client_error(403);
+	else response::client_error(403);
 ?>
 
 <!DOCTYPE html>
@@ -38,10 +35,16 @@
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="../css/shared.css">
     <title>Private area</title>
 </head>
 <body>
-    <input id="ID_FILE_UPLOADER" type="file">
+
+    <center><input type="file" id="ID_FILE_UPLOADER"></center>
+    <br>
+
+    <div id="C_FILES" class="FILE_CARDS">
+    </div>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/crypto-js/3.1.2/rollups/aes.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/crypto-js/3.1.2/rollups/sha256.js"></script>
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
@@ -56,7 +59,45 @@
 
     $('document').ready(() => {
         checkKey();
+
+
+        $.ajax({
+            type: 'GET',
+            url: "../../back-end/class/client_resource_handler.php",
+            data: {DATA:true},
+            success: (response) => {
+                const files = response.files;
+                const rep = response.rep;
+                var a = new cryptolib['AES']("getItem");
+                response.files.forEach((filename) => {
+                    if (filename !== "." && filename !== "..")
+                        getFile(filename, rep, a)
+                });
+            },
+            error: (xhr) => {
+                console.log(xhr);
+            }
+        });
     })
+    
+    const getFile = (filename, rep, aes) => {
+
+        $.ajax({
+            type: 'GET',
+            url: "../../back-end/class/client_resource_handler.php",
+            data: {FILE:filename,REP:rep},
+            success: (response) => {
+                console.log(response);
+                filename = filename.replaceAll("_", "/");
+                var ctx = response.ctx;
+                var [fn, url, blob] = GET_FILE_EXE(filename, ctx, aes);
+                createVisualObj(url, fn);
+            },
+            error: (xhr) => {
+                console.log(xhr);
+            }
+        });
+    }
 
     const checkKey = () => {
         const k = localStorage.getItem("k");
@@ -68,9 +109,8 @@
     }
 
     $("#ID_FILE_UPLOADER").on('change', async (e) => {
-
-        checkKey();
-
+        
+        checkKey(); 
         // upload file
         const file = {
             inf: e.target.files[0],
@@ -80,18 +120,17 @@
         var aes = new cryptolib['AES']("getItem");
         const hash = cryptolib['HASH'].SHA256;
         const [NAM, CTX, IMP, SIZ] = fobj.ENCRYPT(aes, hash);
+        
+        var [fn, url, blob] = GET_FILE_EXE(NAM, CTX, aes);
+        await createVisualObj(url, fn);
 
         $.ajax({
             type: 'POST',
             url: "../../back-end/class/client_resource_handler.php",
             data: {NAM:NAM, CTX:CTX, IMP:IMP, SIZ:SIZ},
             success: (response) => {
-
-                var fn = response.filename.replaceAll("_", "/");
-                var fd = response.filedata;
-                var [fn, url, blob] = GET_FILE_EXE(fn, fd, aes);
-                createVisualObj(url, fn);
-
+                console.log(response);
+                $("#ID_FILE_UPLOADER").val("");
             },
             error: (xhr) => {
                 console.log(xhr);
@@ -107,8 +146,35 @@
         return [NAM, BLOB_URL, BLOB_OBJ]
     }
     
-    const createVisualObj = (blob_url, filename) => {
-        document.body.innerHTML += '<a href='+blob_url+' download='+filename+'>'+filename+'</a>';
+    const createVisualObj = async (blob_url, filename) => {
+        document.getElementById("C_FILES").innerHTML += '<br><br><a href='+blob_url+' download='+filename+'>'+filename+'</a><br><br>';
     }
 
 </script>
+
+<style>
+
+    .FILE_CARDS {
+
+        border: 2px solid white;
+        border-radius: 25px;
+        width: 80%;
+        color: white;
+        margin-left: auto;
+        margin-right: auto;
+        text-align: center;
+    }
+
+    a, h1, h3 {
+
+        color: white;
+        font-size: 1.5rem;
+    }
+
+    input {
+        color: white;
+        border: 2px solid white;
+        outline: none;
+    }
+
+</style>
