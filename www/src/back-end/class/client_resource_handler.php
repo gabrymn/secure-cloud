@@ -24,6 +24,15 @@
                     $ctx = file_get_contents("../users/" . $_GET['REP'] . "/" . $_GET['FILE']);
                     response::successful(200, false, array("ctx" => $ctx));
                 }
+                else if (isset($_GET['OTPSTATE'])){
+                    session_start();
+                    $id_user = $_SESSION['ID_USER'];
+                    sqlc::connect();
+                    $val = intval(sqlc::get_2fa($id_user));
+                    response::successful(200, false, array("2FA" => $val));
+                    exit;
+                }
+                else response::client_error(400);
 
                 break;
             }
@@ -60,6 +69,19 @@
                         response::server_error(500);
                     }
                 }
+                else if (isset($_POST['OTP']) && count($_POST) === 1)
+                {
+                    session_start();
+                    $id_user = $_SESSION['ID_USER'];
+                    $val = $_POST['OTP'];
+                    sqlc::connect();
+                    sqlc::set_2fa($id_user, intval($val));
+                    $msg = $val ? "2FA activated" : "2FA disabled"; 
+                    response::successful(201, $msg);
+
+                    exit;            
+                }
+
                 break;
             }
             default:

@@ -9,22 +9,22 @@
 
         private const QRY =
         [
-            "INS_CRED" => "INSERT INTO `secure-cloud`.`users` (email, pass, logged_with) VALUES (?, ?, 'EMAIL')",
+            "INS_CRED" => "INSERT INTO `secure-cloud`.`users` (email, pass, logged_with, 2FA) VALUES (?, ?, 'EMAIL')",
             "LOGIN" => "SELECT * FROM `secure-cloud`.`users` WHERE email = ? AND logged_with = 'EMAIL'",
             "ACC_REC" => "INSERT INTO `secure-cloud`.`account_recovery` (id_user, htkn, expires) VALUES (?, ?, ADDTIME(NOW(), 1000))",
             "ID_FROM_EMAIL" => "SELECT id FROM `secure-cloud`.`users` WHERE email = ?",
             "EMAIL_FROM_ID" => "SELECT email FROM `secure-cloud`.`users` WHERE id = ?",
-            "TKN_ROW" => "SELECT u.email, r.expires
-            FROM `secure-cloud`.`account_recovery` AS r, `secure-cloud`.`users` AS u
-            WHERE u.id = r.id_user AND r.htkn = ? AND r.expires > NOW()",
+            "TKN_ROW" => "SELECT u.email, r.expires FROM `secure-cloud`.`account_recovery` AS r, `secure-cloud`.`users` AS u WHERE u.id = r.id_user AND r.htkn = ? AND r.expires > NOW()",
             "DEL_TKN" => "DELETE FROM `secure-cloud`.`account_recovery` WHERE htkn = ?",
             "CH_PASS" => "UPDATE `secure-cloud`.`users` SET pass = ? WHERE email = ?",
             "REM_DEL" => "DELETE FROM `secure-cloud`.`remember` WHERE htkn = ?",
             "REM_SEL" => "SELECT * FROM `secure-cloud`.`remember` WHERE htkn = ? AND expires > NOW()",
-            "OAUTH2_INS" => "INSERT INTO `secure-cloud`.`users` (email, logged_with) VALUES (?, 'GOOGLE_OAUTH2')",
+            "OAUTH2_INS" => "INSERT INTO `secure-cloud`.`users` (email, logged_with, 2FA) VALUES (?, 'GOOGLE_OAUTH2')",
             "OAUTH2_SEL" => "SELECT * FROM `secure-cloud`.`users` WHERE email = ?",
             "DEL_USER_WITH_EMAIL" => "DELETE FROM `secure-cloud`.`users` WHERE email = ?",
-            "UPL_FILE" => "INSERT INTO `secure-cloud`.`uploads` (id_file, id_user, size, datet) VALUES (?, ?, ?, NOW())"
+            "UPL_FILE" => "INSERT INTO `secure-cloud`.`uploads` (id_file, id_user, size, datet) VALUES (?, ?, ?, NOW())",
+            "SET_2FA" => "UPDATE `secure-cloud`.`users` SET 2FA = ? WHERE id = ?",
+            "GET_2FA" => "SELECT 2FA FROM `secure-cloud`.`users` WHERE id = ?"
         ];
 
         public static function connect($address = "localhost", $name = "root", $password = "", $dbname = "secure-cloud")
@@ -79,6 +79,21 @@
 
         private static function get_REM_INS_query(int $time){
             return "INSERT INTO `secure-cloud`.`remember` (htkn, expires, id_user) VALUES (?, ADDTIME(NOW(), '20 0:0:0'), ?)";
+        }
+
+        public static function set_2fa($id_user, $value){
+            if ($value !== 0 && $value !== 1) return false;
+            self::prep(self::QRY['SET_2FA']);
+            self::$stmt->bind_param("ii", $value, $id_user);
+            return self::$stmt->execute();
+        }
+
+        public static function get_2fa($id_user){
+            self::prep(self::QRY['GET_2FA']);
+            self::$stmt->bind_param("i", $id_user);
+            self::$stmt->execute();
+            $row = self::$stmt->get_result()->fetch_assoc();
+            return isset($row['2FA']) ? $row['2FA'] : 0;
         }
 
         // elimina righe tabella '`secure-cloud.remember`_me' e '`secure-cloud.account_recovery`' scadute

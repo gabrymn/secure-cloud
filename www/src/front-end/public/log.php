@@ -6,7 +6,7 @@
     require_once __BACKEND__ . 'class/sqlc.php';
     require_once __BACKEND__ . 'class/response.php';
     //require_once '../resources/OAuth/google/vendor/autoload.php';
-
+    
     $error = "";
 
     if (isset($_SERVER['REQUEST_METHOD'])){
@@ -114,6 +114,7 @@
         <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" integrity="sha384-1BmE4kWBq78iYhFldvKuhfTAU6auU8tT94WrHftjDbrCEXSU1oBoqyl2QvZ6jIW3" crossorigin="anonymous">
         <link rel="stylesheet" href="../css/shared.css">
         <link rel="stylesheet" href="../css/login.css">
+        <link href="../img/icon.ico" rel="icon" type="image/x-icon" >
     </head>
     <body>
         <nav class="navbar navbar-expand-lg navbar-dark bg-dark">

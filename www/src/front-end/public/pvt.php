@@ -4,29 +4,53 @@
     require_once __BACKEND__ . 'class/sqlc.php';
     require_once __BACKEND__ . 'class/response.php';
     require_once __BACKEND__ . 'class/system.php';
-    
-	if (isset($_COOKIE['PHPSESSID']))
-	{
-		session_start();
-        if (isset($_SESSION['ID_USER']) && isset($_SESSION['AUTH']))
-        {
-            sqlc::connect();
-            $email = sqlc::get_email($_SESSION['ID_USER']);
-            echo "<h1>Private area of: [ $email ]</h1>";
-            echo "<h3><a href='../../back-end/class/out.php'>logout</a></h3>";
+
+    if (isset($_SERVER['REQUEST_METHOD'])){
+
+        switch ($_SERVER['REQUEST_METHOD']) {
+
+            case 'GET': {
+
+                if (isset($_COOKIE['PHPSESSID']))
+                {
+                    session_start();
+                    if (isset($_SESSION['ID_USER']) && isset($_SESSION['AUTH']))
+                    {
+                        sqlc::connect();
+                        $email = sqlc::get_email($_SESSION['ID_USER']);
+                    }
+                    else response::client_error(403);
+                }
+                else if (isset($_COOKIE['logged']) && isset($_COOKIE['rm_tkn'])){
+                    if ($_COOKIE['logged']){
+                        $tkn = $_COOKIE['rm_tkn'];
+                        $htkn = hash("sha256", $tkn);
+                        sqlc::connect();
+                        $data = sqlc::rem_sel($htkn);
+                        if ($data) system::redirect_priv_area($data['id_user']);
+                    }   
+                }
+                else response::client_error(403);
+
+                break;
+            }
+
+            case 'POST': {
+
+                break;  
+            }
+
+            default: {
+
+                response::client_error(405);
+                break;
+            }
         }
-        else response::client_error(403);
-	}
-    else if (isset($_COOKIE['logged']) && isset($_COOKIE['rm_tkn'])){
-        if ($_COOKIE['logged']){
-            $tkn = $_COOKIE['rm_tkn'];
-            $htkn = hash("sha256", $tkn);
-            sqlc::connect();
-            $data = sqlc::rem_sel($htkn);
-            if ($data) system::redirect_priv_area($data['id_user']);
-        }
+
     }
-	else response::client_error(403);
+    else response::server_error(500);
+
+
 ?>
 
 <!DOCTYPE html>
@@ -37,14 +61,17 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="../css/shared.css">
     <title>Private area</title>
+    <link href="../img/icon.ico" rel="icon" type="image/x-icon" >
 </head>
 <body>
+    <h1>Private area of <?php echo $email; ?> </h1>
+    <h3><a href='../../back-end/class/out.php'>logout</a></h3>;
+    <center><input type="file" id="ID_FILE_UPLOADER"></center><br>
+    <div id="C_FILES" class="FILE_CARDS"></div>
 
-    <center><input type="file" id="ID_FILE_UPLOADER"></center>
     <br>
+    <h3>2FA</h3><input id="OTP_YN" type="checkbox">
 
-    <div id="C_FILES" class="FILE_CARDS">
-    </div>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/crypto-js/3.1.2/rollups/aes.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/crypto-js/3.1.2/rollups/sha256.js"></script>
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
@@ -59,7 +86,7 @@
 
     $('document').ready(() => {
         checkKey();
-
+        sync_2FA_state();
 
         $.ajax({
             type: 'GET',
@@ -148,6 +175,37 @@
     
     const createVisualObj = async (blob_url, filename) => {
         document.getElementById("C_FILES").innerHTML += '<br><br><a href='+blob_url+' download='+filename+'>'+filename+'</a><br><br>';
+    }
+
+    $('#OTP_YN').on('change', () => {
+        const otp = $('#OTP_YN').prop('checked')? 1 : 0;
+        $.ajax({
+            type: 'POST',
+            url: "../../back-end/class/client_resource_handler.php",
+            data: {OTP:otp},
+            success: (response) => {
+                console.log(response);
+            },
+            error: (xhr) => {
+                console.log(xhr);
+            }
+        })
+    })
+
+    const sync_2FA_state = () => {
+
+        $.ajax({
+            type: 'GET',
+            url: "../../back-end/class/client_resource_handler.php",
+            data: {OTPSTATE:1},
+            success: (response) => {
+                const val = response["2FA"];
+                if (val === 1) $('#OTP_YN').prop('checked', true)     
+            },
+            error: (xhr) => {
+                console.log(xhr);
+            }
+        })
     }
 
 </script>
