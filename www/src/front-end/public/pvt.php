@@ -16,6 +16,11 @@
                     session_start();
                     if (isset($_SESSION['ID_USER']) && isset($_SESSION['AUTH']))
                     {
+                        if (isset($_SESSION['HOTP']))
+                        {
+                            header("Location: otp-form.php");
+                            exit;
+                        }
                         sqlc::connect();
                         $email = sqlc::get_email($_SESSION['ID_USER']);
                     }
@@ -23,14 +28,10 @@
                 }
                 else if (isset($_COOKIE['logged']) && isset($_COOKIE['rm_tkn'])){
                     if ($_COOKIE['logged']){
-                        $tkn = $_COOKIE['rm_tkn'];
-                        $htkn = hash("sha256", $tkn);
-                        sqlc::connect();
-                        $data = sqlc::rem_sel($htkn);
-                        if ($data) system::redirect_priv_area($data['id_user']);
+                        system::redirect_remember($_COOKIE['rm_tkn']);
                     }   
                 }
-                else response::client_error(403);
+                else header("Location: log.php");
 
                 break;
             }
@@ -61,7 +62,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="../css/shared.css">
     <title>Private area</title>
-    <link href="../img/icon.ico" rel="icon" type="image/x-icon" >
+    <link href="../img/icon.svg" rel="icon" type="image/x-icon" sizes="32x32">
 </head>
 <body>
     <h1>Private area of <?php echo $email; ?> </h1>
@@ -79,23 +80,27 @@
 </html>
 
 <script type="module">
-
+    
     import CLIENT_FILE from '../class/clientfile.js'
     import cryptolib from '../class/cryptolib.js'
     import FILE_URL from '../class/blob.js'
-
+    
     $('document').ready(() => {
         checkKey();
         sync_2FA_state();
+        getData();
+    })
 
+    const getData = () => {
         $.ajax({
             type: 'GET',
             url: "../../back-end/class/client_resource_handler.php",
             data: {DATA:true},
             success: (response) => {
+                console.log(response);
                 const files = response.files;
                 const rep = response.rep;
-                var a = new cryptolib['AES']("getItem");
+                var a = new cryptolib['AES'](localStorage.getItem("k"));
                 response.files.forEach((filename) => {
                     if (filename !== "." && filename !== "..")
                         getFile(filename, rep, a)
@@ -105,7 +110,7 @@
                 console.log(xhr);
             }
         });
-    })
+    }
     
     const getFile = (filename, rep, aes) => {
 
@@ -138,18 +143,20 @@
     $("#ID_FILE_UPLOADER").on('change', async (e) => {
         
         checkKey(); 
+
         // upload file
         const file = {
             inf: e.target.files[0],
             ctx: await CLIENT_FILE.TO_BASE64(e.target.files[0]).catch((error) => console.log("Error uploading your file."))
         }
+
         const fobj = new CLIENT_FILE(file.inf, file.ctx)
-        var aes = new cryptolib['AES']("getItem");
+        var aes = new cryptolib['AES'](localStorage.getItem("k"));
         const hash = cryptolib['HASH'].SHA256;
         const [NAM, CTX, IMP, SIZ] = fobj.ENCRYPT(aes, hash);
-        
         var [fn, url, blob] = GET_FILE_EXE(NAM, CTX, aes);
-        await createVisualObj(url, fn);
+
+        await createVisualObj(url, e.target.files[0].name);
 
         $.ajax({
             type: 'POST',

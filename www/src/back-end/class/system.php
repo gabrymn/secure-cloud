@@ -15,14 +15,12 @@
         // default remember for 20 days
         public static function remember($id_user, int $days = 20)
         {
-            //if (!isset($_COOKIE['ALLOW'])) return false;
-
             $t_sql = self::ONE_DAY_SQL * $days;
             $t_cookie = self::ONE_DAY_COOKIE * $days;
 
             sqlc::connect();
 
-            $tkn = new token(36, "", "", array("A-Z", "a-z", "0-9"));
+            $tkn = new token(36, "", "", array("a-z", "0-9"));
             $state = sqlc::rem_ins(hash("sha256", $tkn->val()), $id_user, $t_sql);
             
             if ($state){
@@ -33,25 +31,9 @@
             else return false;
         }
 
-        public static function redirect_priv_area($id_user, $session_data = array())
-        {
-
-            session_start();
-            $_SESSION['ID_USER'] = $id_user;
-            $_SESSION['AUTH'] = 3;
-
-            if (count($session_data) > 0)
-                foreach ($session_data as $key => $value)
-                    $_SESSION[$key] = $value;
-
-            header("Location: pvt.php");
-        }
-
         public static function redirect_otp_form($id_user)
         {
-
             session_start();
-            $_SESSION['ID_USER'] = $id_user;
             $otp = new token("OTP");
             $_SESSION['HOTP'] = array("value" => $otp->hashed(), "exp" => time() + 60*5);
 
@@ -67,6 +49,17 @@
                 header("Location: log.php");
 
             exit;
+        }
+
+        public static function redirect_remember($rm_token){
+            $tkn = $rm_token;
+            $htkn = hash("sha256", $tkn);
+            sqlc::connect();
+            $data = sqlc::rem_sel($htkn);
+            session_start();
+            $_SESSION['ID_USER'] = $data['id_user'];
+            $_SESSION['AUTH'] = 0;
+            header("Location: pvt.php");
         }
         
         public static function mk_dir($email, $dir)

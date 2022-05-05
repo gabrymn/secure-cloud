@@ -17,6 +17,8 @@
                     $email = sqlc::get_email($id_user);
                     $rep = md5("dir" . $id_user . $email);
                     $files = scandir("../users/$rep");
+                    unset($files[array_search('.', $files)]);
+                    unset($files[array_search('..', $files)]);
                     response::successful(200, false, array("files" => $files, "rep" => $rep));
                 }
                 else if (isset($_GET['FILE']) && isset($_GET['REP']) && count($_GET) === 2)

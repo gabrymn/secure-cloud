@@ -9,7 +9,7 @@
 
         private const QRY =
         [
-            "INS_CRED" => "INSERT INTO `secure-cloud`.`users` (email, pass, logged_with, 2FA) VALUES (?, ?, 'EMAIL')",
+            "INS_CRED" => "INSERT INTO `secure-cloud`.`users` (email, pass, logged_with, 2FA) VALUES (?, ?, 'EMAIL', 0)",
             "LOGIN" => "SELECT * FROM `secure-cloud`.`users` WHERE email = ? AND logged_with = 'EMAIL'",
             "ACC_REC" => "INSERT INTO `secure-cloud`.`account_recovery` (id_user, htkn, expires) VALUES (?, ?, ADDTIME(NOW(), 1000))",
             "ID_FROM_EMAIL" => "SELECT id FROM `secure-cloud`.`users` WHERE email = ?",

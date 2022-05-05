@@ -22,7 +22,11 @@
                         if (sqlc::login($_REQUEST['EMAIL'], $_REQUEST['PASS'])){
 
                             $id_user = sqlc::get_id_user($_REQUEST['EMAIL']);
-                            
+
+                            session_start();
+                            $_SESSION['ID_USER'] = $id_user;
+                            $_SESSION['AUTH'] = 1;
+
                             if (isset($_REQUEST['REM_ME']) && $_REQUEST['REM_ME'])
                             {
                                 system::remember($id_user); 
@@ -32,9 +36,12 @@
                             unset($_REQUEST['EMAIL']);
                             unset($_REQUEST['PASS']);
 
-                            system::redirect_otp_form($id_user);
+                            $status_2FA = sqlc::get_2fa($id_user);
+                            if ($status_2FA)
+                                system::redirect_otp_form($id_user);
+                            else
+                                header("Location: pvt.php");
                             
-                            //system::redirect_priv_area($id_user);
                             exit;
 
                         }else { 
@@ -52,34 +59,40 @@
 
             case 'GET': {
 
-                if (isset($_COOKIE['PHPSESSID'])){
+                if (isset($_COOKIE['PHPSESSID']))
+                {
                     session_start();
-                    if (isset($_SESSION['AUTH'])){
-                        //system::redirect_priv_area($_SESSION['ID_USER']);
-                        header("Location: pvt.php");
-                        exit;
-                    }
-
-                    if (isset($_SESSION['HOTP']) && isset($_SESSION['ID_USER'])){
-                        $exp = $_SESSION['HOTP']['exp'];
-                        if (time() < $exp){
-                            header("Location: otp-form.php");
+                    if (isset($_SESSION['AUTH']))
+                    {
+                        if ($_SESSION['AUTH'] === 2)
+                        {
+                            header("Location: pvt.php");
                             exit;
                         }
-                        else
+                        if ($_SESSION['AUTH'] === 1)
+                        {
+                            if (!isset($_SESSION['HOTP']))
+                            {
+                                header("Location: pvt.php");
+                                exit;
+                            }
+                        }
+                    }
+
+                    if (isset($_SESSION['HOTP']) && isset($_SESSION['ID_USER']))
+                    {
+                        $exp = $_SESSION['HOTP']['exp'];
+                        if (time() > $exp)
                         {
                             unset($_SESSION['HOTP']);
+                            exit;
                         }
                     }
                 }
 
                 if (isset($_COOKIE['logged']) && isset($_COOKIE['rm_tkn'])){
                     if ($_COOKIE['logged']){
-                        $tkn = $_COOKIE['rm_tkn'];
-                        $htkn = hash("sha256", $tkn);
-                        sqlc::connect();
-                        $data = sqlc::rem_sel($htkn);
-                        if ($data) system::redirect_priv_area($data['id_user']);
+                        system::redirect_remember($_COOKIE['rm_tkn']);
                     }
                 }
 
@@ -114,7 +127,7 @@
         <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" integrity="sha384-1BmE4kWBq78iYhFldvKuhfTAU6auU8tT94WrHftjDbrCEXSU1oBoqyl2QvZ6jIW3" crossorigin="anonymous">
         <link rel="stylesheet" href="../css/shared.css">
         <link rel="stylesheet" href="../css/login.css">
-        <link href="../img/icon.ico" rel="icon" type="image/x-icon" >
+        <link href="../img/icon.svg" rel="icon" type="image/x-icon" >
     </head>
     <body>
         <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
