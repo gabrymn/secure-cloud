@@ -42,8 +42,10 @@
                                 }
                                 unset($_POST['EMAIL']);
                                 unset($_POST['PASS1']);
-                                unset($_POST['PASS2']);
+                                unset($_POST['PASS2']); 
 
+                                session_start();
+                                $_SESSION['VERIFING_EMAIL'] = 1;
                                 system::verify($_REQUEST['EMAIL'], 1);
                                 exit;
                             }

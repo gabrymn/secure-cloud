@@ -62,6 +62,7 @@
                         if (sqlc::get_tkn_row($_REQUEST['HTKN']) === 0)
                         {
                             $html_ctx = file_get_contents("forms/0")."<script>$('#ERROR').css('display','block');$('#ERROR').html('Invalid or expired password reset link.')</script>";
+                            $change_url = "password_reset.php"; 
                             goto front_end;
                         }
                     }
@@ -102,6 +103,7 @@
                     if (strlen($tkn) !== 150)
                     {
                         $html_ctx = file_get_contents("forms/0")."<script>$('#ERROR').css('display','block');$('#ERROR').html('Invalid or expired password reset link.')</script>";
+                        $change_url = "password_reset.php";
                         goto front_end;
                     }
 
@@ -112,6 +114,7 @@
                     if ($data === 0)
                     {
                         $html_ctx = file_get_contents("forms/0")."<script>$('#ERROR').css('display','block');$('#ERROR').html('Invalid or expired password reset link.')</script>";
+                        $change_url = "password_reset.php";
                         goto front_end;
                     }
                     
@@ -192,6 +195,14 @@
             else
             {
                 echo "bad request";
+            }
+        ?>
+
+        <?php 
+            if (isset($change_url))
+            {
+                echo "<script>window.history.pushState('', '', '".$change_url."');</script>";
+                unset($change_url);
             }
         ?>
 

@@ -10,7 +10,6 @@
     {
         switch ($_SERVER['REQUEST_METHOD'])
         {
-
             case 'GET': {
 
                 if (isset($_COOKIE['PHPSESSID']))
@@ -34,7 +33,8 @@
                     }
                 }
 
-                if (isset($_COOKIE['logged']) && isset($_COOKIE['rm_tkn'])){
+                if (isset($_COOKIE['logged']) && isset($_COOKIE['rm_tkn']))
+                {
                     if ($_COOKIE['logged']){
                         system::redirect_remember($_COOKIE['rm_tkn']);
                     }
@@ -48,7 +48,8 @@
             }
         }
     }    
-    else{
+    else
+    {
         response::server_error(500);
     }
 

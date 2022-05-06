@@ -131,9 +131,9 @@
             http_response_code($code);
         }
 
-        public static function print($code, &$e, $value){
+        public static function print($code, &$v, $value){
             self::code($code);
-            $e = $value;
+            $v = $value;
         }
 
         public static function html_ctx($html, $code = 200){

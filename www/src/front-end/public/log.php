@@ -6,6 +6,7 @@
     require_once __BACKEND__ . 'class/sqlc.php';
     require_once __BACKEND__ . 'class/response.php';
     
+    $success = "";
     $error = "";
 
     if (isset($_SERVER['REQUEST_METHOD'])){
@@ -18,18 +19,18 @@
                     if (filter_var($_REQUEST['EMAIL'], FILTER_VALIDATE_EMAIL)){
 
                         sqlc::connect();
-                        $id_user = sqlc::get_id_user($_REQUEST['EMAIL']);
-
-                        if (sqlc::user_verified($id_user) === 0){
-                            session_start();
-                            $_SESSION['EMAIL'] = $_REQUEST['EMAIL'];
-                            system::verify($_REQUEST['EMAIL'], 0);
-                            exit;
-                        }
 
                         if (sqlc::login($_REQUEST['EMAIL'], $_REQUEST['PASS'])){
 
                             $id_user = sqlc::get_id_user($_REQUEST['EMAIL']);
+
+                            if (sqlc::user_verified($id_user) === 0){
+                                session_start();
+                                $_SESSION['EMAIL'] = $_REQUEST['EMAIL'];
+                                $_SESSION['VERIFING_EMAIL'] = 1;
+                                system::verify($_REQUEST['EMAIL'], 0);
+                                exit;
+                            }
 
                             session_start();
                             $_SESSION['ID_USER'] = $id_user;
@@ -105,18 +106,29 @@
                     }
                 }
 
-                if (isset($_GET['verifing']))
+                if (isset($_GET['tkn']))
                 {
-                    if (isset($_GET['token']))
+                    sqlc::connect();
+                    $id_user = sqlc::get_tkn_verify(hash("sha256", $_GET['tkn']));
+                    if ($id_user)
                     {
-                    /*
-                        if (is_valid(token))
-                            success->hai verificato la tua email
-                        else
-                            error->il link non è valido
-                    */
+                        if (!session_status()) session_start();
+                        if (isset($_SESSION['VERIFING_EMAIL']))
+                        {
+                            unset($_SESSION['VERIFING_EMAIL']);
+                        }
+                        sqlc::upd_verified(intval($id_user));
+                        response::print(200, $success, "Hai verificato la tua email, accedi.");
+                        sqlc::del_tkn_verify(intval($id_user));
                     }
- 
+                    else
+                    {
+                        response::print(400, $error, "Invalid or expired email verify link.");
+                    }
+
+                    $change_url = "log.php";
+
+                    goto front_end;
                 }
 
                 break;
@@ -132,6 +144,7 @@
     else response::server_error(500);
 
     front_end:
+
 ?>
 
 
@@ -181,19 +194,20 @@
                 <div class="row justify-content-center">
                     <div class="col-md-8">
                         <?php
-                            if (isset($error) && $error != "")
+                            if (isset($error) && $error != ""){
                                 echo '<div class="alert alert-danger" onclick="this.remove()" role="alert">'.$error.'</div>';
-                            unset($error);    
+                                unset($error);  
+                            }  
                         ?>  
                         <?php
                             if (isset($success) && $success != "")
-                                echo '<div class="alert-success" onclick="this.remove()" role="alert">'.$error.'</div>';
+                                echo '<div class="alert alert-success" onclick="this.remove()" role="alert">'.$success.'</div>';
                             unset($success);    
                         ?>
                         <div class="card">
                             <div class="card-header">Sign in</div>
                             <div class="card-body">
-                                <form id="FRM_LGN" onsubmit="return keygen()" action="<?php $_SERVER['PHP_SELF']; ?>" method="POST">
+                                <form id="FRM_LGN" action="<?php $_SERVER['PHP_SELF']; ?>" method="POST">
                                     <div class="form-group row">
                                         <label for="email_address" class="col-md-4 col-form-label text-md-right">E-Mail Address</label>
                                         <div class="col-md-6">
@@ -231,6 +245,15 @@
             </div>
             </div>
         </main>
+
+        <?php 
+            if (isset($change_url))
+            {
+                echo "<script>window.history.pushState('', '', '".$change_url."');</script>";
+                unset($change_url);
+            }
+        ?>
+
         <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-ka7Sk0Gln4gmtz2MlQnikT1wXgYsOg+OMhuP+IlRH9sENBO0LRn5q+8nbTov4+1p" crossorigin="anonymous"></script>
         <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
         <script src="https://cdnjs.cloudflare.com/ajax/libs/crypto-js/3.1.2/rollups/aes.js"></script>

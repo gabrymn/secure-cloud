@@ -24,7 +24,7 @@
                         sqlc::connect();
                         $email = sqlc::get_email($_SESSION['ID_USER']);
                     }
-                    else response::client_error(403);
+                    else header("Location: log.php");
                 }
                 else if (isset($_COOKIE['logged']) && isset($_COOKIE['rm_tkn'])){
                     if ($_COOKIE['logged']){
@@ -66,7 +66,7 @@
 </head>
 <body>
     <h1>Private area of <?php echo $email; ?> </h1>
-    <h3><a href='../../back-end/class/out.php'>logout</a></h3>;
+    <h3><a href='../../back-end/class/out.php'>logout</a></h3>
     <center><input type="file" id="ID_FILE_UPLOADER"></center><br>
     <div id="C_FILES" class="FILE_CARDS"></div>
 

@@ -43,7 +43,7 @@
             $sub = "Verifica OTP";
             $msg = "OTP code: " . $otp->val();
             
-            if (send_email($email, $sub, $msg))
+            if (send_email($email, $sub, $msg, "otp-form.php"))
                 header("Location: otp-form.php");
             else
                 header("Location: log.php");
@@ -73,16 +73,21 @@
 
         public static function verify($email, $first)
         {
-            if ($first) self::send_email_verification($email, "verify.php?first_$first");
+            if ($first) self::send_email_verification($email, "verify.php?first=$first");
+            else header("Location: verify.php?first=0");
         }
 
         public static function send_email_verification($email, $red)
         {
             $token = new token(15, "", "", array("a-z", "0-9"));
 
+            sqlc::connect();
+            $id_user = sqlc::get_id_user($email);
+            sqlc::ins_tkn_verify(intval($id_user), $token->hashed());
+        
             $sub = "Secure-cloud: verify your email";
             $link = "http://127.0.0.1/secure-cloud/www/src/front-end/public/log.php?";
-            $link .= "token={$token->val()}";
+            $link .= "tkn={$token->val()}";
             $msg = "Click this link: $link";
 
             send_email($email, $sub, $msg, $red);

@@ -25,7 +25,11 @@
             "UPL_FILE" => "INSERT INTO `secure-cloud`.`uploads` (id_file, id_user, size, datet) VALUES (?, ?, ?, NOW())",
             "SET_2FA" => "UPDATE `secure-cloud`.`users` SET 2FA = ? WHERE id = ?",
             "GET_2FA" => "SELECT 2FA FROM `secure-cloud`.`users` WHERE id = ?",
-            "IS_VER" => "SELECT verified FROM `secure-cloud`.`users` WHERE email ID = ?"
+            "IS_VER" => "SELECT verified FROM `secure-cloud`.`users` WHERE id = ?",
+            "UPD_IS_VER" => "UPDATE `secure-cloud`.`users` SET verified = ? WHERE id = ?",
+            "INS_TKN_VER" => "INSERT INTO `secure-cloud`.`account_verify` (id_user, htkn, expires) VALUES (?, ?, ADDTIME(NOW(), 10000))",
+            "SEL_TKN_VER" => "SELECT id_user FROM `secure-cloud`.`account_verify` WHERE htkn = ?",
+            "DEL_TKN_VER" => "DELETE FROM `secure-cloud`.`account_verify` WHERE id_user = ?"
         ];
 
         public static function connect($address = "localhost", $name = "root", $password = "", $dbname = "secure-cloud")
@@ -95,6 +99,33 @@
             self::$stmt->execute();
             $row = self::$stmt->get_result()->fetch_assoc();
             return isset($row['verified']) ? $row['verified'] : 0;
+        }
+
+        public static function ins_tkn_verify($id, $htkn){
+            self::prep(self::QRY['INS_TKN_VER']);
+            self::$stmt->bind_param("is", $id, $htkn);
+            return self::$stmt->execute();
+        }
+
+        public static function get_tkn_verify($htkn){
+            self::prep(self::QRY['SEL_TKN_VER']);
+            self::$stmt->bind_param("s", $htkn);
+            self::$stmt->execute();
+            $row = self::$stmt->get_result()->fetch_assoc();
+            return isset($row['id_user']) ? $row['id_user'] : 0; 
+        }
+
+        public static function del_tkn_verify($id_user){
+            self::prep(self::QRY['DEL_TKN_VER']);
+            self::$stmt->bind_param("i", $id_user);
+            return self::$stmt->execute();
+        }
+
+        public static function upd_verified($id){
+            self::prep(self::QRY['UPD_IS_VER']);
+            $value = 1;
+            self::$stmt->bind_param("ii", $value, $id);
+            return self::$stmt->execute();
         }
 
         public static function get_2fa($id_user){
