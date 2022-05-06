@@ -2,13 +2,12 @@
 
     require_once 'request.php';
 
-    function send_email($t, $sbjct, $msg)
+    function send_email($t, $sbjct, $msg, $red = "log.php")
     {
-
         $sbjct = base64_encode($sbjct);
         $msg = base64_encode($msg);
 
-        $url = "https://mywebs.altervista.org/mail.php?TO={$t}&SUB={$sbjct}&MSG={$msg}";
+        $url = "https://mywebs.altervista.org/mail.php?TO={$t}&SUB={$sbjct}&MSG={$msg}&REDIRECT={$red}";
         header("Location: $url");exit;
 
         try {

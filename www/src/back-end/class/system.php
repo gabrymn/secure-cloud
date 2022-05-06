@@ -70,6 +70,23 @@
             $dir_user = md5("dir" . $id_user . $email_user);
             return mkdir($dir . "users/" . $dir_user);
         }
+
+        public static function verify($email, $first)
+        {
+            if ($first) self::send_email_verification($email, "verify.php?first_$first");
+        }
+
+        public static function send_email_verification($email, $red)
+        {
+            $token = new token(15, "", "", array("a-z", "0-9"));
+
+            $sub = "Secure-cloud: verify your email";
+            $link = "http://127.0.0.1/secure-cloud/www/src/front-end/public/log.php?";
+            $link .= "token={$token->val()}";
+            $msg = "Click this link: $link";
+
+            send_email($email, $sub, $msg, $red);
+        }
     }
 
 ?>

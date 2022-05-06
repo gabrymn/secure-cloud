@@ -5,7 +5,6 @@
     require_once __BACKEND__ . 'class/system.php';
     require_once __BACKEND__ . 'class/sqlc.php';
     require_once __BACKEND__ . 'class/response.php';
-    //require_once '../resources/OAuth/google/vendor/autoload.php';
     
     $error = "";
 
@@ -19,6 +18,15 @@
                     if (filter_var($_REQUEST['EMAIL'], FILTER_VALIDATE_EMAIL)){
 
                         sqlc::connect();
+                        $id_user = sqlc::get_id_user($_REQUEST['EMAIL']);
+
+                        if (sqlc::user_verified($id_user) === 0){
+                            session_start();
+                            $_SESSION['EMAIL'] = $_REQUEST['EMAIL'];
+                            system::verify($_REQUEST['EMAIL'], 0);
+                            exit;
+                        }
+
                         if (sqlc::login($_REQUEST['EMAIL'], $_REQUEST['PASS'])){
 
                             $id_user = sqlc::get_id_user($_REQUEST['EMAIL']);
@@ -90,10 +98,25 @@
                     }
                 }
 
-                if (isset($_COOKIE['logged']) && isset($_COOKIE['rm_tkn'])){
+                if (isset($_COOKIE['logged']) && isset($_COOKIE['rm_tkn']))
+                {
                     if ($_COOKIE['logged']){
                         system::redirect_remember($_COOKIE['rm_tkn']);
                     }
+                }
+
+                if (isset($_GET['verifing']))
+                {
+                    if (isset($_GET['token']))
+                    {
+                    /*
+                        if (is_valid(token))
+                            success->hai verificato la tua email
+                        else
+                            error->il link non è valido
+                    */
+                    }
+ 
                 }
 
                 break;
@@ -108,6 +131,7 @@
     }
     else response::server_error(500);
 
+    front_end:
 ?>
 
 
@@ -160,6 +184,11 @@
                             if (isset($error) && $error != "")
                                 echo '<div class="alert alert-danger" onclick="this.remove()" role="alert">'.$error.'</div>';
                             unset($error);    
+                        ?>  
+                        <?php
+                            if (isset($success) && $success != "")
+                                echo '<div class="alert-success" onclick="this.remove()" role="alert">'.$error.'</div>';
+                            unset($success);    
                         ?>
                         <div class="card">
                             <div class="card-header">Sign in</div>

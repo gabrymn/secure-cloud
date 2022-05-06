@@ -43,7 +43,8 @@
                                 unset($_POST['EMAIL']);
                                 unset($_POST['PASS1']);
                                 unset($_POST['PASS2']);
-                                header("Location: log.php");
+
+                                system::verify($_REQUEST['EMAIL'], 1);
                                 exit;
                             }
                         }

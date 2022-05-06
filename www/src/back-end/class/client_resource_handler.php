@@ -19,6 +19,7 @@
                     $files = scandir("../users/$rep");
                     unset($files[array_search('.', $files)]);
                     unset($files[array_search('..', $files)]);
+                    $files = array_values($files);
                     response::successful(200, false, array("files" => $files, "rep" => $rep));
                 }
                 else if (isset($_GET['FILE']) && isset($_GET['REP']) && count($_GET) === 2)

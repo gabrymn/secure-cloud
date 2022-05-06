@@ -9,7 +9,7 @@
 
         private const QRY =
         [
-            "INS_CRED" => "INSERT INTO `secure-cloud`.`users` (email, pass, logged_with, 2FA) VALUES (?, ?, 'EMAIL', 0)",
+            "INS_CRED" => "INSERT INTO `secure-cloud`.`users` (email, pass, logged_with, 2FA, verified) VALUES (?, ?, 'EMAIL', 0, 0)",
             "LOGIN" => "SELECT * FROM `secure-cloud`.`users` WHERE email = ? AND logged_with = 'EMAIL'",
             "ACC_REC" => "INSERT INTO `secure-cloud`.`account_recovery` (id_user, htkn, expires) VALUES (?, ?, ADDTIME(NOW(), 1000))",
             "ID_FROM_EMAIL" => "SELECT id FROM `secure-cloud`.`users` WHERE email = ?",
@@ -19,12 +19,13 @@
             "CH_PASS" => "UPDATE `secure-cloud`.`users` SET pass = ? WHERE email = ?",
             "REM_DEL" => "DELETE FROM `secure-cloud`.`remember` WHERE htkn = ?",
             "REM_SEL" => "SELECT * FROM `secure-cloud`.`remember` WHERE htkn = ? AND expires > NOW()",
-            "OAUTH2_INS" => "INSERT INTO `secure-cloud`.`users` (email, logged_with, 2FA) VALUES (?, 'GOOGLE_OAUTH2')",
+            "OAUTH2_INS" => "INSERT INTO `secure-cloud`.`users` (email, logged_with, 2FA, verified) VALUES (?, 'GOOGLE_OAUTH2')",
             "OAUTH2_SEL" => "SELECT * FROM `secure-cloud`.`users` WHERE email = ?",
             "DEL_USER_WITH_EMAIL" => "DELETE FROM `secure-cloud`.`users` WHERE email = ?",
             "UPL_FILE" => "INSERT INTO `secure-cloud`.`uploads` (id_file, id_user, size, datet) VALUES (?, ?, ?, NOW())",
             "SET_2FA" => "UPDATE `secure-cloud`.`users` SET 2FA = ? WHERE id = ?",
-            "GET_2FA" => "SELECT 2FA FROM `secure-cloud`.`users` WHERE id = ?"
+            "GET_2FA" => "SELECT 2FA FROM `secure-cloud`.`users` WHERE id = ?",
+            "IS_VER" => "SELECT verified FROM `secure-cloud`.`users` WHERE email ID = ?"
         ];
 
         public static function connect($address = "localhost", $name = "root", $password = "", $dbname = "secure-cloud")
@@ -86,6 +87,14 @@
             self::prep(self::QRY['SET_2FA']);
             self::$stmt->bind_param("ii", $value, $id_user);
             return self::$stmt->execute();
+        }
+
+        public static function user_verified($id_user){
+            self::prep(self::QRY['IS_VER']);
+            self::$stmt->bind_param("i", $id_user);
+            self::$stmt->execute();
+            $row = self::$stmt->get_result()->fetch_assoc();
+            return isset($row['verified']) ? $row['verified'] : 0;
         }
 
         public static function get_2fa($id_user){
