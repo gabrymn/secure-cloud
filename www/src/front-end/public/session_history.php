@@ -42,12 +42,11 @@
                                     // RESUME
                                     $_SESSION['SESSION_STATUS_ACTIVE'] = 1;
                                     $_SESSION['SESSION_SC_ID'] = $session['id'];
-                                    $session_sc_id = $_SESSION['SESSION_SC_ID'];
                                     sqlc::upd_session($session_sc_id);
                                 }
                                 else
                                 {
-                                    // CREATE
+                                    // CREATE NEW SESSION
                                     create_session();
                                 }
                             }
@@ -87,18 +86,6 @@
     }
     else response::server_error(500);
 
-    function create_session()
-    {
-        $session_id = new token(16, "", "", array("0-9", "a-z"));
-        $session_id = $session_id->val();
-        $http_user_agent = $_SERVER['HTTP_USER_AGENT'];
-        $ip = $_SERVER['REMOTE_ADDR'];
-        $htkn = isset($_COOKIE['rm_tkn']) ? $_COOKIE['rm_tkn'] : null;
-        sqlc::add_session($session_id, $http_user_agent, $ip, $_SESSION['ID_USER'], $htkn); 
-        $_SESSION['SESSION_STATUS_ACTIVE'] = 1;
-        $_SESSION['SESSION_SC_ID'] = $session_id;
-    }
-
 
 ?>
 
@@ -114,7 +101,7 @@
     <head>
     <meta charset="UTF-8">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <title>Private Area</title>
+        <title>secure-cloud</title>
         <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/css/bootstrap.min.css">
         <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" integrity="sha384-1BmE4kWBq78iYhFldvKuhfTAU6auU8tT94WrHftjDbrCEXSU1oBoqyl2QvZ6jIW3" crossorigin="anonymous">
         <link rel="stylesheet" href="../css/shared.css">
@@ -122,7 +109,6 @@
         <link href="../img/icon.svg" rel="icon" type="image/x-icon" >
     </head>
     <body>
-
 
         <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
             <div class="container-fluid">
@@ -149,8 +135,24 @@
             </div>
         </nav>
 
-        <input type="file" id="ID_FILE_UPLOADER" style="display:none">
-        <br><br><div id="C_FILES" class="FILE_CARDS"></div>
+        <br><br>
+
+        <table class="table table-dark" style="width: 80%; margin-left: auto; margin-right: auto;" id="ID_SESSIONS">
+            <thead>
+                <tr>
+                    <th scope="col">ID</th>
+                    <th scope="col">IP Address</th>
+                    <th scope="col">Client</th>
+                    <th scope="col">OS</th>
+                    <th scope="col">Device</th>
+                    <th scope="col">Last activity</th>
+                    <th scope="col">Session status</th>
+                </tr>
+            </thead>
+            <tbody id="ID_TBL_BODY">
+            </tbody>
+        </table>
+
 
         <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-ka7Sk0Gln4gmtz2MlQnikT1wXgYsOg+OMhuP+IlRH9sENBO0LRn5q+8nbTov4+1p" crossorigin="anonymous"></script>
         <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
@@ -162,145 +164,49 @@
 </html>
 
 <script type="module">
-    
-    import CLIENT_FILE from '../class/clientfile.js'
-    import cryptolib from '../class/cryptolib.js'
-    import FILE_URL from '../class/blob.js'
-    
+
+    "use strict";
+    var SESSION_SC_ID;
+
     $('document').ready(() => {
-        checkKey();
-        sync_2FA_state();
-        getData();
-    })
+        syncSessions();
+    });
 
-    const getData = () => {
+    const addSession = (sd) => {
+        var rowHTML = "";
+        sd.session_status = sd.session_status? sd.id === SESSION_SC_ID ? 'Actual' : 'Active': 'Expired';
+        rowHTML += "<tr>";
+            rowHTML += "<td>"+sd.id+"</td>";
+            rowHTML += "<td>"+sd.ip+"</td>";
+            rowHTML += "<td>"+sd.client+"</td>";
+            rowHTML += "<td>"+sd.os+"</td>";
+            rowHTML += "<td>"+sd.device+"</td>";
+            rowHTML += "<td>"+sd.last_time+"</td>";
+            rowHTML += "<td>"+sd.session_status+"</td>";
+        rowHTML += "</tr>";
+        document.getElementById("ID_TBL_BODY").innerHTML += rowHTML;
+    }
+
+    const syncSessions = () => {
+
+        const id_user = <?php echo $_SESSION['ID_USER']; ?>;
         $.ajax({
-            type: 'GET',
-            url: "../../back-end/class/client_resource_handler.php",
-            data: {DATA:true},
+            url: "../../back-end/class/sessions_handler.php",
+            data: {ID_USER: id_user},
+            type: "GET",
             success: (response) => {
                 console.log(response);
-                const files = response.files;
-                const rep = response.rep;
-                var a = new cryptolib['AES'](localStorage.getItem("k"));
-                response.files.forEach((filename) => {
-                    if (filename !== "." && filename !== "..")
-                        getFile(filename, rep, a)
-                });
+                SESSION_SC_ID = "<?php echo $_SESSION['SESSION_SC_ID']; ?>";
+                for (let i=0; i<response.sessions.length; i++){
+                    addSession(response.sessions[i]);
+                }
             },
             error: (xhr) => {
                 console.log(xhr);
-            }
+            } 
         });
     }
     
-    const getFile = (filename, rep, aes) => {
-
-        $.ajax({
-            type: 'GET',
-            url: "../../back-end/class/client_resource_handler.php",
-            data: {FILE:filename,REP:rep},
-            success: (response) => {
-                console.log(response);
-                filename = filename.replaceAll("_", "/");
-                var ctx = response.ctx;
-                var [fn, url, blob] = GET_FILE_EXE(filename, ctx, aes);
-                createVisualObj(url, fn);
-            },
-            error: (xhr) => {
-                console.log(xhr);
-            }
-        });
-    }
-
-    const checkKey = () => {
-        const k = localStorage.getItem("k");
-        if (k === null){
-            alert("Chiave mancante, e' necessario riaccedere");
-            window.location.href = "../../back-end/class/out.php";
-            return;
-        };
-    }
-
-    $("#ID_FILE_UPLOADER").on('change', async (e) => {
-        
-        checkKey(); 
-
-        // upload file
-        const file = {
-            inf: e.target.files[0],
-            ctx: await CLIENT_FILE.TO_BASE64(e.target.files[0]).catch((error) => console.log("Error uploading your file."))
-        }
-
-        const fobj = new CLIENT_FILE(file.inf, file.ctx)
-        var aes = new cryptolib['AES'](localStorage.getItem("k"));
-        const hash = cryptolib['HASH'].SHA256;
-        const [NAM, CTX, IMP, SIZ] = fobj.ENCRYPT(aes, hash);
-        var [fn, url, blob] = GET_FILE_EXE(NAM, CTX, aes);
-
-        await createVisualObj(url, e.target.files[0].name);
-
-        $.ajax({
-            type: 'POST',
-            url: "../../back-end/class/client_resource_handler.php",
-            data: {NAM:NAM, CTX:CTX, IMP:IMP, SIZ:SIZ},
-            success: (response) => {
-                console.log(response);
-                $("#ID_FILE_UPLOADER").val("");
-            },
-            error: (xhr) => {
-                console.log(xhr);
-            }
-        });
-    });
-
-    const GET_FILE_EXE = (NAM, CTX, aes) => {
-        NAM = aes.decrypt(NAM, true);
-        CTX = aes.decrypt(CTX, true);
-        const BLOB_OBJ = FILE_URL.B64_2_BLOB(CTX);
-        const BLOB_URL = FILE_URL.GET_BLOB_URL(BLOB_OBJ);
-        return [NAM, BLOB_URL, BLOB_OBJ]
-    }
-    
-    const createVisualObj = async (blob_url, filename) => {
-        document.getElementById("C_FILES").innerHTML += '<br><br><a href='+blob_url+' download='+filename+'>'+filename+'</a><br><br>';
-    }
-
-    $('#OTP_YN').on('change', () => {
-        const otp = $('#OTP_YN').prop('checked')? 1 : 0;
-        $.ajax({
-            type: 'POST',
-            url: "../../back-end/class/client_resource_handler.php",
-            data: {OTP:otp},
-            success: (response) => {
-                console.log(response);
-            },
-            error: (xhr) => {
-                console.log(xhr);
-            }
-        })
-    })
-
-    const sync_2FA_state = () => {
-
-        $.ajax({
-            type: 'GET',
-            url: "../../back-end/class/client_resource_handler.php",
-            data: {OTPSTATE:1},
-            success: (response) => {
-                const val = response["2FA"];
-                if (val === 1) $('#OTP_YN').prop('checked', true)     
-            },
-            error: (xhr) => {
-                console.log(xhr);
-            }
-        })
-    }
-
-    $("#ID_UPLOAD").on('click', () => {
-        $('#ID_FILE_UPLOADER').trigger('click');
-    });
-
 </script>
 
 <style>

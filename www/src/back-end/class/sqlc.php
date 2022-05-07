@@ -1,6 +1,7 @@
 <?php
 
     require_once "response.php";
+    require_once "browser.php";
 
     class sqlc
     {
@@ -29,7 +30,13 @@
             "UPD_IS_VER" => "UPDATE `secure-cloud`.`users` SET verified = ? WHERE id = ?",
             "INS_TKN_VER" => "INSERT INTO `secure-cloud`.`account_verify` (id_user, htkn, expires) VALUES (?, ?, ADDTIME(NOW(), 10000))",
             "SEL_TKN_VER" => "SELECT id_user FROM `secure-cloud`.`account_verify` WHERE htkn = ?",
-            "DEL_TKN_VER" => "DELETE FROM `secure-cloud`.`account_verify` WHERE id_user = ?"
+            "DEL_TKN_VER" => "DELETE FROM `secure-cloud`.`account_verify` WHERE id_user = ?",
+            "INS_SESS" => "INSERT INTO `secure-cloud`.`sessions` (id, ip, client, os, device, last_time, session_status, id_user, rem_htkn) VALUES (?,?,?,?,?,NOW(),1,?,?)",
+            "SEL_SESS" => "SELECT * FROM `secure-cloud`.`sessions` WHERE id = ? AND session_status = 1",
+            "SEL_SESS_HTKN" => "SELECT * FROM `secure-cloud`.`sessions` WHERE rem_htkn = ? AND session_status = 1",
+            "UPD_SESS" => "UPDATE `secure-cloud`.`sessions` SET last_time = NOW() WHERE id = ? AND session_status = 1",
+            "EXP_SESS" => "UPDATE `secure-cloud`.`sessions` SET session_status = 0 WHERE id = ?",
+            "SEL_SESS_ALL" => "SELECT * FROM `secure-cloud`.`sessions` WHERE id_user = ? ORDER BY session_status DESC, last_time DESC"
         ];
 
         public static function connect($address = "localhost", $name = "root", $password = "", $dbname = "secure-cloud")
@@ -52,7 +59,6 @@
         public static function init_db(){
             self::create_db();
         }
-
 
         public static function create_user_administrator($user, $host, $limits = array(0,0,0,0))
         {
@@ -90,6 +96,59 @@
             if ($value !== 0 && $value !== 1) return false;
             self::prep(self::QRY['SET_2FA']);
             self::$stmt->bind_param("ii", $value, $id_user);
+            return self::$stmt->execute();
+        }
+
+        // (ip, client, os, device, session_status, rem_htkn)
+        public static function add_session($id_session, $http_user_agent, $ip, $id_user, $htkn = null)
+        {
+            $d = get_browser_info($http_user_agent);
+            self::prep(self::QRY['INS_SESS']);
+            self::$stmt->bind_param("sssssss", $id_session, $ip, $d['browser'], $d['os_platform'], $d['device'], $id_user, $htkn);
+            return self::$stmt->execute();
+        }
+
+        public static function sel_session($key, $value)
+        {   
+            if ($key === "SESSION_ID")
+                $index = "SEL_SESS";
+            else if ($key === "HTKN")
+                $index = "SEL_SESS_HTKN";
+
+            self::prep(self::QRY[$index]);
+            self::$stmt->bind_param("s", $value);
+            self::$stmt->execute();
+            $row = self::$stmt->get_result()->fetch_assoc();
+            return isset($row['id']) ? $row : 0;
+        }
+
+        public static function sel_session_all($id_user)
+        {
+            self::prep(self::QRY["SEL_SESS_ALL"]);
+            self::$stmt->bind_param("i", $id_user);
+            self::$stmt->execute();
+            $result = self::$stmt->get_result();
+            $row = true;
+            while ($row !== NULL)
+            {
+                $row = $result->fetch_assoc();
+                if ($row === NULL) continue;
+                $rows[] = $row;
+            }
+            return isset($rows) ? $rows : 0;
+        }
+
+        public static function upd_session($id_session)
+        {
+            self::prep(self::QRY['UPD_SESS']);
+            self::$stmt->bind_param("s", $id_session);
+            return self::$stmt->execute();
+        }
+
+        public static function expire_session($id_session)
+        {
+            self::prep(self::QRY['EXP_SESS']);
+            self::$stmt->bind_param("s", $id_session);
             return self::$stmt->execute();
         }
 
@@ -273,7 +332,6 @@
                 return $row;
             }
         }
-
     }
 
 ?>
