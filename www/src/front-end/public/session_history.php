@@ -62,10 +62,8 @@
                     }
                     else header("Location: log.php");
                 }
-                else if (isset($_COOKIE['logged']) && isset($_COOKIE['rm_tkn'])){
-                    if ($_COOKIE['logged']){
-                        system::redirect_remember($_COOKIE['rm_tkn']);
-                    }   
+                else if (isset($_COOKIE['rm_tkn'])){
+                    system::redirect_remember($_COOKIE['rm_tkn']);
                 }
                 else header("Location: log.php");
 
@@ -119,7 +117,7 @@
                 <div class="collapse navbar-collapse" id="navbarNav">
                     <ul class="navbar-nav">
                         <li class="nav-item">
-                            <a class="nav-link active" aria-current="page" href="../../back-end/class/out.php">Logout</a>
+                            <a id="ID_LOGOUT" class="nav-link active" aria-current="page" href="../../back-end/class/out.php">Logout</a>
                         </li>
                         <li class="nav-item">
                             <a class="nav-link active" aria-current="page" href="#" id="ID_UPLOAD">Upload file</a>
@@ -137,7 +135,7 @@
 
         <br><br>
 
-        <table class="table table-dark" style="width: 80%; margin-left: auto; margin-right: auto;" id="ID_SESSIONS">
+        <table class="table table-dark" id="ID_SESSIONS">
             <thead>
                 <tr>
                     <th scope="col">ID</th>
@@ -147,6 +145,7 @@
                     <th scope="col">Device</th>
                     <th scope="col">Last activity</th>
                     <th scope="col">Session status</th>
+                    <th scope="col">Edit</th>
                 </tr>
             </thead>
             <tbody id="ID_TBL_BODY">
@@ -166,13 +165,70 @@
 <script type="module">
 
     "use strict";
+
+    import Polling from "../class/polling.js";
+
     var SESSION_SC_ID;
+    var getSessionStatus;
 
     $('document').ready(() => {
+        getSessionStatus = new Polling(sessionStatus, 5000);
+        getSessionStatus.Start();
         syncSessions();
     });
 
-    const addSession = (sd) => {
+    const sessionStatus = () => {
+        $.ajax({
+            url: "../../back-end/class/sessions_handler.php",
+            data: {SESSION_ID:SESSION_SC_ID},
+            type: "GET",
+            success: (response) => {
+                console.info("session status "+response);
+                if (response == 0)
+                {
+                    alert("Sessione terminata, clicca ok per continuare");
+                    window.location.href = "../../back-end/class/out.php"
+                }
+            },
+            error: (xhr) => {
+                console.log(xhr);
+            }
+        })
+    }
+
+    const expireSession = (idRowBtn, idRowTxt, sessionID) => {
+        getSessionStatus.Stop();
+
+        if ($('#'+idRowTxt).html() === "Actual")
+        {
+            if (confirm("Stai per terminare la session attuale"))
+            {
+                window.location.href = "../../back-end/class/out.php"
+            }
+            else
+            {
+                getSessionStatus.Start();
+                return;
+            }
+        }
+
+        $.ajax({
+            url: "../../back-end/class/sessions_handler.php",
+            data: {SESSION_ID: sessionID},
+            type: "POST",
+            success: (response) => {
+                console.log(response);
+                const del = (idRowBtn, idRowTxt) => {$('#'+idRowBtn).children().remove();$('#'+idRowTxt).html("Expired");}
+                del(idRowBtn, idRowTxt);
+                getSessionStatus.Start();
+            },
+            error: (xhr) => {
+                console.log(xhr);
+            } 
+        })
+    }
+
+    const addSession = (idRow, sd) => {
         var rowHTML = "";
         sd.session_status = sd.session_status? sd.id === SESSION_SC_ID ? 'Actual' : 'Active': 'Expired';
         rowHTML += "<tr>";
@@ -182,7 +238,11 @@
             rowHTML += "<td>"+sd.os+"</td>";
             rowHTML += "<td>"+sd.device+"</td>";
             rowHTML += "<td>"+sd.last_time+"</td>";
-            rowHTML += "<td>"+sd.session_status+"</td>";
+            rowHTML += "<td id='ROW_T_"+idRow+"'>"+sd.session_status+"</td>";
+            if (sd.session_status !== "Expired") {
+                rowHTML += "<td id='ROW_S_"+idRow+"'><button id='BTN_S_"+idRow+"'>close</button></td>";
+            }
+            else rowHTML += "<td></td>";
         rowHTML += "</tr>";
         document.getElementById("ID_TBL_BODY").innerHTML += rowHTML;
     }
@@ -198,7 +258,10 @@
                 console.log(response);
                 SESSION_SC_ID = "<?php echo $_SESSION['SESSION_SC_ID']; ?>";
                 for (let i=0; i<response.sessions.length; i++){
-                    addSession(response.sessions[i]);
+                    addSession(i, response.sessions[i]);
+                }
+                for (let i=0; i<response.sessions.length; i++){
+                    $('#BTN_S_'+i).on('click', () => expireSession("ROW_S_"+i, "ROW_T_"+i, response.sessions[i].id))
                 }
             },
             error: (xhr) => {
@@ -206,6 +269,8 @@
             } 
         });
     }
+
+
     
 </script>
 

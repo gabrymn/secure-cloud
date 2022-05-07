@@ -18,11 +18,10 @@
 		setcookie('PHPSESSID', "", time() - 3600, "/");
 		session_destroy();
 		session_write_close();
-        if (isset($_COOKIE['logged']) && isset($_COOKIE['rm_tkn']))
+        if (isset($_COOKIE['rm_tkn']))
         {
             sqlc::rem_del(hash("sha256", $_COOKIE['rm_tkn']));
-            setcookie ('logged', false, time() - 3600, "/");
-		    setcookie ('rm_tkn', false, time() - 3600, "/");
+		    setcookie('rm_tkn', false, time() - 3600, "/");
         }
 	}
 

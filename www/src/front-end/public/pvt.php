@@ -63,10 +63,8 @@
                     }
                     else header("Location: log.php");
                 }
-                else if (isset($_COOKIE['logged']) && isset($_COOKIE['rm_tkn'])){
-                    if ($_COOKIE['logged']){
-                        system::redirect_remember($_COOKIE['rm_tkn']);
-                    }   
+                else if (isset($_COOKIE['rm_tkn'])){
+                    system::redirect_remember($_COOKIE['rm_tkn']);
                 }
                 else header("Location: log.php");
 

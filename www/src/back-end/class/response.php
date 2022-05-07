@@ -140,7 +140,14 @@
             self::ctype('HTML');
             self::code($code);
             echo $html;
-        }   
+        }
+        
+        public static function light($code, $data)
+        {
+            self::ctype('TEXT');
+            self::code($code);
+            echo $data;
+        }
     }
 
 

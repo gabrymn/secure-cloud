@@ -17,12 +17,26 @@
                     response::successful(200, false, array("sessions" => $sessions));
                     exit;
                 }
+                else if (isset($_GET['SESSION_ID']) && count($_GET) === 1)
+                {
+                    sqlc::connect();
+                    $sstatus = sqlc::sel_session_status($_GET['SESSION_ID']);
+                    response::light(200, $sstatus);
+                }
                 else response::client_error(400);
 
                 break;
             }
             case 'POST':
             {
+                if (isset($_POST['SESSION_ID']) && count($_POST) === 1)
+                {
+                    $session_id = $_POST['SESSION_ID'];
+                    sqlc::connect();
+                    sqlc::expire_session($session_id);
+                    response::successful(200);
+                    exit;
+                }
                 break;
             }
             default:

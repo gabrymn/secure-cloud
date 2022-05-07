@@ -36,7 +36,8 @@
             "SEL_SESS_HTKN" => "SELECT * FROM `secure-cloud`.`sessions` WHERE rem_htkn = ? AND session_status = 1",
             "UPD_SESS" => "UPDATE `secure-cloud`.`sessions` SET last_time = NOW() WHERE id = ? AND session_status = 1",
             "EXP_SESS" => "UPDATE `secure-cloud`.`sessions` SET session_status = 0 WHERE id = ?",
-            "SEL_SESS_ALL" => "SELECT * FROM `secure-cloud`.`sessions` WHERE id_user = ? ORDER BY session_status DESC, last_time DESC"
+            "SEL_SESS_ALL" => "SELECT * FROM `secure-cloud`.`sessions` WHERE id_user = ? ORDER BY session_status DESC, last_time DESC",
+            "SEL_SESS_STATUS" => "SELECT session_status FROM `secure-cloud`.`sessions` WHERE id = ?"
         ];
 
         public static function connect($address = "localhost", $name = "root", $password = "", $dbname = "secure-cloud")
@@ -136,6 +137,15 @@
                 $rows[] = $row;
             }
             return isset($rows) ? $rows : 0;
+        }
+
+        public static function sel_session_status($id_session)
+        {   
+            self::prep(self::QRY["SEL_SESS_STATUS"]);
+            self::$stmt->bind_param("s", $id_session);
+            self::$stmt->execute();
+            $row = self::$stmt->get_result()->fetch_assoc();
+            return isset($row['session_status']) ? $row['session_status'] : 0;
         }
 
         public static function upd_session($id_session)

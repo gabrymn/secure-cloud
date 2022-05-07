@@ -24,7 +24,6 @@
             $state = sqlc::rem_ins(hash("sha256", $tkn->val()), $id_user, $t_sql);
             
             if ($state){
-                setcookie('logged', 1, time() + $t_cookie, "/");
                 setcookie('rm_tkn', $tkn->val(), time() + $t_cookie, "/");
                 return true;
             }
