@@ -4,6 +4,9 @@
     require_once 'request.php';
     require_once 'email.php';
     require_once 'sqlc.php';
+    require_once "dmn.php";
+
+    if (!defined('DMN')) define('DMN', get_dmn()); 
 
     class system 
     {
@@ -85,7 +88,7 @@
             sqlc::ins_tkn_verify(intval($id_user), $token->hashed());
         
             $sub = "Secure-cloud: verify your email";
-            $link = "http://127.0.0.1/secure-cloud/www/src/front-end/public/log.php?";
+            $link = DMN."/secure-cloud/www/src/front-end/public/log.php?";
             $link .= "tkn={$token->val()}";
             $msg = "Click this link: $link";
 

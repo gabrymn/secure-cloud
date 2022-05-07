@@ -6,6 +6,9 @@
     require_once __BACKEND__ . 'class/sqlc.php';
     require_once __BACKEND__ . 'class/token.php';
     require_once __BACKEND__ . 'class/email.php';
+    require_once __BACKEND__ . 'class/dmn.php';
+
+    if (!defined('DMN')) define('DMN', get_dmn()); 
 
     $error = "";
 
@@ -40,7 +43,7 @@
 
                     $subject = 'RESET YOUR PASSWORD';
                     $ltkn = $tkn->val();
-                    $message = "click http://127.0.0.1/secure-cloud/www/src/front-end/public/password-reset/password_reset.php?TKN=$ltkn for reset your password";
+                    $message = "click ".DMN."/secure-cloud/www/src/front-end/public/password-reset/password_reset.php?TKN=$ltkn for reset your password";
 
                     send_email($_REQUEST['EMAIL'], $subject, $message);
                     $html_ctx = file_get_contents("forms/1");

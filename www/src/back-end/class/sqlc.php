@@ -2,6 +2,9 @@
 
     require_once "response.php";
     require_once "browser.php";
+    require_once "dmn.php";
+
+    if (!defined('DMN')) define('DMN', get_dmn()); 
 
     class sqlc
     {
@@ -75,7 +78,7 @@
             self::qry_exec("CREATE DATABASE IF NOT EXISTS $db_name", false);
             foreach ($tables as $table)
             {
-                $db = file_get_contents("http://127.0.0.1/secure-cloud/www/src/back-end/db/{$table}");
+                $db = file_get_contents(DMN."/secure-cloud/www/src/back-end/db/{$table}");
 
                 $r = self::qry_exec($db, false);
                 if (!$r) response::server_error();
