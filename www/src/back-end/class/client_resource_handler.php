@@ -2,32 +2,44 @@
 
     require_once "response.php";
     require_once "sqlc.php";
-
+    
     if (isset($_SERVER['REQUEST_METHOD']))
     {
         switch ($_SERVER['REQUEST_METHOD'])
         {
             case 'GET':
             {
-                if (isset($_GET['DATA']) && count($_GET) === 1)
+                if (isset($_GET['REFS']) && count($_GET) === 1)
                 {
                     session_start();
                     $id_user = $_SESSION['ID_USER'];
                     sqlc::connect();
-                    $email = sqlc::get_email($id_user);
-                    $rep = md5("dir" . $id_user . $email);
-                    $files = scandir("../users/$rep");
-                    unset($files[array_search('.', $files)]);
-                    unset($files[array_search('..', $files)]);
-                    $files = array_values($files);
-                    response::successful(200, false, array("files" => $files, "rep" => $rep));
+                    $ids = sqlc::sel_fileids($id_user);
+                    $ids = $ids?$ids:array();
+                    response::successful(200, false, array("file_ids" => $ids));
+                    exit;
                 }
-                else if (isset($_GET['FILE']) && isset($_GET['REP']) && count($_GET) === 2)
+                else if (isset($_GET['ACTION']) && isset($_GET['ID']) && count($_GET) === 2)
                 {
-                    $ctx = file_get_contents("../users/" . $_GET['REP'] . "/" . $_GET['FILE']);
-                    response::successful(200, false, array("ctx" => $ctx));
+                    sqlc::connect();
+                    switch ($_GET['ACTION'])
+                    {
+                        case 'PREVIEW': default: {
+                            $d = sqlc::sel_file($_GET['ID']);
+                            response::successful(200, false, array("name" => $d['fname']));
+                            break;
+                        }
+                        case 'CONTENT': {
+                            $d = sqlc::sel_file($_GET['ID']);
+                            $ctx = file_get_contents($d['ref']);
+                            response::successful(200, false, array("ctx" => $ctx, "name" => $d['fname']));
+                            break;
+                        }
+                    }
+                    exit;
                 }
-                else if (isset($_GET['OTPSTATE'])){
+                else if (isset($_GET['OTPSTATE']))
+                {
                     session_start();
                     $id_user = $_SESSION['ID_USER'];
                     sqlc::connect();
@@ -60,8 +72,12 @@
                         
                         $dir = md5("dir" . $id . $email);
 
-                        file_put_contents("../users/{$dir}/{$filename}", $filedata);
-                        //sqlc::upl_file($server_hash, $id, $size);
+                        $ref = "../users/{$dir}/{$filename}";
+
+                        file_put_contents($ref, $filedata);
+
+                        sqlc::ins_upload_data($size, $id);
+                        sqlc::ins_file_data($filename, $ref, $size, $id);
                         
                         response::successful(201);
                         exit;

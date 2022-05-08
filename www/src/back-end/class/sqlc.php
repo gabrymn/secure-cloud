@@ -26,7 +26,7 @@
             "OAUTH2_INS" => "INSERT INTO `secure-cloud`.`users` (email, logged_with, 2FA, verified) VALUES (?, 'GOOGLE_OAUTH2')",
             "OAUTH2_SEL" => "SELECT * FROM `secure-cloud`.`users` WHERE email = ?",
             "DEL_USER_WITH_EMAIL" => "DELETE FROM `secure-cloud`.`users` WHERE email = ?",
-            "UPL_FILE" => "INSERT INTO `secure-cloud`.`uploads` (id_file, id_user, size, datet) VALUES (?, ?, ?, NOW())",
+            "UPL_FILE" => "INSERT INTO `secure-cloud`.`uploads` (bytes, id_user, upload_date) VALUES (?, ?, NOW())",
             "SET_2FA" => "UPDATE `secure-cloud`.`users` SET 2FA = ? WHERE id = ?",
             "GET_2FA" => "SELECT 2FA FROM `secure-cloud`.`users` WHERE id = ?",
             "IS_VER" => "SELECT verified FROM `secure-cloud`.`users` WHERE id = ?",
@@ -40,7 +40,10 @@
             "UPD_SESS" => "UPDATE `secure-cloud`.`sessions` SET last_time = NOW() WHERE id = ? AND session_status = 1",
             "EXP_SESS" => "UPDATE `secure-cloud`.`sessions` SET session_status = 0 WHERE id = ?",
             "SEL_SESS_ALL" => "SELECT * FROM `secure-cloud`.`sessions` WHERE id_user = ? ORDER BY session_status DESC, last_time DESC",
-            "SEL_SESS_STATUS" => "SELECT session_status FROM `secure-cloud`.`sessions` WHERE id = ?"
+            "SEL_SESS_STATUS" => "SELECT session_status FROM `secure-cloud`.`sessions` WHERE id = ?",
+            "INS_FILE_DATA" => "INSERT INTO `secure-cloud`.`files` (fname, ref, size, mime, id_user) VALUES (?,?,?,'mimetype',?)",
+            "SEL_FILEIDS" => "SELECT id FROM `secure-cloud`.`files` WHERE id_user = ?",
+            "SEL_FILE" => "SELECT * FROM `secure-cloud`.`files` WHERE id = ?"
         ];
 
         public static function connect($address = "localhost", $name = "root", $password = "", $dbname = "secure-cloud")
@@ -110,6 +113,31 @@
             self::prep(self::QRY['INS_SESS']);
             self::$stmt->bind_param("sssssss", $id_session, $ip, $d['browser'], $d['os_platform'], $d['device'], $id_user, $htkn);
             return self::$stmt->execute();
+        }
+
+        public static function sel_fileids($id_user)
+        {
+            self::prep(self::QRY["SEL_FILEIDS"]);
+            self::$stmt->bind_param("i", $id_user);
+            self::$stmt->execute();
+            $result = self::$stmt->get_result();
+            $row = true;
+            while ($row !== NULL)
+            {
+                $row = $result->fetch_assoc();
+                if ($row === NULL) continue;
+                $rows[] = $row['id'];
+            }
+            return isset($rows) ? $rows : 0;
+        }
+
+        public static function sel_file($id_file)
+        {
+            self::prep(self::QRY["SEL_FILE"]);
+            self::$stmt->bind_param("i", $id_file);
+            self::$stmt->execute();
+            $row = self::$stmt->get_result()->fetch_assoc();
+            return $row;
         }
 
         public static function sel_session($key, $value)
@@ -216,9 +244,17 @@
             self::qry_exec($qry, false);
         }
 
-        public static function upl_file($id_file, $id_user, $size){
+        public static function ins_upload_data($bytes, $id_user)
+        {
             self::prep(self::QRY['UPL_FILE']);
-            self::$stmt->bind_param("sii", $id_file, $id_user, $size);
+            self::$stmt->bind_param("ii", $bytes, $id_user);
+            return self::$stmt->execute();
+        }
+
+        public static function ins_file_data($fname, $ref, $size, $id_user)
+        {
+            self::prep(self::QRY['INS_FILE_DATA']);
+            self::$stmt->bind_param("ssii", $fname, $ref, $size, $id_user);
             return self::$stmt->execute();
         }
 

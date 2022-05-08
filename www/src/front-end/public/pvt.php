@@ -147,7 +147,7 @@
             </div>
         </nav>
 
-        <input type="file" id="ID_FILE_UPLOADER" style="display:none">
+        <input type="file" id="ID_FILE_UPLOADER" style="display:none" multiple>
         <br><br><div id="C_FILES" class="FILE_CARDS"></div>
 
         <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-ka7Sk0Gln4gmtz2MlQnikT1wXgYsOg+OMhuP+IlRH9sENBO0LRn5q+8nbTov4+1p" crossorigin="anonymous"></script>
@@ -164,26 +164,27 @@
     import CLIENT_FILE from '../class/clientfile.js'
     import cryptolib from '../class/cryptolib.js'
     import FILE_URL from '../class/blob.js'
+
+    const AES = cryptolib['AES']
+    const k = localStorage.getItem('k');
     
     $('document').ready(() => {
         checkKey();
         sync_2FA_state();
-        getData();
+        syncData();
     })
 
-    const getData = () => {
+    const syncData = () => {
         $.ajax({
             type: 'GET',
             url: "../../back-end/class/client_resource_handler.php",
-            data: {DATA:true},
+            data: {REFS:true},
             success: (response) => {
-                console.log(response);
-                const files = response.files;
-                const rep = response.rep;
-                var a = new cryptolib['AES'](localStorage.getItem("k"));
-                response.files.forEach((filename) => {
-                    if (filename !== "." && filename !== "..")
-                        getFile(filename, rep, a)
+                if (response.file_ids.length === 0) return;
+                const ids = response.file_ids;
+                var aes = new AES(k);
+                response.file_ids.forEach((id) => {
+                    getFilePreview(id, aes)
                 });
             },
             error: (xhr) => {
@@ -191,19 +192,52 @@
             }
         });
     }
-    
-    const getFile = (filename, rep, aes) => {
+
+    const addEvent = id => {
+        document.body.addEventListener('click', e => {
+            if (event.target.id == id)
+            {
+                id = id.replace("id_file_", "")
+                getCTX(id)    
+            }
+        });
+    }
+
+    const getCTX = id => {
+        $.ajax({
+            type: 'GET',
+            url: "../../back-end/class/client_resource_handler.php",
+            data: {ACTION:"CONTENT", ID:id},
+            success: response => {
+                var a = document.createElement("a");
+                document.body.appendChild(a);
+                a.style = "display:none";
+                var aes = new AES(k);
+                var [fn, url, blob] = GET_FILE_EXE(response.name, response.ctx, aes);
+                a.href = url;
+                a.download = JSON.parse(sessionStorage.getItem(id)).name;
+                a.click();
+                document.body.removeChild(a);
+            },
+            error: xhr => {
+                console.log(xhr)
+            }
+        })
+    }
+
+    const getFilePreview = (id, aes) => {
 
         $.ajax({
             type: 'GET',
             url: "../../back-end/class/client_resource_handler.php",
-            data: {FILE:filename,REP:rep},
+            data: {ACTION:'PREVIEW',ID:id},
             success: (response) => {
-                console.log(response);
-                filename = filename.replaceAll("_", "/");
-                var ctx = response.ctx;
-                var [fn, url, blob] = GET_FILE_EXE(filename, ctx, aes);
-                createVisualObj(url, fn);
+                name = response.name.replaceAll("_", "/");
+                name = aes.decrypt(name, true);
+                addEvent('id_file_'+id)
+                var a = "<button id='id_file_"+id+"'>"+name+"</button>"; 
+                sessionStorage.setItem(id, JSON.stringify({name:name}))
+                document.getElementById("C_FILES").innerHTML += '<br><br>'+a+'<br><br>';
             },
             error: (xhr) => {
                 console.log(xhr);
@@ -212,7 +246,6 @@
     }
 
     const checkKey = () => {
-        const k = localStorage.getItem("k");
         if (k === null){
             alert("Chiave mancante, e' necessario riaccedere");
             window.location.href = "../../back-end/class/out.php";
@@ -223,43 +256,48 @@
     $("#ID_FILE_UPLOADER").on('change', async (e) => {
         
         checkKey(); 
+        var files = Object.values(e.target.files);
+        files.forEach((file) => {
 
-        // upload file
-        const file = {
-            inf: e.target.files[0],
-            ctx: await CLIENT_FILE.TO_BASE64(e.target.files[0]).catch((error) => console.log("Error uploading your file."))
-        }
+            CLIENT_FILE.TO_BASE64(file)
+                .then((ctx) => {
 
-        const fobj = new CLIENT_FILE(file.inf, file.ctx)
-        var aes = new cryptolib['AES'](localStorage.getItem("k"));
-        const hash = cryptolib['HASH'].SHA256;
-        const [NAM, CTX, IMP, SIZ] = fobj.ENCRYPT(aes, hash);
-        var [fn, url, blob] = GET_FILE_EXE(NAM, CTX, aes);
+                    const fobj = new CLIENT_FILE(file,ctx)
+                    var aes = new AES(k);
+                    const hash = cryptolib['HASH'].SHA256;
+                    const [NAM, CTX, IMP, SIZ] = fobj.ENCRYPT(aes, hash);
+                    var [fn, url, blob] = GET_FILE_EXE(NAM, CTX, aes);
+                    
+                    document.getElementById("C_FILES").innerHTML 
+                        += '<br><br><a href='+url+' download='+file.name+'>'+file.name+'</a><br><br>';
 
-        await createVisualObj(url, e.target.files[0].name);
-
-        $.ajax({
-            type: 'POST',
-            url: "../../back-end/class/client_resource_handler.php",
-            data: {NAM:NAM, CTX:CTX, IMP:IMP, SIZ:SIZ},
-            success: (response) => {
-                console.log(response);
-                $("#ID_FILE_UPLOADER").val("");
-            },
-            error: (xhr) => {
-                console.log(xhr);
-            }
-        });
+                    $.ajax({
+                        type: 'POST',
+                        url: "../../back-end/class/client_resource_handler.php",
+                        data: {NAM:NAM, CTX:CTX, IMP:IMP, SIZ:SIZ},
+                        success: (response) => {
+                            console.log(response);
+                            $("#ID_FILE_UPLOADER").val("");
+                        },
+                        error: (xhr) => {
+                            console.log(xhr);
+                        }
+                    });
+                })
+                .catch((error) => {
+                    alert("File troppo grande");
+                })
+        })
     });
 
     const GET_FILE_EXE = (NAM, CTX, aes) => {
         NAM = aes.decrypt(NAM, true);
         CTX = aes.decrypt(CTX, true);
-        const BLOB_OBJ = FILE_URL.B64_2_BLOB(CTX);
-        const BLOB_URL = FILE_URL.GET_BLOB_URL(BLOB_OBJ);
-        return [NAM, BLOB_URL, BLOB_OBJ]
+        var BLOB = FILE_URL.B64_2_BLOB(CTX);
+        var BLOB_URL =  FILE_URL.GET_BLOB_URL(BLOB);
+        return [NAM, BLOB_URL, BLOB]
     }
-    
+
     const createVisualObj = async (blob_url, filename) => {
         document.getElementById("C_FILES").innerHTML += '<br><br><a href='+blob_url+' download='+filename+'>'+filename+'</a><br><br>';
     }
@@ -302,6 +340,11 @@
 </script>
 
 <style>
+
+    .fileClass {
+
+
+    }
 
     .FILE_CARDS {
 

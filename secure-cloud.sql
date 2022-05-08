@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Creato il: Mag 06, 2022 alle 21:13
+-- Creato il: Mag 08, 2022 alle 23:55
 -- Versione del server: 10.4.22-MariaDB
 -- Versione PHP: 8.0.13
 
@@ -60,6 +60,30 @@ CREATE TABLE `env` (
 -- --------------------------------------------------------
 
 --
+-- Struttura della tabella `files`
+--
+
+CREATE TABLE `files` (
+  `id` int(11) NOT NULL,
+  `fname` varchar(500) NOT NULL,
+  `ref` varchar(1000) NOT NULL,
+  `size` int(11) NOT NULL,
+  `mime` varchar(30) NOT NULL,
+  `id_user` int(11) NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+--
+-- Dump dei dati per la tabella `files`
+--
+
+INSERT INTO `files` (`id`, `fname`, `ref`, `size`, `mime`, `id_user`) VALUES
+(91, 'U2FsdGVkX1+eySjM7ukP5jvjdh6oC4kgbPNgtv9lGdNPALyqF4Hlp1cTfV9sWGO2', '../users/c0baeb7eadb69ccbfb43eca284fe9717/U2FsdGVkX1+eySjM7ukP5jvjdh6oC4kgbPNgtv9lGdNPALyqF4Hlp1cTfV9sWGO2', 128, 'arandom', 34),
+(92, 'U2FsdGVkX19hXB6CK3y0qmJeDc5PT8cE0EGSOuyamKQ=', '../users/c0baeb7eadb69ccbfb43eca284fe9717/U2FsdGVkX19hXB6CK3y0qmJeDc5PT8cE0EGSOuyamKQ=', 408, 'mimetype', 34),
+(93, 'U2FsdGVkX1+XnJlwXJKjDODpjGCATHkPMRBXdvulQrI=', '../users/c0baeb7eadb69ccbfb43eca284fe9717/U2FsdGVkX1+XnJlwXJKjDODpjGCATHkPMRBXdvulQrI=', 189184, 'mimetype', 34);
+
+-- --------------------------------------------------------
+
+--
 -- Struttura della tabella `remember`
 --
 
@@ -79,15 +103,47 @@ INSERT INTO `remember` (`htkn`, `expires`, `id_user`) VALUES
 -- --------------------------------------------------------
 
 --
+-- Struttura della tabella `sessions`
+--
+
+CREATE TABLE `sessions` (
+  `id` varchar(20) NOT NULL,
+  `ip` varchar(30) NOT NULL,
+  `client` varchar(30) NOT NULL,
+  `os` varchar(20) NOT NULL,
+  `device` varchar(10) NOT NULL,
+  `last_time` datetime NOT NULL,
+  `session_status` int(11) NOT NULL,
+  `id_user` int(11) NOT NULL,
+  `rem_htkn` varchar(64) DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+--
+-- Dump dei dati per la tabella `sessions`
+--
+
+INSERT INTO `sessions` (`id`, `ip`, `client`, `os`, `device`, `last_time`, `session_status`, `id_user`, `rem_htkn`) VALUES
+('64ngoxaotmjjv674', '127.0.0.1', 'Chrome', 'Windows', 'Desktop', '2022-05-08 22:00:39', 0, 34, NULL),
+('t01zvwjxuocwjsav', '127.0.0.1', 'Chrome', 'Windows', 'Desktop', '2022-05-08 23:54:27', 1, 34, NULL);
+
+-- --------------------------------------------------------
+
+--
 -- Struttura della tabella `uploads`
 --
 
 CREATE TABLE `uploads` (
-  `id_file` varchar(64) NOT NULL,
+  `bytes` int(11) NOT NULL,
   `id_user` int(11) NOT NULL,
-  `size` int(11) NOT NULL,
-  `datet` datetime NOT NULL
+  `upload_date` datetime NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+--
+-- Dump dei dati per la tabella `uploads`
+--
+
+INSERT INTO `uploads` (`bytes`, `id_user`, `upload_date`) VALUES
+(189184, 34, '2022-05-08 23:54:25');
 
 -- --------------------------------------------------------
 
@@ -109,11 +165,23 @@ CREATE TABLE `users` (
 --
 
 INSERT INTO `users` (`id`, `email`, `pass`, `logged_with`, `2FA`, `verified`) VALUES
-(31, 'gabrieledevs@gmail.com', '$2y$10$arfSJGV6rikJKw5mCxlKPuuDc7xc5JbmzBWcK2m6aaqU3Nml5TxbG', 'EMAIL', 0, 1);
+(34, 'gabrieledevs@gmail.com', '$2y$10$/VyUb5nT6h1Ppl4HUfB9wujeeLm8SU61PnmtVwPkm2ulURDuq8OxC', 'EMAIL', 0, 1);
 
 --
 -- Indici per le tabelle scaricate
 --
+
+--
+-- Indici per le tabelle `files`
+--
+ALTER TABLE `files`
+  ADD PRIMARY KEY (`id`);
+
+--
+-- Indici per le tabelle `sessions`
+--
+ALTER TABLE `sessions`
+  ADD PRIMARY KEY (`id`);
 
 --
 -- Indici per le tabelle `users`
@@ -126,10 +194,16 @@ ALTER TABLE `users`
 --
 
 --
+-- AUTO_INCREMENT per la tabella `files`
+--
+ALTER TABLE `files`
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=94;
+
+--
 -- AUTO_INCREMENT per la tabella `users`
 --
 ALTER TABLE `users`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=32;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=35;
 COMMIT;
 
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
