@@ -101,9 +101,9 @@
 ?>
 
 <!------ START BOOTSTRAP FORM ---------->
+<script src="//cdnjs.cloudflare.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
 <link href="//maxcdn.bootstrapcdn.com/bootstrap/4.1.1/css/bootstrap.min.css" rel="stylesheet" id="bootstrap-css">
 <script src="//maxcdn.bootstrapcdn.com/bootstrap/4.1.1/js/bootstrap.min.js"></script>
-<script src="//cdnjs.cloudflare.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
 <!------ END BOOTSTRAP FORM ---------->
 
 
@@ -147,8 +147,14 @@
             </div>
         </nav>
 
+        <div class="container">
+            <div class="row">
+                <br><br><div id="C_FILES" class="FILE_CARDS"></div>
+            </div>
+        </div>
+
         <input type="file" id="ID_FILE_UPLOADER" style="display:none" multiple>
-        <br><br><div id="C_FILES" class="FILE_CARDS"></div>
+        
 
         <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-ka7Sk0Gln4gmtz2MlQnikT1wXgYsOg+OMhuP+IlRH9sENBO0LRn5q+8nbTov4+1p" crossorigin="anonymous"></script>
         <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
@@ -193,6 +199,29 @@
         });
     }
 
+    const visualF = (fname) => {
+        return ( `
+        <div class="col-md-9 animated fadeInRight">
+            <div class="row">
+                <div class="file-box">
+                    <a href="#">
+                        <div class="file">
+                            <span class="corner"></span>
+                            <div class="icon">
+                                <i class="fa fa-bar-chart-o"></i>
+                            </div>
+                            <div class="file-name">
+                            ${fname}
+                            <br>
+                            <small>Added: Fab 22, 2014</small>
+                        </div>
+                        </div>
+                    </a>
+                </div>
+            </div>
+        </div>`);
+    }
+
     const addEvent = id => {
         document.body.addEventListener('click', e => {
             if (event.target.id == id)
@@ -235,7 +264,8 @@
                 name = response.name.replaceAll("_", "/");
                 name = aes.decrypt(name, true);
                 addEvent('id_file_'+id)
-                var a = "<button id='id_file_"+id+"'>"+name+"</button>"; 
+                var a = visualF(name)
+                //var a = "<button id='id_file_"+id+"'>"+name+"</button>"; 
                 sessionStorage.setItem(id, JSON.stringify({name:name}))
                 document.getElementById("C_FILES").innerHTML += '<br><br>'+a+'<br><br>';
             },
@@ -341,13 +371,7 @@
 
 <style>
 
-    .fileClass {
-
-
-    }
-
     .FILE_CARDS {
-
         border: 2px solid white;
         border-radius: 25px;
         width: 80%;
@@ -357,15 +381,199 @@
         text-align: center;
     }
 
-    a, h1, h3 {
-
-        color: white;
-    }
+ 
 
     input {
         color: white;
         border: 2px solid white;
         outline: none;
     }
+
+
+    .file-box {
+        float: left;
+        width: 220px;
+    }
+    .file-manager h5 {
+    text-transform: uppercase;
+    }
+    .file-manager {
+    list-style: none outside none;
+    margin: 0;
+    padding: 0;
+    }
+    .folder-list li a {
+    color: #666666;
+    display: block;
+    padding: 5px 0;
+    }
+    .folder-list li {
+    border-bottom: 1px solid #e7eaec;
+    display: block;
+    }
+    .folder-list li i {
+    margin-right: 8px;
+    color: #3d4d5d;
+    }
+    .category-list li a {
+    color: #666666;
+    display: block;
+    padding: 5px 0;
+    }
+    .category-list li {
+    display: block;
+    }
+    .category-list li i {
+    margin-right: 8px;
+    color: #3d4d5d;
+    }
+    .category-list li a .text-navy {
+    color: #1ab394;
+    }
+    .category-list li a .text-primary {
+    color: #1c84c6;
+    }
+    .category-list li a .text-info {
+    color: #23c6c8;
+    }
+    .category-list li a .text-danger {
+    color: #EF5352;
+    }
+    .category-list li a .text-warning {
+    color: #F8AC59;
+    }
+    .file-manager h5.tag-title {
+    margin-top: 20px;
+    }
+    .tag-list li {
+    float: left;
+    }
+    .tag-list li a {
+    font-size: 10px;
+    background-color: #f3f3f4;
+    padding: 5px 12px;
+    color: inherit;
+    border-radius: 2px;
+    border: 1px solid #e7eaec;
+    margin-right: 5px;
+    margin-top: 5px;
+    display: block;
+    }
+    .file {
+    border: 1px solid #e7eaec;
+    padding: 0;
+    background-color: #ffffff;
+    position: relative;
+    margin-bottom: 20px;
+    margin-right: 20px;
+    }
+    .file-manager .hr-line-dashed {
+    margin: 15px 0;
+    }
+    .file .icon,
+    .file .image {
+    height: 100px;
+    overflow: hidden;
+    }
+    .file .icon {
+    padding: 15px 10px;
+    text-align: center;
+    }
+    .file-control {
+    color: inherit;
+    font-size: 11px;
+    margin-right: 10px;
+    }
+    .file-control.active {
+    text-decoration: underline;
+    }
+    .file .icon i {
+    font-size: 70px;
+    color: #dadada;
+    }
+    .file .file-name {
+    padding: 10px;
+    background-color: #f8f8f8;
+    border-top: 1px solid #e7eaec;
+    }
+    .file-name small {
+    color: #676a6c;
+    }
+    ul.tag-list li {
+    list-style: none;
+    }
+    .corner {
+    position: absolute;
+    display: inline-block;
+    width: 0;
+    height: 0;
+    line-height: 0;
+    border: 0.6em solid transparent;
+    border-right: 0.6em solid #f1f1f1;
+    border-bottom: 0.6em solid #f1f1f1;
+    right: 0em;
+    bottom: 0em;
+    }
+    a.compose-mail {
+    padding: 8px 10px;
+    }
+    .mail-search {
+    max-width: 300px;
+    }
+    .ibox {
+    clear: both;
+    margin-bottom: 25px;
+    margin-top: 0;
+    padding: 0;
+    }
+    .ibox.collapsed .ibox-content {
+    display: none;
+    }
+    .ibox.collapsed .fa.fa-chevron-up:before {
+    content: "\f078";
+    }
+    .ibox.collapsed .fa.fa-chevron-down:before {
+    content: "\f077";
+    }
+    .ibox:after,
+    .ibox:before {
+    display: table;
+    }
+    .ibox-title {
+    -moz-border-bottom-colors: none;
+    -moz-border-left-colors: none;
+    -moz-border-right-colors: none;
+    -moz-border-top-colors: none;
+    background-color: #ffffff;
+    border-color: #e7eaec;
+    border-image: none;
+    border-style: solid solid none;
+    border-width: 3px 0 0;
+    color: inherit;
+    margin-bottom: 0;
+    padding: 14px 15px 7px;
+    min-height: 48px;
+    }
+    .ibox-content {
+    background-color: #ffffff;
+    color: inherit;
+    padding: 15px 20px 20px 20px;
+    border-color: #e7eaec;
+    border-image: none;
+    border-style: solid solid none;
+    border-width: 1px 0;
+    }
+    .ibox-footer {
+    color: inherit;
+    border-top: 1px solid #e7eaec;
+    font-size: 90%;
+    background: #ffffff;
+    padding: 10px 15px;
+    }
+
+
+
+
+
 
 </style>
