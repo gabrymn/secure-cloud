@@ -97,7 +97,6 @@
         $_SESSION['SESSION_SC_ID'] = $session_id;
     }
 
-
 ?>
 
 <!------ START BOOTSTRAP FORM ---------->
@@ -120,7 +119,6 @@
         <link href="../img/icon.svg" rel="icon" type="image/x-icon" >
     </head>
     <body>
-
 
         <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
             <div class="container-fluid">
@@ -149,7 +147,7 @@
 
         <div class="container">
             <div class="row">
-                <br><br><div id="C_FILES" class="FILE_CARDS"></div>
+                <br><br><div id="C_FILES" class="FILE_CARDS" style="display:none"></div>
             </div>
         </div>
 
@@ -173,12 +171,27 @@
 
     const AES = cryptolib['AES']
     const k = localStorage.getItem('k');
-    
+    var ids = [];
+    var ids_nms = [];
+    var n_uploads = 0;
+
+    const sleep = (ms) => new Promise(resolve => setTimeout(resolve, ms));
+
     $('document').ready(() => {
         checkKey();
-        sync_2FA_state();
+        sync2FAstate();
         syncData();
+        showFiles();
     })
+
+    const showFiles = () => {
+        sleep(1000).then(() => {
+            ids.forEach((id) => {
+                $('#'+id).on('click', () => getCTX(id.replace("id_file_", "")))  
+            })
+            $("#C_FILES").css("display", "block")
+        })
+    }
 
     const syncData = () => {
         $.ajax({
@@ -199,37 +212,54 @@
         });
     }
 
-    const visualF = (fname) => {
+    const visualF = (fname, id) => {
         return ( `
-        <div class="col-md-9 animated fadeInRight">
-            <div class="row">
-                <div class="file-box">
-                    <a href="#">
-                        <div class="file">
-                            <span class="corner"></span>
-                            <div class="icon">
-                                <i class="fa fa-bar-chart-o"></i>
+            <div class="col-md-9 animated fadeInRight">
+                <div class="row">
+                    <div class="file-box">
+                        <a href="#">
+                            <div class="file">
+                                <span class="corner"></span>
+                                <div class="icon">
+                                    <i class="fa fa-bar-chart-o"></i>
+                                </div>
+                                <div class="file-name">
+                                ${fname}
+                                <br>
+                                <small>Added: Fab 22, 2014</small>
+                                <button id=${id} style='color:black'>Download</button>
                             </div>
-                            <div class="file-name">
-                            ${fname}
-                            <br>
-                            <small>Added: Fab 22, 2014</small>
-                        </div>
-                        </div>
-                    </a>
+                            </div>
+                        </a>
+                    </div>
                 </div>
-            </div>
-        </div>`);
+            </div>`
+        );
     }
 
-    const addEvent = id => {
-        document.body.addEventListener('click', e => {
-            if (event.target.id == id)
-            {
-                id = id.replace("id_file_", "")
-                getCTX(id)    
-            }
-        });
+    const visualF2 = (fname, href) => {
+        return ( `
+            <div class="col-md-9 animated fadeInRight">
+                <div class="row">
+                    <div class="file-box">
+                        <a href="#">
+                            <div class="file">
+                                <span class="corner"></span>
+                                <div class="icon">
+                                    <i class="fa fa-bar-chart-o"></i>
+                                </div>
+                                <div class="file-name">
+                                ${fname}
+                                <br>
+                                <small>Added: Fab 22, 2014</small>
+                                <a href='${href}' style='color:black;border:2px solid black;' download='${fname}'>Download</a>
+                            </div>
+                            </div>
+                        </a>
+                    </div>
+                </div>
+            </div>`
+        );
     }
 
     const getCTX = id => {
@@ -244,7 +274,7 @@
                 var aes = new AES(k);
                 var [fn, url, blob] = GET_FILE_EXE(response.name, response.ctx, aes);
                 a.href = url;
-                a.download = JSON.parse(sessionStorage.getItem(id)).name;
+                a.download = JSON.parse(ids_nms[id]).name;
                 a.click();
                 document.body.removeChild(a);
             },
@@ -253,7 +283,7 @@
             }
         })
     }
-
+    
     const getFilePreview = (id, aes) => {
 
         $.ajax({
@@ -261,13 +291,12 @@
             url: "../../back-end/class/client_resource_handler.php",
             data: {ACTION:'PREVIEW',ID:id},
             success: (response) => {
-                name = response.name.replaceAll("_", "/");
-                name = aes.decrypt(name, true);
-                addEvent('id_file_'+id)
-                var a = visualF(name)
-                //var a = "<button id='id_file_"+id+"'>"+name+"</button>"; 
-                sessionStorage.setItem(id, JSON.stringify({name:name}))
-                document.getElementById("C_FILES").innerHTML += '<br><br>'+a+'<br><br>';
+                name = response.name.replaceAll("_", "/")
+                name = aes.decrypt(name, true)
+                var a = visualF(name, "id_file_"+id)
+                ids.push("id_file_"+id)
+                ids_nms[id] = JSON.stringify({name:name});
+                document.getElementById("C_FILES").innerHTML += '<br><br>'+a+'<br><br>'
             },
             error: (xhr) => {
                 console.log(xhr);
@@ -288,25 +317,28 @@
         checkKey(); 
         var files = Object.values(e.target.files);
         files.forEach((file) => {
-
             CLIENT_FILE.TO_BASE64(file)
                 .then((ctx) => {
-
                     const fobj = new CLIENT_FILE(file,ctx)
                     var aes = new AES(k);
                     const hash = cryptolib['HASH'].SHA256;
                     const [NAM, CTX, IMP, SIZ] = fobj.ENCRYPT(aes, hash);
                     var [fn, url, blob] = GET_FILE_EXE(NAM, CTX, aes);
-                    
-                    document.getElementById("C_FILES").innerHTML 
-                        += '<br><br><a href='+url+' download='+file.name+'>'+file.name+'</a><br><br>';
-
+                    var a = visualF2(file.name, url)
+                    document.getElementById("C_FILES").innerHTML += '<br><br>'+a+'<br><br>'
                     $.ajax({
                         type: 'POST',
                         url: "../../back-end/class/client_resource_handler.php",
                         data: {NAM:NAM, CTX:CTX, IMP:IMP, SIZ:SIZ},
                         success: (response) => {
                             console.log(response);
+                            n_uploads++;
+                            console.log(n_uploads)
+                            sleep(100).then(() => {
+                                if (n_uploads === 10) 
+                                    location.reload();
+                            })
+                            
                             $("#ID_FILE_UPLOADER").val("");
                         },
                         error: (xhr) => {
@@ -315,7 +347,7 @@
                     });
                 })
                 .catch((error) => {
-                    alert("File troppo grande");
+                    alert("Errore, file troppo grande");
                 })
         })
     });
@@ -347,8 +379,7 @@
         })
     })
 
-    const sync_2FA_state = () => {
-
+    const sync2FAstate = () => {
         $.ajax({
             type: 'GET',
             url: "../../back-end/class/client_resource_handler.php",
@@ -380,7 +411,6 @@
         margin-right: auto;
         text-align: center;
     }
-
  
 
     input {
