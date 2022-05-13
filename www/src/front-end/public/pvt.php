@@ -145,14 +145,17 @@
             </div>
         </nav>
 
+        <br><br>
+        <div id="C_LOADING" style="display:none;margin-left:auto;margin-right:auto" class="lds-dual-ring"></div>
+
         <div class="container">
             <div class="row">
                 <br><br><div id="C_FILES" class="FILE_CARDS" style="display:none"></div>
             </div>
         </div>
+        <br>
 
         <input type="file" id="ID_FILE_UPLOADER" style="display:none" multiple>
-        
 
         <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-ka7Sk0Gln4gmtz2MlQnikT1wXgYsOg+OMhuP+IlRH9sENBO0LRn5q+8nbTov4+1p" crossorigin="anonymous"></script>
         <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
@@ -170,7 +173,7 @@
     import FILE_URL from '../class/blob.js'
 
     const AES = cryptolib['AES']
-    const k = localStorage.getItem('k');
+    const k = "ciao123"
     var ids = [];
     var ids_nms = [];
     var n_uploads = 0;
@@ -178,17 +181,22 @@
     const sleep = (ms) => new Promise(resolve => setTimeout(resolve, ms));
 
     $('document').ready(() => {
+        setLoading("block");
         checkKey();
         sync2FAstate();
         syncData();
         showFiles();
+        getTranserTables();
     })
 
+    const rd = (min, max) => Math.random() * (max - min) + min
+
     const showFiles = () => {
-        sleep(1000).then(() => {
+        sleep(rd(200,700)).then(() => {
             ids.forEach((id) => {
                 $('#'+id).on('click', () => getCTX(id.replace("id_file_", "")))  
             })
+            setLoading("none");
             $("#C_FILES").css("display", "block")
         })
     }
@@ -212,32 +220,29 @@
         });
     }
 
-    const visualF = (fname, id) => {
-        return ( `
-            <div class="col-md-9 animated fadeInRight">
-                <div class="row">
-                    <div class="file-box">
-                        <a href="#">
-                            <div class="file">
-                                <span class="corner"></span>
-                                <div class="icon">
-                                    <i class="fa fa-bar-chart-o"></i>
-                                </div>
-                                <div class="file-name">
-                                ${fname}
-                                <br>
-                                <small>Added: Fab 22, 2014</small>
-                                <button id=${id} style='color:black'>Download</button>
-                            </div>
-                            </div>
-                        </a>
-                    </div>
-                </div>
-            </div>`
-        );
+    const getTranserTables = () => {
+        $.ajax({
+            type: 'GET',
+            url: "../../back-end/class/client_resource_handler.php",
+            data: {TRANSFERS:true},
+            success: response => {
+                console.log(response)
+            },
+            error: xhr => {
+                console.log(xhr)
+            }
+        })
     }
 
-    const visualF2 = (fname, href) => {
+    const setLoading = state => $("#C_LOADING").css("display", state)        
+
+    const visualF = (fname, x, ttype) => {
+        var aline = ""
+        if (ttype === 'id')
+            aline = `<a id=${x} class='btn btn-info' role='button'>Download</a>`;
+        else if (ttype === 'href')
+            aline = `<a href='${x}' class='btn btn-info' role='button' download='${fname}' style='color:white'>Download</a>`
+
         return ( `
             <div class="col-md-9 animated fadeInRight">
                 <div class="row">
@@ -251,8 +256,7 @@
                                 <div class="file-name">
                                 ${fname}
                                 <br>
-                                <small>Added: Fab 22, 2014</small>
-                                <a href='${href}' style='color:black;border:2px solid black;' download='${fname}'>Download</a>
+                                ${aline}
                             </div>
                             </div>
                         </a>
@@ -293,7 +297,7 @@
             success: (response) => {
                 name = response.name.replaceAll("_", "/")
                 name = aes.decrypt(name, true)
-                var a = visualF(name, "id_file_"+id)
+                var a = visualF(name, "id_file_"+id, "id")
                 ids.push("id_file_"+id)
                 ids_nms[id] = JSON.stringify({name:name});
                 document.getElementById("C_FILES").innerHTML += '<br><br>'+a+'<br><br>'
@@ -324,7 +328,7 @@
                     const hash = cryptolib['HASH'].SHA256;
                     const [NAM, CTX, IMP, SIZ] = fobj.ENCRYPT(aes, hash);
                     var [fn, url, blob] = GET_FILE_EXE(NAM, CTX, aes);
-                    var a = visualF2(file.name, url)
+                    var a = visualF(file.name, url, "href")
                     document.getElementById("C_FILES").innerHTML += '<br><br>'+a+'<br><br>'
                     $.ajax({
                         type: 'POST',
@@ -599,6 +603,31 @@
     font-size: 90%;
     background: #ffffff;
     padding: 10px 15px;
+    }
+
+    .lds-dual-ring {
+    display: inline-block;
+    width: 80px;
+    height: 80px;
+    }
+    .lds-dual-ring:after {
+    content: " ";
+    display: block;
+    width: 64px;
+    height: 64px;
+    margin: 8px;
+    border-radius: 50%;
+    border: 6px solid #fff;
+    border-color: #fff transparent #fff transparent;
+    animation: lds-dual-ring 1.2s linear infinite;
+    }
+    @keyframes lds-dual-ring {
+    0% {
+    transform: rotate(0deg);
+    }
+    100% {
+    transform: rotate(360deg);
+    }
     }
 
 

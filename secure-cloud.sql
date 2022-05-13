@@ -3,20 +3,15 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Creato il: Mag 08, 2022 alle 23:55
+-- Creato il: Mag 14, 2022 alle 00:41
 -- Versione del server: 10.4.22-MariaDB
 -- Versione PHP: 8.0.13
-
-
-CREATE DATABASE `secure-cloud`;
-
 
 SET SQL_MODE = "NO_AUTO_VALUE_ON_ZERO";
 START TRANSACTION;
 SET time_zone = "+00:00";
 
-
-
+CREATE DATABASE `secure-cloud`;
 
 /*!40101 SET @OLD_CHARACTER_SET_CLIENT=@@CHARACTER_SET_CLIENT */;
 /*!40101 SET @OLD_CHARACTER_SET_RESULTS=@@CHARACTER_SET_RESULTS */;
@@ -54,6 +49,27 @@ CREATE TABLE `secure-cloud`.`account_verify` (
 -- --------------------------------------------------------
 
 --
+-- Struttura della tabella `downloads`
+--
+
+CREATE TABLE `secure-cloud`.`downloads` (
+  `download_datet` datetime NOT NULL,
+  `id_user` int(11) NOT NULL,
+  `id_session` varchar(20) NOT NULL,
+  `id_file` varchar(8) NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+--
+-- Dump dei dati per la tabella `downloads`
+--
+
+INSERT INTO `secure-cloud`.`downloads` (`download_datet`, `id_user`, `id_session`, `id_file`) VALUES
+('2022-05-14 00:04:12', 34, '8b9dan16jycpfjjw', 'pYqI40Yl'),
+('2022-05-14 00:24:27', 34, '8b9dan16jycpfjjw', 'pYqI40Yl');
+
+-- --------------------------------------------------------
+
+--
 -- Struttura della tabella `env`
 --
 
@@ -70,7 +86,7 @@ CREATE TABLE `secure-cloud`.`env` (
 --
 
 CREATE TABLE `secure-cloud`.`files` (
-  `id` int(11) NOT NULL,
+  `idf` varchar(8) NOT NULL,
   `fname` varchar(500) NOT NULL,
   `ref` varchar(1000) NOT NULL,
   `size` int(11) NOT NULL,
@@ -82,10 +98,8 @@ CREATE TABLE `secure-cloud`.`files` (
 -- Dump dei dati per la tabella `files`
 --
 
-INSERT INTO `secure-cloud`.`files` (`id`, `fname`, `ref`, `size`, `mime`, `id_user`) VALUES
-(91, 'U2FsdGVkX1+eySjM7ukP5jvjdh6oC4kgbPNgtv9lGdNPALyqF4Hlp1cTfV9sWGO2', '../users/c0baeb7eadb69ccbfb43eca284fe9717/U2FsdGVkX1+eySjM7ukP5jvjdh6oC4kgbPNgtv9lGdNPALyqF4Hlp1cTfV9sWGO2', 128, 'arandom', 34),
-(92, 'U2FsdGVkX19hXB6CK3y0qmJeDc5PT8cE0EGSOuyamKQ=', '../users/c0baeb7eadb69ccbfb43eca284fe9717/U2FsdGVkX19hXB6CK3y0qmJeDc5PT8cE0EGSOuyamKQ=', 408, 'mimetype', 34),
-(93, 'U2FsdGVkX1+XnJlwXJKjDODpjGCATHkPMRBXdvulQrI=', '../users/c0baeb7eadb69ccbfb43eca284fe9717/U2FsdGVkX1+XnJlwXJKjDODpjGCATHkPMRBXdvulQrI=', 189184, 'mimetype', 34);
+INSERT INTO `secure-cloud`.`files` (`idf`, `fname`, `ref`, `size`, `mime`, `id_user`) VALUES
+('pYqI40Yl', 'U2FsdGVkX19ZlXFS+TSHxtTbjkoAnOwiZSKBjHAJRPM=', '../users/c0baeb7eadb69ccbfb43eca284fe9717/U2FsdGVkX19ZlXFS+TSHxtTbjkoAnOwiZSKBjHAJRPM=', 408, 'mimetype', 34);
 
 -- --------------------------------------------------------
 
@@ -129,8 +143,15 @@ CREATE TABLE `secure-cloud`.`sessions` (
 --
 
 INSERT INTO `secure-cloud`.`sessions` (`id`, `ip`, `client`, `os`, `device`, `last_time`, `session_status`, `id_user`, `rem_htkn`) VALUES
+('1g4m3c64l91f008x', '127.0.0.1', 'Chrome', 'Windows', 'Desktop', '2022-05-14 00:32:50', 0, 34, NULL),
 ('64ngoxaotmjjv674', '127.0.0.1', 'Chrome', 'Windows', 'Desktop', '2022-05-08 22:00:39', 0, 34, NULL),
-('t01zvwjxuocwjsav', '127.0.0.1', 'Chrome', 'Windows', 'Desktop', '2022-05-08 23:54:27', 1, 34, NULL);
+('8b9dan16jycpfjjw', '127.0.0.1', 'Chrome', 'Windows', 'Desktop', '2022-05-14 00:24:42', 0, 34, NULL),
+('aqdajf0hrst51wwp', '127.0.0.1', 'Chrome', 'Windows', 'Desktop', '2022-05-14 00:32:54', 0, 34, NULL),
+('dbl4aomismfk3wkt', '127.0.0.1', 'Chrome', 'Windows', 'Desktop', '2022-05-14 00:35:30', 0, 34, 'a7419h27cr4qmtde2w55drc3625q419vjwu1'),
+('hmw91ncl3osen997', '127.0.0.1', 'Chrome', 'Windows', 'Desktop', '2022-05-14 00:25:11', 0, 34, NULL),
+('t01zvwjxuocwjsav', '127.0.0.1', 'Chrome', 'Windows', 'Desktop', '2022-05-09 00:00:12', 0, 34, NULL),
+('ycaef7zg90mh8ggy', '127.0.0.1', 'Chrome', 'Windows', 'Desktop', '2022-05-14 00:32:31', 0, 34, NULL),
+('zb126jelle8sxwhq', '127.0.0.1', 'Chrome', 'Windows', 'Desktop', '2022-05-09 00:04:45', 0, 34, NULL);
 
 -- --------------------------------------------------------
 
@@ -139,17 +160,18 @@ INSERT INTO `secure-cloud`.`sessions` (`id`, `ip`, `client`, `os`, `device`, `la
 --
 
 CREATE TABLE `secure-cloud`.`uploads` (
-  `bytes` int(11) NOT NULL,
+  `upload_datet` datetime NOT NULL,
   `id_user` int(11) NOT NULL,
-  `upload_date` datetime NOT NULL
+  `id_session` varchar(20) NOT NULL,
+  `id_file` varchar(8) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 --
 -- Dump dei dati per la tabella `uploads`
 --
 
-INSERT INTO `secure-cloud`.`uploads` (`bytes`, `id_user`, `upload_date`) VALUES
-(189184, 34, '2022-05-08 23:54:25');
+INSERT INTO `secure-cloud`.`uploads` (`upload_datet`, `id_user`, `id_session`, `id_file`) VALUES
+('2022-05-14 00:03:48', 34, '8b9dan16jycpfjjw', 'pYqI40Yl');
 
 -- --------------------------------------------------------
 
@@ -181,7 +203,7 @@ INSERT INTO `secure-cloud`.`users` (`id`, `email`, `pass`, `logged_with`, `2FA`,
 -- Indici per le tabelle `files`
 --
 ALTER TABLE `secure-cloud`.`files`
-  ADD PRIMARY KEY (`id`);
+  ADD PRIMARY KEY (`idf`);
 
 --
 -- Indici per le tabelle `sessions`
@@ -198,12 +220,6 @@ ALTER TABLE `secure-cloud`.`users`
 --
 -- AUTO_INCREMENT per le tabelle scaricate
 --
-
---
--- AUTO_INCREMENT per la tabella `files`
---
-ALTER TABLE `secure-cloud`.`files`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=94;
 
 --
 -- AUTO_INCREMENT per la tabella `users`

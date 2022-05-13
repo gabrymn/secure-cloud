@@ -26,7 +26,8 @@
             "OAUTH2_INS" => "INSERT INTO `secure-cloud`.`users` (email, logged_with, 2FA, verified) VALUES (?, 'GOOGLE_OAUTH2')",
             "OAUTH2_SEL" => "SELECT * FROM `secure-cloud`.`users` WHERE email = ?",
             "DEL_USER_WITH_EMAIL" => "DELETE FROM `secure-cloud`.`users` WHERE email = ?",
-            "UPL_FILE" => "INSERT INTO `secure-cloud`.`uploads` (bytes, id_user, upload_date) VALUES (?, ?, NOW())",
+            "UPL_FILE" => "INSERT INTO `secure-cloud`.`uploads` (upload_datet, id_user, id_session, id_file) VALUES (NOW(), ?, ?, ?)",
+            "DWL_FILE" => "INSERT INTO `secure-cloud`.`downloads` (download_datet, id_user, id_session, id_file) VALUES (NOW(), ?, ?, ?)",
             "SET_2FA" => "UPDATE `secure-cloud`.`users` SET 2FA = ? WHERE id = ?",
             "GET_2FA" => "SELECT 2FA FROM `secure-cloud`.`users` WHERE id = ?",
             "IS_VER" => "SELECT verified FROM `secure-cloud`.`users` WHERE id = ?",
@@ -41,9 +42,12 @@
             "EXP_SESS" => "UPDATE `secure-cloud`.`sessions` SET session_status = 0 WHERE id = ?",
             "SEL_SESS_ALL" => "SELECT * FROM `secure-cloud`.`sessions` WHERE id_user = ? ORDER BY session_status DESC, last_time DESC",
             "SEL_SESS_STATUS" => "SELECT session_status FROM `secure-cloud`.`sessions` WHERE id = ?",
-            "INS_FILE_DATA" => "INSERT INTO `secure-cloud`.`files` (fname, ref, size, mime, id_user) VALUES (?,?,?,'mimetype',?)",
-            "SEL_FILEIDS" => "SELECT id FROM `secure-cloud`.`files` WHERE id_user = ?",
-            "SEL_FILE" => "SELECT * FROM `secure-cloud`.`files` WHERE id = ?"
+            "INS_FILE_DATA" => "INSERT INTO `secure-cloud`.`files` (idf, fname, ref, size, mime, id_user) VALUES (?,?,?,?,'mimetype',?)",
+            "SEL_FILEIDS" => "SELECT idf FROM `secure-cloud`.`files` WHERE id_user = ?",
+            "SEL_FILE" => "SELECT * FROM `secure-cloud`.`files` WHERE idf = ?",
+            "DWL_TBL" => "SELECT f.fname AS filename, f.size AS filesize, d.download_datet AS download_date, s.ip AS ip_address FROM files f, downloads d, sessions s WHERE d.id_file = f.idf AND d.id_session = s.id AND d.id_user = ?",
+            "UPL_TBL" => "SELECT f.fname AS filename, f.size AS filesize, u.upload_datet AS upload_date, s.ip AS ip_address FROM files f, uploads u, sessions s WHERE u.id_file = f.idf AND u.id_session = s.id AND u.id_user = ?"
+
         ];
 
         public static function connect($address = "localhost", $name = "root", $password = "", $dbname = "secure-cloud")
@@ -106,6 +110,38 @@
             return self::$stmt->execute();
         }
 
+        public static function get_uploads_table($id_user)
+        {
+            self::prep(self::QRY["UPL_TBL"]);
+            self::$stmt->bind_param("i", $id_user);
+            self::$stmt->execute();
+            $result = self::$stmt->get_result();
+            $row = true;
+            while ($row !== NULL)
+            {
+                $row = $result->fetch_assoc();
+                if ($row === NULL) continue;
+                $rows[] = $row;
+            }
+            return isset($rows) ? $rows : 0;
+        }
+
+        public static function get_downloads_table($id_user)
+        {
+            self::prep(self::QRY["DWL_TBL"]);
+            self::$stmt->bind_param("i", $id_user);
+            self::$stmt->execute();
+            $result = self::$stmt->get_result();
+            $row = true;
+            while ($row !== NULL)
+            {
+                $row = $result->fetch_assoc();
+                if ($row === NULL) continue;
+                $rows[] = $row;
+            }
+            return isset($rows) ? $rows : 0;
+        }
+
         // (ip, client, os, device, session_status, rem_htkn)
         public static function add_session($id_session, $http_user_agent, $ip, $id_user, $htkn = null)
         {
@@ -126,7 +162,7 @@
             {
                 $row = $result->fetch_assoc();
                 if ($row === NULL) continue;
-                $rows[] = $row['id'];
+                $rows[] = $row['idf'];
             }
             return isset($rows) ? $rows : 0;
         }
@@ -134,7 +170,7 @@
         public static function sel_file($id_file)
         {
             self::prep(self::QRY["SEL_FILE"]);
-            self::$stmt->bind_param("i", $id_file);
+            self::$stmt->bind_param("s", $id_file);
             self::$stmt->execute();
             $row = self::$stmt->get_result()->fetch_assoc();
             return $row;
@@ -244,17 +280,24 @@
             self::qry_exec($qry, false);
         }
 
-        public static function ins_upload_data($bytes, $id_user)
+        public static function ins_upload_data($id_user, $id_session, $id_file)
         {
             self::prep(self::QRY['UPL_FILE']);
-            self::$stmt->bind_param("ii", $bytes, $id_user);
+            self::$stmt->bind_param("iss", $id_user, $id_session, $id_file);
             return self::$stmt->execute();
         }
 
-        public static function ins_file_data($fname, $ref, $size, $id_user)
+        public static function ins_download_data($id_user, $id_session, $id_file)
+        {
+            self::prep(self::QRY['DWL_FILE']);
+            self::$stmt->bind_param("iss", $id_user, $id_session, $id_file);
+            return self::$stmt->execute();
+        }
+
+        public static function ins_file_data($id_file, $fname, $ref, $size, $id_user)
         {
             self::prep(self::QRY['INS_FILE_DATA']);
-            self::$stmt->bind_param("ssii", $fname, $ref, $size, $id_user);
+            self::$stmt->bind_param("sssii", $id_file, $fname, $ref, $size, $id_user);
             return self::$stmt->execute();
         }
 
