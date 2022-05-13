@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Creato il: Mag 14, 2022 alle 00:41
+-- Creato il: Mag 14, 2022 alle 00:46
 -- Versione del server: 10.4.22-MariaDB
 -- Versione PHP: 8.0.13
 
@@ -11,7 +11,6 @@ SET SQL_MODE = "NO_AUTO_VALUE_ON_ZERO";
 START TRANSACTION;
 SET time_zone = "+00:00";
 
-CREATE DATABASE `secure-cloud`;
 
 /*!40101 SET @OLD_CHARACTER_SET_CLIENT=@@CHARACTER_SET_CLIENT */;
 /*!40101 SET @OLD_CHARACTER_SET_RESULTS=@@CHARACTER_SET_RESULTS */;
@@ -21,6 +20,8 @@ CREATE DATABASE `secure-cloud`;
 --
 -- Database: `secure-cloud`
 --
+CREATE DATABASE IF NOT EXISTS `secure-cloud` DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci;
+USE `secure-cloud`;
 
 -- --------------------------------------------------------
 
@@ -28,7 +29,7 @@ CREATE DATABASE `secure-cloud`;
 -- Struttura della tabella `account_recovery`
 --
 
-CREATE TABLE `secure-cloud`.`account_recovery` (
+CREATE TABLE `account_recovery` (
   `id_user` int(11) NOT NULL,
   `htkn` varchar(80) NOT NULL,
   `expires` datetime NOT NULL
@@ -40,7 +41,7 @@ CREATE TABLE `secure-cloud`.`account_recovery` (
 -- Struttura della tabella `account_verify`
 --
 
-CREATE TABLE `secure-cloud`.`account_verify` (
+CREATE TABLE `account_verify` (
   `id_user` int(11) NOT NULL,
   `htkn` varchar(64) NOT NULL,
   `expires` datetime NOT NULL
@@ -52,7 +53,7 @@ CREATE TABLE `secure-cloud`.`account_verify` (
 -- Struttura della tabella `downloads`
 --
 
-CREATE TABLE `secure-cloud`.`downloads` (
+CREATE TABLE `downloads` (
   `download_datet` datetime NOT NULL,
   `id_user` int(11) NOT NULL,
   `id_session` varchar(20) NOT NULL,
@@ -63,7 +64,7 @@ CREATE TABLE `secure-cloud`.`downloads` (
 -- Dump dei dati per la tabella `downloads`
 --
 
-INSERT INTO `secure-cloud`.`downloads` (`download_datet`, `id_user`, `id_session`, `id_file`) VALUES
+INSERT INTO `downloads` (`download_datet`, `id_user`, `id_session`, `id_file`) VALUES
 ('2022-05-14 00:04:12', 34, '8b9dan16jycpfjjw', 'pYqI40Yl'),
 ('2022-05-14 00:24:27', 34, '8b9dan16jycpfjjw', 'pYqI40Yl');
 
@@ -73,7 +74,7 @@ INSERT INTO `secure-cloud`.`downloads` (`download_datet`, `id_user`, `id_session
 -- Struttura della tabella `env`
 --
 
-CREATE TABLE `secure-cloud`.`env` (
+CREATE TABLE `env` (
   `id` varchar(10) NOT NULL,
   `key` varchar(30) NOT NULL,
   `value` varchar(120) NOT NULL
@@ -85,7 +86,7 @@ CREATE TABLE `secure-cloud`.`env` (
 -- Struttura della tabella `files`
 --
 
-CREATE TABLE `secure-cloud`.`files` (
+CREATE TABLE `files` (
   `idf` varchar(8) NOT NULL,
   `fname` varchar(500) NOT NULL,
   `ref` varchar(1000) NOT NULL,
@@ -98,7 +99,7 @@ CREATE TABLE `secure-cloud`.`files` (
 -- Dump dei dati per la tabella `files`
 --
 
-INSERT INTO `secure-cloud`.`files` (`idf`, `fname`, `ref`, `size`, `mime`, `id_user`) VALUES
+INSERT INTO `files` (`idf`, `fname`, `ref`, `size`, `mime`, `id_user`) VALUES
 ('pYqI40Yl', 'U2FsdGVkX19ZlXFS+TSHxtTbjkoAnOwiZSKBjHAJRPM=', '../users/c0baeb7eadb69ccbfb43eca284fe9717/U2FsdGVkX19ZlXFS+TSHxtTbjkoAnOwiZSKBjHAJRPM=', 408, 'mimetype', 34);
 
 -- --------------------------------------------------------
@@ -107,7 +108,7 @@ INSERT INTO `secure-cloud`.`files` (`idf`, `fname`, `ref`, `size`, `mime`, `id_u
 -- Struttura della tabella `remember`
 --
 
-CREATE TABLE `secure-cloud`.`remember` (
+CREATE TABLE `remember` (
   `htkn` varchar(64) NOT NULL,
   `expires` datetime NOT NULL,
   `id_user` int(11) NOT NULL
@@ -117,7 +118,7 @@ CREATE TABLE `secure-cloud`.`remember` (
 -- Dump dei dati per la tabella `remember`
 --
 
-INSERT INTO `secure-cloud`.`remember` (`htkn`, `expires`, `id_user`) VALUES
+INSERT INTO `remember` (`htkn`, `expires`, `id_user`) VALUES
 ('f7decb918d44a14b111afebde41d5d6256f04fedd90b47eebabb52b69eee0288', '2022-05-23 10:29:56', 6);
 
 -- --------------------------------------------------------
@@ -126,7 +127,7 @@ INSERT INTO `secure-cloud`.`remember` (`htkn`, `expires`, `id_user`) VALUES
 -- Struttura della tabella `sessions`
 --
 
-CREATE TABLE `secure-cloud`.`sessions` (
+CREATE TABLE `sessions` (
   `id` varchar(20) NOT NULL,
   `ip` varchar(30) NOT NULL,
   `client` varchar(30) NOT NULL,
@@ -142,7 +143,7 @@ CREATE TABLE `secure-cloud`.`sessions` (
 -- Dump dei dati per la tabella `sessions`
 --
 
-INSERT INTO `secure-cloud`.`sessions` (`id`, `ip`, `client`, `os`, `device`, `last_time`, `session_status`, `id_user`, `rem_htkn`) VALUES
+INSERT INTO `sessions` (`id`, `ip`, `client`, `os`, `device`, `last_time`, `session_status`, `id_user`, `rem_htkn`) VALUES
 ('1g4m3c64l91f008x', '127.0.0.1', 'Chrome', 'Windows', 'Desktop', '2022-05-14 00:32:50', 0, 34, NULL),
 ('64ngoxaotmjjv674', '127.0.0.1', 'Chrome', 'Windows', 'Desktop', '2022-05-08 22:00:39', 0, 34, NULL),
 ('8b9dan16jycpfjjw', '127.0.0.1', 'Chrome', 'Windows', 'Desktop', '2022-05-14 00:24:42', 0, 34, NULL),
@@ -159,7 +160,7 @@ INSERT INTO `secure-cloud`.`sessions` (`id`, `ip`, `client`, `os`, `device`, `la
 -- Struttura della tabella `uploads`
 --
 
-CREATE TABLE `secure-cloud`.`uploads` (
+CREATE TABLE `uploads` (
   `upload_datet` datetime NOT NULL,
   `id_user` int(11) NOT NULL,
   `id_session` varchar(20) NOT NULL,
@@ -170,7 +171,7 @@ CREATE TABLE `secure-cloud`.`uploads` (
 -- Dump dei dati per la tabella `uploads`
 --
 
-INSERT INTO `secure-cloud`.`uploads` (`upload_datet`, `id_user`, `id_session`, `id_file`) VALUES
+INSERT INTO `uploads` (`upload_datet`, `id_user`, `id_session`, `id_file`) VALUES
 ('2022-05-14 00:03:48', 34, '8b9dan16jycpfjjw', 'pYqI40Yl');
 
 -- --------------------------------------------------------
@@ -179,7 +180,7 @@ INSERT INTO `secure-cloud`.`uploads` (`upload_datet`, `id_user`, `id_session`, `
 -- Struttura della tabella `users`
 --
 
-CREATE TABLE `secure-cloud`.`users` (
+CREATE TABLE `users` (
   `id` int(11) NOT NULL,
   `email` varchar(50) NOT NULL,
   `pass` varchar(100) NOT NULL,
@@ -192,7 +193,7 @@ CREATE TABLE `secure-cloud`.`users` (
 -- Dump dei dati per la tabella `users`
 --
 
-INSERT INTO `secure-cloud`.`users` (`id`, `email`, `pass`, `logged_with`, `2FA`, `verified`) VALUES
+INSERT INTO `users` (`id`, `email`, `pass`, `logged_with`, `2FA`, `verified`) VALUES
 (34, 'gabrieledevs@gmail.com', '$2y$10$/VyUb5nT6h1Ppl4HUfB9wujeeLm8SU61PnmtVwPkm2ulURDuq8OxC', 'EMAIL', 0, 1);
 
 --
@@ -202,19 +203,19 @@ INSERT INTO `secure-cloud`.`users` (`id`, `email`, `pass`, `logged_with`, `2FA`,
 --
 -- Indici per le tabelle `files`
 --
-ALTER TABLE `secure-cloud`.`files`
+ALTER TABLE `files`
   ADD PRIMARY KEY (`idf`);
 
 --
 -- Indici per le tabelle `sessions`
 --
-ALTER TABLE `secure-cloud`.`sessions`
+ALTER TABLE `sessions`
   ADD PRIMARY KEY (`id`);
 
 --
 -- Indici per le tabelle `users`
 --
-ALTER TABLE `secure-cloud`.`users`
+ALTER TABLE `users`
   ADD PRIMARY KEY (`id`);
 
 --
@@ -224,7 +225,7 @@ ALTER TABLE `secure-cloud`.`users`
 --
 -- AUTO_INCREMENT per la tabella `users`
 --
-ALTER TABLE `secure-cloud`.`users`
+ALTER TABLE `users`
   MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=35;
 COMMIT;
 
