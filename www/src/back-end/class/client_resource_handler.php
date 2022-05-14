@@ -33,7 +33,7 @@
                         case 'CONTENT': {
                             session_start();
                             $d = sqlc::sel_file($_GET['ID']);
-                            sqlc::ins_download_data($_SESSION['ID_USER'], $_SESSION['SESSION_SC_ID'], $_GET['ID']);
+                            sqlc::ins_tsf_data("d", $_SESSION['ID_USER'], $_SESSION['SESSION_SC_ID'], $_GET['ID']);
                             $ctx = file_get_contents($d['ref']);
                             response::successful(200, false, array("ctx" => $ctx, "name" => $d['fname']));
                             break;
@@ -55,9 +55,9 @@
                     session_start();
                     $id_user = $_SESSION['ID_USER'];
                     sqlc::connect();
-                    $uploads = sqlc::get_uploads_table($id_user);
-                    $downloads = sqlc::get_downloads_table($id_user);
-                    response::successful(200, false, array("UPLOADS" => $uploads, "DOWNLOADS" => $downloads));
+                    $tsf = sqlc::get_tsf_table($id_user);
+                    response::successful(200, false, array("TSF" => $tsf));
+                    exit;
                 }
                 else response::client_error(400);
 
@@ -90,10 +90,10 @@
 
                         $id_session_sc = $_SESSION['SESSION_SC_ID'];
 
-                        $id_file = new token(8,"","",array("A-Z", "a-z", "0-9"));
+                        $id_file = new token(16,"","",array("A-Z", "a-z", "0-9"));
                         $id_file = $id_file->val();
 
-                        sqlc::ins_upload_data($id, $id_session_sc, $id_file);
+                        sqlc::ins_tsf_data("u", $id, $id_session_sc, $id_file);
                         sqlc::ins_file_data($id_file, $filename, $ref, $size, $id);
                         
                         response::successful(201);

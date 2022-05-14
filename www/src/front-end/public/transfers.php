@@ -42,11 +42,12 @@
                                     // RESUME
                                     $_SESSION['SESSION_STATUS_ACTIVE'] = 1;
                                     $_SESSION['SESSION_SC_ID'] = $session['id'];
+                                    $session_sc_id = $_SESSION['SESSION_SC_ID'];
                                     sqlc::upd_session($session_sc_id);
                                 }
                                 else
                                 {
-                                    // CREATE NEW SESSION
+                                    // CREATE
                                     create_session();
                                 }
                             }
@@ -84,13 +85,24 @@
     }
     else response::server_error(500);
 
+    function create_session()
+    {
+        $session_id = new token(16, "", "", array("0-9", "a-z"));
+        $session_id = $session_id->val();
+        $http_user_agent = $_SERVER['HTTP_USER_AGENT'];
+        $ip = $_SERVER['REMOTE_ADDR'];
+        $htkn = isset($_COOKIE['rm_tkn']) ? $_COOKIE['rm_tkn'] : null;
+        sqlc::add_session($session_id, $http_user_agent, $ip, $_SESSION['ID_USER'], $htkn); 
+        $_SESSION['SESSION_STATUS_ACTIVE'] = 1;
+        $_SESSION['SESSION_SC_ID'] = $session_id;
+    }
 
 ?>
 
 <!------ START BOOTSTRAP FORM ---------->
+<script src="//cdnjs.cloudflare.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
 <link href="//maxcdn.bootstrapcdn.com/bootstrap/4.1.1/css/bootstrap.min.css" rel="stylesheet" id="bootstrap-css">
 <script src="//maxcdn.bootstrapcdn.com/bootstrap/4.1.1/js/bootstrap.min.js"></script>
-<script src="//cdnjs.cloudflare.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
 <!------ END BOOTSTRAP FORM ---------->
 
 
@@ -110,20 +122,23 @@
 
         <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
             <div class="container-fluid">
-                <a class="navbar-brand" href="index.php"><?php echo $email; ?></a>
+                <a class="navbar-brand" href="index.php">Cloud Drive</a>
                 <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
                 <span class="navbar-toggler-icon"></span>
                 </button>
                 <div class="collapse navbar-collapse" id="navbarNav">
                     <ul class="navbar-nav">
                         <li class="nav-item">
-                            <a id="ID_LOGOUT" class="nav-link active" aria-current="page" href="../../back-end/class/out.php">Logout</a>
+                            <a class="nav-link active" aria-current="page" href="../../back-end/class/out.php">Logout</a>
                         </li>
                         <li class="nav-item">
                             <a class="nav-link active" aria-current="page" href="#" id="ID_UPLOAD">Upload file</a>
                         </li>
                         <li class="nav-item">
                             <a class="nav-link active" aria-current="page" href="session_history.php" id="ID_UPLOAD">Cronologia sessioni</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link active" aria-current="page" href="transfers.php" id="ID_UPLOAD">Transfers</a>
                         </li>
                         <li class="nav-item">
                             <input id="OTP_YN" type="checkbox">
@@ -133,25 +148,19 @@
             </div>
         </nav>
 
-        <br><br>
-
-        <table class="table table-dark" id="ID_SESSIONS">
+        <table style="display:none" class="table table-dark" id="ID_TSF_HEAD">
             <thead>
                 <tr>
-                    <th scope="col">ID</th>
-                    <th scope="col">IP Address</th>
-                    <th scope="col">Client</th>
-                    <th scope="col">OS</th>
-                    <th scope="col">Device</th>
-                    <th scope="col">Last activity</th>
-                    <th scope="col">Session status</th>
-                    <th scope="col">Edit</th>
+                    <th scope="col">Name</th>
+                    <th scope="col">Size</th>
+                    <th scope="col">Transfer date</th>
+                    <th scope="col">IP address</th>
+                    <th scope="col">Type</th>
                 </tr>
             </thead>
-            <tbody id="ID_TBL_BODY">
+            <tbody id="ID_TSF_BODY">
             </tbody>
         </table>
-
 
         <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-ka7Sk0Gln4gmtz2MlQnikT1wXgYsOg+OMhuP+IlRH9sENBO0LRn5q+8nbTov4+1p" crossorigin="anonymous"></script>
         <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
@@ -164,137 +173,41 @@
 
 <script type="module">
 
-    "use strict";
+    import cryptolib from '../class/cryptolib.js'
 
-    import Polling from "../class/polling.js";
-
-    var SESSION_SC_ID;
-    var getSessionStatus;
+    const AES = cryptolib['AES']
+    var aes = new AES("ciao123")
 
     $('document').ready(() => {
-        getSessionStatus = new Polling(sessionStatus, 5000);
-        getSessionStatus.Start();
-        syncSessions();
-    });
+        getTSFT();
+    })
 
-    const sessionStatus = () => {
+    const getTSFT = () => {
         $.ajax({
-            url: "../../back-end/class/sessions_handler.php",
-            data: {SESSION_ID:SESSION_SC_ID},
-            type: "GET",
-            success: (response) => {
-                console.info("session status "+response);
-                if (response == 0)
+            type: 'GET',
+            url: "../../back-end/class/client_resource_handler.php",
+            data: {TRANSFERS:true},
+            success: response => {
+                var tsf = response.TSF
+                for (let i = 0; i < tsf.length; i++)
                 {
-                    alert("Sessione terminata, clicca ok per continuare");
-                    window.location.href = "../../back-end/class/out.php"
+                    tsf[i].filename = 
+                        aes.decrypt(tsf[i].filename, true)
                 }
+                console.table(tsf)
             },
-            error: (xhr) => {
-                console.log(xhr);
+            error: xhr => {
+                console.log(xhr)
             }
         })
     }
 
-    const expireSession = (idRowBtn, idRowTxt, sessionID) => {
-        getSessionStatus.Stop();
-
-        if ($('#'+idRowTxt).html() === "Actual")
-        {
-            if (confirm("Stai per terminare la session attuale"))
-            {
-                window.location.href = "../../back-end/class/out.php"
-            }
-            else
-            {
-                getSessionStatus.Start();
-                return;
-            }
-        }
-
-        $.ajax({
-            url: "../../back-end/class/sessions_handler.php",
-            data: {SESSION_ID: sessionID},
-            type: "POST",
-            success: (response) => {
-                console.log(response);
-                const del = (idRowBtn, idRowTxt) => {$('#'+idRowBtn).children().remove();$('#'+idRowTxt).html("Expired");}
-                del(idRowBtn, idRowTxt);
-                getSessionStatus.Start();
-            },
-            error: (xhr) => {
-                console.log(xhr);
-            } 
-        })
-    }
-
-    const addSession = (idRow, sd) => {
-        var rowHTML = "";
-        sd.session_status = sd.session_status? sd.id === SESSION_SC_ID ? 'Actual' : 'Active': 'Expired';
-        rowHTML += "<tr>";
-            rowHTML += "<td>"+sd.id+"</td>";
-            rowHTML += "<td>"+sd.ip+"</td>";
-            rowHTML += "<td>"+sd.client+"</td>";
-            rowHTML += "<td>"+sd.os+"</td>";
-            rowHTML += "<td>"+sd.device+"</td>";
-            rowHTML += "<td>"+sd.last_time+"</td>";
-            rowHTML += "<td id='ROW_T_"+idRow+"'>"+sd.session_status+"</td>";
-            if (sd.session_status !== "Expired") {
-                rowHTML += "<td id='ROW_S_"+idRow+"'><button id='BTN_S_"+idRow+"'>close</button></td>";
-            }
-            else rowHTML += "<td></td>";
-        rowHTML += "</tr>";
-        document.getElementById("ID_TBL_BODY").innerHTML += rowHTML;
-    }
-
-    const syncSessions = () => {
-
-        $.ajax({
-            url: "../../back-end/class/sessions_handler.php",
-            data: {SESSIONS_DATA:true},
-            type: "GET",
-            success: (response) => {
-                console.log(response);
-                SESSION_SC_ID = "<?php echo $_SESSION['SESSION_SC_ID']; ?>";
-                for (let i=0; i<response.sessions.length; i++){
-                    addSession(i, response.sessions[i]);
-                }
-                for (let i=0; i<response.sessions.length; i++){
-                    $('#BTN_S_'+i).on('click', () => expireSession("ROW_S_"+i, "ROW_T_"+i, response.sessions[i].id))
-                }
-            },
-            error: (xhr) => {
-                console.log(xhr);
-            } 
-        });
+    const addTSF = () => {
+        
     }
 
 
-    
 </script>
 
-<style>
 
-    .FILE_CARDS {
 
-        border: 2px solid white;
-        border-radius: 25px;
-        width: 80%;
-        color: white;
-        margin-left: auto;
-        margin-right: auto;
-        text-align: center;
-    }
-
-    a, h1, h3 {
-
-        color: white;
-    }
-
-    input {
-        color: white;
-        border: 2px solid white;
-        outline: none;
-    }
-
-</style>

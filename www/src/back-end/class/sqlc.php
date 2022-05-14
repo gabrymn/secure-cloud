@@ -28,8 +28,7 @@
             "OAUTH2_INS" => "INSERT INTO `secure-cloud`.`users` (email, logged_with, 2FA, verified) VALUES (?, 'GOOGLE_OAUTH2')",
             "OAUTH2_SEL" => "SELECT * FROM `secure-cloud`.`users` WHERE email = ?",
             "DEL_USER_WITH_EMAIL" => "DELETE FROM `secure-cloud`.`users` WHERE email = ?",
-            "UPL_FILE" => "INSERT INTO `secure-cloud`.`uploads` (upload_datet, id_user, id_session, id_file) VALUES (NOW(), ?, ?, ?)",
-            "DWL_FILE" => "INSERT INTO `secure-cloud`.`downloads` (download_datet, id_user, id_session, id_file) VALUES (NOW(), ?, ?, ?)",
+            "TSF_FILE" => "INSERT INTO `secure-cloud`.`transfers` (tdate, `type`, id_user, id_session, id_file) VALUES (NOW(), ?, ?, ?, ?)",
             "SET_2FA" => "UPDATE `secure-cloud`.`users` SET 2FA = ? WHERE id = ?",
             "GET_2FA" => "SELECT 2FA FROM `secure-cloud`.`users` WHERE id = ?",
             "IS_VER" => "SELECT verified FROM `secure-cloud`.`users` WHERE id = ?",
@@ -47,8 +46,7 @@
             "INS_FILE_DATA" => "INSERT INTO `secure-cloud`.`files` (idf, fname, ref, size, mime, id_user) VALUES (?,?,?,?,'mimetype',?)",
             "SEL_FILEIDS" => "SELECT idf FROM `secure-cloud`.`files` WHERE id_user = ?",
             "SEL_FILE" => "SELECT * FROM `secure-cloud`.`files` WHERE idf = ?",
-            "DWL_TBL" => "SELECT f.fname AS filename, f.size AS filesize, d.download_datet AS download_date, s.ip AS ip_address FROM files f, downloads d, sessions s WHERE d.id_file = f.idf AND d.id_session = s.id AND d.id_user = ?",
-            "UPL_TBL" => "SELECT f.fname AS filename, f.size AS filesize, u.upload_datet AS upload_date, s.ip AS ip_address FROM files f, uploads u, sessions s WHERE u.id_file = f.idf AND u.id_session = s.id AND u.id_user = ?"
+            "TSF_TBL" => "SELECT f.fname AS filename, f.size AS filesize, t.tdate AS transfer_date, s.ip AS ip_address, t.type AS type FROM files f, transfers t, sessions s WHERE t.id_file = f.idf AND t.id_session = s.id AND t.id_user = ? GROUP BY t.id ORDER BY t.tdate"
         ];
 
         public static function connect($address = "localhost", $name = "USER_STD", $dbname = "secure-cloud")
@@ -104,25 +102,9 @@
             return self::$stmt->execute();
         }
 
-        public static function get_uploads_table($id_user)
+        public static function get_tsf_table($id_user)
         {
-            self::prep(self::QRY["UPL_TBL"]);
-            self::$stmt->bind_param("i", $id_user);
-            self::$stmt->execute();
-            $result = self::$stmt->get_result();
-            $row = true;
-            while ($row !== NULL)
-            {
-                $row = $result->fetch_assoc();
-                if ($row === NULL) continue;
-                $rows[] = $row;
-            }
-            return isset($rows) ? $rows : 0;
-        }
-
-        public static function get_downloads_table($id_user)
-        {
-            self::prep(self::QRY["DWL_TBL"]);
+            self::prep(self::QRY["TSF_TBL"]);
             self::$stmt->bind_param("i", $id_user);
             self::$stmt->execute();
             $result = self::$stmt->get_result();
@@ -274,17 +256,10 @@
             self::qry_exec($qry, false);
         }
 
-        public static function ins_upload_data($id_user, $id_session, $id_file)
+        public static function ins_tsf_data($type, $id_user, $id_session, $id_file)
         {
-            self::prep(self::QRY['UPL_FILE']);
-            self::$stmt->bind_param("iss", $id_user, $id_session, $id_file);
-            return self::$stmt->execute();
-        }
-
-        public static function ins_download_data($id_user, $id_session, $id_file)
-        {
-            self::prep(self::QRY['DWL_FILE']);
-            self::$stmt->bind_param("iss", $id_user, $id_session, $id_file);
+            self::prep(self::QRY['TSF_FILE']);
+            self::$stmt->bind_param("siss", $type, $id_user, $id_session, $id_file);
             return self::$stmt->execute();
         }
 

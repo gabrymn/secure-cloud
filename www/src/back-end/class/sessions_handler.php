@@ -9,11 +9,12 @@
         {
             case 'GET':
             {
-                if (isset($_GET['ID_USER']) && count($_GET) === 1)
+                if (isset($_GET['SESSIONS_DATA']) && count($_GET) === 1)
                 {
+                    session_start();
                     sqlc::connect();
-                    $id_user = $_GET['ID_USER'];
-                    $sessions = sqlc::sel_session_all(intval($_GET['ID_USER']));
+                    $id_user = $_SESSION['ID_USER'];
+                    $sessions = sqlc::sel_session_all(intval($id_user));
                     response::successful(200, false, array("sessions" => $sessions));
                     exit;
                 }
