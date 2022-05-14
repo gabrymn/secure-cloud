@@ -10,6 +10,8 @@
     {
         private static $conn = null;
         private static $stmt = null;
+        const USER_STD_KEY = "zqSxYvjck7e5ORpc9kg0";
+        const USER_ADMIN_KEY = "2YGBXYQ8y93dhguc728VXHbk2_h3g782iwkjapzsoj92njl";
 
         private const QRY =
         [
@@ -47,12 +49,21 @@
             "SEL_FILE" => "SELECT * FROM `secure-cloud`.`files` WHERE idf = ?",
             "DWL_TBL" => "SELECT f.fname AS filename, f.size AS filesize, d.download_datet AS download_date, s.ip AS ip_address FROM files f, downloads d, sessions s WHERE d.id_file = f.idf AND d.id_session = s.id AND d.id_user = ?",
             "UPL_TBL" => "SELECT f.fname AS filename, f.size AS filesize, u.upload_datet AS upload_date, s.ip AS ip_address FROM files f, uploads u, sessions s WHERE u.id_file = f.idf AND u.id_session = s.id AND u.id_user = ?"
-
         ];
 
-        public static function connect($address = "localhost", $name = "root", $password = "", $dbname = "secure-cloud")
+        public static function connect($address = "localhost", $name = "USER_STD", $dbname = "secure-cloud")
         {
-            self::$conn = new mysqli($address, $name, $password, $dbname);
+            if ($name !== "USER_STD" && $name !== "USER_ADMIN")
+            {
+                //self::$conn = new mysqli("localhost", "root", "", $dbname);
+                response::server_error(400, "Invalid credentials, connection failed");
+            }
+            else
+            {
+                $password = $name==="USER_ADMIN"?self::USER_ADMIN_KEY:self::USER_STD_KEY;
+                self::$conn = new mysqli($address, $name, $password, $dbname);
+            }
+
             if (self::$conn->connect_error)
             {
                 self::$conn = null;
@@ -60,43 +71,26 @@
             }
             else
             {
-                // Ogni x giorni le righe scadute dalle tabelle indicate devono essere eliminate
-                // per evitare di tenere in memoria dati inutili.
-                self::del_expired_rows();
+                //self::del_expired_rows();
+                // connection ok
                 return 1;
             }
-        }
-
-        public static function init_db(){
-            self::create_db();
-        }
-
-        public static function create_user_administrator($user, $host, $limits = array(0,0,0,0))
-        {
-            self::connect();
-            $qry = "CREATE USER '$user'@'$host' IDENTIFIED VIA mysql_native_password USING '***';GRANT ALL PRIVILEGES ON *.* TO '$user'@'$host' REQUIRE NONE WITH GRANT OPTION MAX_QUERIES_PER_HOUR $limits[0] MAX_CONNECTIONS_PER_HOUR $limits[1] MAX_UPDATES_PER_HOUR $limits[2] MAX_USER_CONNECTIONS $limits[3];";
-            $state = self::qry_exec($qry, false);
-            return $state;
-        }
-
-        public static function create_db($db_name='secure-cloud', $tables = array("env.sql", "remember.sql", "users.sql", "account_recovery.sql"))
-        {
-            self::connect("localhost", "root", "", "secure-cloud");
-            self::qry_exec("CREATE DATABASE IF NOT EXISTS $db_name", false);
-            foreach ($tables as $table)
-            {
-                $db = file_get_contents(DMN."/secure-cloud/www/src/back-end/db/{$table}");
-
-                $r = self::qry_exec($db, false);
-                if (!$r) response::server_error();
-            }
-            return 1;
         }
 
         private static function prep($qry)
         {
             self::$stmt = null;
             self::$stmt = self::$conn->prepare($qry);
+        }
+
+        public static function TEST_CONNECTION($account = "USER_STD")
+        {
+            self::connect("localhost", $account);
+            $state = self::qry_exec("SELECT * FROM `secure-cloud`.`users`", true);
+            echo "<pre>";
+                print_r($state);
+            echo "</pre>";
+            exit;
         }
 
         private static function get_REM_INS_query(int $time){
