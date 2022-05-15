@@ -189,7 +189,6 @@
         sync2FAstate();
         syncData();
         showFiles();
-        getTranserTables();
     })
 
     const rd = (min, max) => Math.random() * (max - min) + min
@@ -221,20 +220,6 @@
                 console.log(xhr);
             }
         });
-    }
-
-    const getTranserTables = () => {
-        $.ajax({
-            type: 'GET',
-            url: "../../back-end/class/client_resource_handler.php",
-            data: {TRANSFERS:true},
-            success: response => {
-                console.log(response)
-            },
-            error: xhr => {
-                console.log(xhr)
-            }
-        })
     }
 
     const setLoading = state => $("#C_LOADING").css("display", state)        

@@ -148,11 +148,11 @@
             </div>
         </nav>
 
-        <table style="display:none" class="table table-dark" id="ID_TSF_HEAD">
+        <br><br>
+        <table class="table table-dark" id="ID_TSF_HEAD">
             <thead>
                 <tr>
                     <th scope="col">Name</th>
-                    <th scope="col">Size</th>
                     <th scope="col">Transfer date</th>
                     <th scope="col">IP address</th>
                     <th scope="col">Type</th>
@@ -188,11 +188,15 @@
             url: "../../back-end/class/client_resource_handler.php",
             data: {TRANSFERS:true},
             success: response => {
+                console.log(response)
                 var tsf = response.TSF
                 for (let i = 0; i < tsf.length; i++)
                 {
+                    tsf[i].filename = tsf[i].filename.replaceAll("_", "/")
                     tsf[i].filename = 
                         aes.decrypt(tsf[i].filename, true)
+
+                    addTsf(tsf[i])
                 }
                 console.table(tsf)
             },
@@ -202,8 +206,19 @@
         })
     }
 
-    const addTSF = () => {
-        
+    const addTsf = (td) => {
+        var rowHTML = "";
+        td.type = td.type === "u" ? "upload" : "download"
+        rowHTML += "<tr>";
+            rowHTML += "<td>"+td.filename+"</td>";
+            rowHTML += "<td>"+td.transfer_date+"</td>";
+            rowHTML += "<td>"+td.ip_address+"</td>";
+            rowHTML += "<td>"+td.type+"</td>";
+            //rowHTML += "<td>"+td.ip+"</td>";
+            //rowHTML += "<td>"+td.client+"</td>";
+            //rowHTML += "<td id='ROW_T_"+idRow+"'>"+sd.session_status+"</td>";
+        rowHTML += "</tr>";
+        document.getElementById("ID_TSF_BODY").innerHTML += rowHTML;
     }
 
 
