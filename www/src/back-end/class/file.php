@@ -9,9 +9,9 @@
         private $extension;      // extension
         private $filename;       // = name.extension
         private $filedir;
-
+        
         public function __construct(string $filename, string $filedir, string $path, string $size, string $tmp) {
-
+            
             $this->filedir = $filedir;
             $this->tmp = $tmp;
             $this->size = $size;

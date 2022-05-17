@@ -5,6 +5,7 @@
     require_once __BACKEND__ . 'class/system.php';
     require_once __BACKEND__ . 'class/sqlc.php';
     require_once __BACKEND__ . 'class/response.php';
+    require_once __BACKEND__ . 'class/email.php';
     
     $error = "";
 
@@ -18,45 +19,45 @@
                     
                     $email = $_POST['EMAIL'];
 
-                    if (!filter_var($email, FILTER_VALIDATE_EMAIL)){
-                        
+                    if (!filter_var($email, FILTER_VALIDATE_EMAIL))
+                    {
                         unset($_POST['EMAIL']);
                         unset($email);
                         response::print(400, $error, "Illegal email format.");
+                    }
+                    else
+                    {                    
 
-                    }else{                    
+                        $pass = $_POST['PASS1'];
+                        sqlc::connect();
 
-                        if ($_POST['PASS1'] !== $_POST['PASS2']){
-                            response::print(400, $error, "Passwords doesn't match.");
+                        if (sqlc::get_id_user($email) > 0){
+                            response::print(400, $error, "Email already taken.");
                         }else{
-                            $pass = $_POST['PASS1'];
-                            sqlc::connect();
 
-                            if (sqlc::get_id_user($email) > 0){
-                                response::print(400, $error, "Email already taken.");
-                            }else{
+                            //$state = email_is_real($email);
 
-                                if (false)
+                            if (false)
+                            {
+                                // IF EMAIL ISN'T REAL
+                                response::print(400, $error, "Email does not exists");
+                            }
+                            else 
+                            {
+                                sqlc::insert_cred($email, password_hash($pass, PASSWORD_BCRYPT));
+                                if (!system::mk_dir($email, __BACKEND__))
                                 {
-                                    // IF EMAIL ISN'T REAL
-                                    response::print(400, $error, "Email does not exists");
+                                    sqlc::del_user_with_email($email);
+                                    response::print(500, $error, "Internal server error, try again.");
                                 }
-                                else 
-                                {
-                                    sqlc::insert_cred($email, password_hash($pass, PASSWORD_BCRYPT));
-                                    if (!system::mk_dir($email, __BACKEND__)){
-                                        sqlc::del_user_with_email($email);
-                                        response::print(500, $error, "Internal server error, try again.");
-                                    }
-                                    unset($_POST['EMAIL']);
-                                    unset($_POST['PASS1']);
-                                    unset($_POST['PASS2']); 
+                                unset($_POST['EMAIL']);
+                                unset($_POST['PASS1']);
+                                unset($_POST['PASS2']); 
 
-                                    session_start();
-                                    $_SESSION['VERIFING_EMAIL'] = 1;
-                                    system::verify($_REQUEST['EMAIL'], 1);
-                                    exit;
-                                }
+                                session_start();
+                                $_SESSION['VERIFING_EMAIL'] = 1;
+                                system::verify($_REQUEST['EMAIL'], 1);
+                                exit;
                             }
                         }
                     }
@@ -82,9 +83,9 @@
 
 
 <!------ START BOOTSTRAP FORM ---------->
+<script src="//cdnjs.cloudflare.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
 <link href="//maxcdn.bootstrapcdn.com/bootstrap/4.1.1/css/bootstrap.min.css" rel="stylesheet" id="bootstrap-css">
 <script src="//maxcdn.bootstrapcdn.com/bootstrap/4.1.1/js/bootstrap.min.js"></script>
-<script src="//cdnjs.cloudflare.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
 <!------ END BOOTSTRAP FORM ---------->
 
 <!doctype html>
@@ -130,10 +131,11 @@
                             echo '<div class="alert alert-danger" onclick="this.remove()" role="alert">'.$error.'</div>';
                         unset($error);    
                     ?>
+                    <div id="ERROR_PDM" style="display:none" class="alert alert-danger" onclick="this.style.display='none'" role="alert">Password does not match</div>
                     <div class="card">
                         <div class="card-header">Sign up</div>
                         <div class="card-body">
-                            <form action="<?php $_SERVER['PHP_SELF']; ?>" method="POST">
+                            <form id="ID_REG_FORM" action="<?php $_SERVER['PHP_SELF']; ?>" method="POST">
                                 <div class="form-group row">
                                     <label for="email_address" class="col-md-4 col-form-label text-md-right">E-Mail Address</label>
                                     <div class="col-md-6">
@@ -174,4 +176,16 @@
 </html>
 
 
+<script>
+
+    $('#ID_REG_FORM').on('submit', () => {
+        if ($('#PASS_1').val() !== $('#PASS_2').val())
+        {
+            $('#ERROR_PDM').css("display", "block")
+            return false
+        }
+    })
+
+
+</script>
 

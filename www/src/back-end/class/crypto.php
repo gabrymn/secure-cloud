@@ -1,6 +1,6 @@
 <?php
 
-class AES {
+    class AES {
 
         private const CIPHER = "aes-256-cbc";
         private const IV = "1234567891234567";
