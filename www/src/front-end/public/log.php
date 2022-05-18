@@ -253,7 +253,7 @@
             }
         ?>
 
-        <div id="ID_COOKIE_BOX" class="row" style="display:none">
+        <div id="ID_COOKIE_BOX" class="row" style="display:none;">
             <div class="col-md-4 col-sm-12 button-fixed">
             <div class="p-3 pb-4 bg-custom text-white">
             <div class="row">
@@ -293,11 +293,6 @@
 
         $('#ID_COOKIE_A').on('click', () => {
             Cookie.Set("allow__", "true", 1)
-            $('#ID_COOKIE_BOX').css("display", "none")
-        })
-
-        $('#ID_COOKIE_BOX').on('click', () => {
-            Cookie.Set("allow__", "false", 1)
             $('#ID_COOKIE_BOX').css("display", "none")
         })
 

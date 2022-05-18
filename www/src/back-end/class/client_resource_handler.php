@@ -35,7 +35,7 @@
                             $d = sqlc::sel_file($_GET['ID']);
                             sqlc::ins_tsf_data("d", $_SESSION['ID_USER'], $_SESSION['SESSION_SC_ID'], $_GET['ID']);
                             $ctx = file_get_contents($d['ref']);
-                            response::successful(200, false, array("ctx" => $ctx, "name" => $d['fname']));
+                            response::successful(200, false, array("ctx" => $ctx, "name" => $d['nam']));
                             break;
                         }
                     }
@@ -97,7 +97,7 @@
                         sqlc::ins_tsf_data("u", $id, $id_session_sc, $id_file);
                         sqlc::ins_file_data($id_file, $filename, $ref, $size, $id, $mime);
                         
-                        response::successful(201);
+                        response::successful(201, false, array("id" => $id_file));
                         exit;
                     }
                     else

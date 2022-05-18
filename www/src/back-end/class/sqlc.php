@@ -45,7 +45,7 @@
             "SEL_SESS_STATUS" => "SELECT session_status FROM `secure-cloud`.`sessions` WHERE id = ?",
             "INS_FILE_DATA" => "INSERT INTO `secure-cloud`.`files` (idf, fname, ref, size, id_user, mime) VALUES (?,?,?,?,?,?)",
             "SEL_FILEIDS" => "SELECT idf FROM `secure-cloud`.`files` WHERE id_user = ?",
-            "SEL_FILE" => "SELECT f.fname AS nam, f.size AS siz, f.mime AS mme, t.tdate AS dat FROM `secure-cloud`.`files` f, `secure-cloud`.`transfers` t WHERE f.idf = t.id_file AND f.idf = ?",
+            "SEL_FILE" => "SELECT f.ref AS ref, f.fname AS nam, f.size AS siz, f.mime AS mme, t.tdate AS dat FROM `secure-cloud`.`files` f, `secure-cloud`.`transfers` t WHERE f.idf = t.id_file AND f.idf = ?",
             "TSF_TBL" => "SELECT f.fname AS filename, f.size AS filesize, t.tdate AS transfer_date, s.ip AS ip_address, t.type AS type FROM files f, transfers t, sessions s WHERE t.id_file = f.idf AND t.id_session = s.id AND t.id_user = ? GROUP BY t.id ORDER BY t.tdate DESC"
         ];
 

@@ -105,7 +105,6 @@
 <script src="//maxcdn.bootstrapcdn.com/bootstrap/4.1.1/js/bootstrap.min.js"></script>
 <!------ END BOOTSTRAP FORM ---------->
 
-
 <!DOCTYPE html>
 <html lang="en">
     <head>
@@ -116,6 +115,7 @@
         <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" integrity="sha384-1BmE4kWBq78iYhFldvKuhfTAU6auU8tT94WrHftjDbrCEXSU1oBoqyl2QvZ6jIW3" crossorigin="anonymous">
         <link rel="stylesheet" href="../css/shared.css">
         <link rel="stylesheet" href="../css/login.css">
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
         <link href="../img/icon.svg" rel="icon" type="image/x-icon" >
     </head>
     <body>
@@ -148,17 +148,39 @@
             </div>
         </nav>
 
-        <br><br>
-        <div id="C_LOADING" style="display:none;margin-left:auto;margin-right:auto" class="lds-dual-ring"></div>
-
-        <div class="container">
-            <div class="row">
-                <br><br><div id="C_FILES" class="FILE_CARDS" style="display:none"></div>
+        <div class="modal fade" id="exampleModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+            <div class="modal-dialog" role="document">
+            <div class="modal-content">
+            <div class="modal-header">
+            <h3 class="modal-title" id="ID_MODAL_TITLE">Filename</h3>
+            <button id="ID_MODAL_CLOSE" type="button" class="close" data-dismiss="modal" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+            </button>
+            </div>
+            <div class="modal-body" id="ID_MODAL_BODY">
+            </div>
+            <div class="modal-footer">
+            <button type="button" class="btn btn-primary" id="ID_MODAL_DOWNLOAD">Download</button>
+            <button type="button" class="btn btn-danger">Delete</button>
+            </div>
+            </div>
             </div>
         </div>
-        <br>
+
+        <br><br><br>
+
+        <div id="C_LOADING" style="display:none;margin-left:auto;margin-right:auto" class="lds-dual-ring"></div>
+
+        <h1 id="ID_NFS" class="nfs" style="display:none">Nessun file trovato<h1>
+
+        <div id="CONT_FILES" class="container" style="display:none">
+            <div id="C_FILES" class="row">
+            </div>
+        </div>
 
         <input type="file" id="ID_FILE_UPLOADER" style="display:none" multiple>
+
+        <br><br><br><br><br>
 
         <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-ka7Sk0Gln4gmtz2MlQnikT1wXgYsOg+OMhuP+IlRH9sENBO0LRn5q+8nbTov4+1p" crossorigin="anonymous"></script>
         <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
@@ -174,47 +196,71 @@
     import CLIENT_FILE from '../class/clientfile.js'
     import cryptolib from '../class/cryptolib.js'
     import FILE_URL from '../class/blob.js'
+    import getIcon from '../class/icon.js'
     
     const AES = cryptolib['AES']
     const k = "ciao123"
     var ids = [];
     var ids_nms = [];
+    var ids_data = [];
     var n_uploads = 0;
 
-    const sleep = (ms) => new Promise(resolve => setTimeout(resolve, ms));
+    const sleep = ms => new Promise(resolve => setTimeout(resolve, ms));
 
-    $('document').ready(() => {
+    $('document').ready(async () => {
         setLoading("block");
         checkKey();
         sync2FAstate();
         syncData();
-        showFiles();
     })
 
     const rd = (min, max) => Math.random() * (max - min) + min
 
-    const showFiles = () => {
-        sleep(rd(200,700)).then(() => {
-            ids.forEach((id) => {
-                $('#'+id).on('click', () => getCTX(id.replace("id_file_", "")))  
-            })
+    const showFiles = (ms) => {
+
+        sleep(ms).then(() => {
+            $('#ID_NFS').css("display","none")
+            for (var key in ids_data)
+            {
+                $("#id_file_"+key).on('click', (e) => {
+                    const id = e.target.id.replaceAll("id_file_", "")
+                    var data = JSON.parse(ids_data[id])
+                    console.log(data)
+                    $('#ID_MODAL_TITLE').html(data.name)
+                    $('#ID_MODAL_BODY').html("<strong>Type</strong>: "+data.mime+"<br><strong>Size</strong>: "+data.size+ " byte<br><strong>Upload date</strong>: "+data.upl)
+                    $('#ID_MODAL_DOWNLOAD').prop("onclick",null).off("click");
+                    $('#ID_MODAL_DOWNLOAD').on('click', () => getCTX(id))
+                })
+            }
+
             setLoading("none");
-            $("#C_FILES").css("display", "block")
+            $("#CONT_FILES").css("display", "block")
         })
     }
 
     const syncData = () => {
-        $.ajax({
+        return $.ajax({
             type: 'GET',
             url: "../../back-end/class/client_resource_handler.php",
             data: {REFS:true},
             success: (response) => {
-                if (response.file_ids.length === 0) return;
-                const ids = response.file_ids;
-                var aes = new AES(k);
-                response.file_ids.forEach((id) => {
-                    getFilePreview(id, aes)
-                });
+                if (response.file_ids.length > 0) 
+                {
+                    var aes = new AES(k);
+                    response.file_ids.forEach((id) => {
+                        getFilePreview(id, aes)
+                    });
+                    
+                    var ms = response.file_ids.length < 10 ? 200 : 900;
+                    return new Promise(resolve => showFiles(ms));
+                }
+                else 
+                {
+                    sleep(200).then(() => {
+                        setLoading("none");
+                        $('#ID_NFS').css("display","block")
+                    })
+                }
             },
             error: (xhr) => {
                 console.log(xhr);
@@ -224,37 +270,44 @@
 
     const setLoading = state => $("#C_LOADING").css("display", state)        
 
-    const visualF = (fname, x, ttype) => {
+    const visualF = (fname, x, ttype, filedata = false) => {
         var aline = ""
         if (ttype === 'id')
-            aline = `<a id=${x} class='btn btn-info' role='button'>&#9679;&#9679;&#9679;</a>`;
+            aline = `<a id=${x} class='btn btn-info' role='button' data-toggle="modal" data-target="#exampleModal">&#9679;&#9679;&#9679;</a>`;
         else if (ttype === 'href')
-            aline = `<a href='${x}' class='btn btn-info' role='button' download='${fname}' style='color:white'>&#9679;&#9679;&#9679;</a>`
+            aline = `<a href='${x}' class='btn btn-info' role='button' download='${fname}' style='color:white' data-toggle="modal" data-target="#exampleModal">&#9679;&#9679;&#9679;</a>`
 
-        return ( `
-            <div class="col-md-9 animated fadeInRight">
-                <div class="row">
-                    <div class="file-box">
-                        <a href="#">
-                            <div class="file">
-                                <span class="corner"></span>
-                                <div class="icon">
-                                    <i class="fa fa-bar-chart-o"></i>
-                                </div>
-                                <div class="file-name">
-                                ${fname}
-                                <br>
-                                ${aline}
-                                </div>
-                            </div>
-                        </a>
+        const arrayName = fname.split(".")
+        var ext = arrayName[arrayName.length-1]
+
+        if (fname.length > 18)
+        {    
+            var t = "";
+            if (ext.length > 10) ext = "" 
+            for (let i=0; i<10 - ext.length; i++)
+                t += fname[i]
+            t += " [...] "
+            t += "."+ext
+            fname = t
+        }
+        
+        const iconFile = getIcon(ext)
+
+        return (`
+            <div class="col-6 cardmy">
+                <div class="card bg-light">
+                    <div class="card-body">
+                        <br><center><h1 class="${iconFile}" style="font-size:48px;"></h1></center><br>
+                        <center><h5 class="card-title" style="font-size:1rem">${fname}</h5></center><br>
+                        <center>${aline}</center>
                     </div>
                 </div>
-            </div>`
-        );
+            </div>
+        `)
     }
 
     const getCTX = id => {
+        console.log(id)
         $.ajax({
             type: 'GET',
             url: "../../back-end/class/client_resource_handler.php",
@@ -264,7 +317,7 @@
                 document.body.appendChild(a);
                 a.style = "display:none";
                 var aes = new AES(k);
-                var [fn, url, blob] = GET_FILE_EXE(response.name, response.ctx, aes);
+                var [url, blob] = GET_FILE_EXE(response.ctx, aes);
                 a.href = url;
                 a.download = JSON.parse(ids_nms[id]).name;
                 a.click();
@@ -282,10 +335,9 @@
             url: "../../back-end/class/client_resource_handler.php",
             data: {ACTION:'PREVIEW',ID:id},
             success: (response) => {
-
                 var name = response.name.replaceAll("_", "/")
                 var mime = aes.decrypt(response.mme, true)
-                name = aes.decrypt(response.name, true)
+                name = aes.decrypt(name, true)
 
                 var filedata = {
                     name: name,
@@ -293,11 +345,14 @@
                     size: response.size,
                     upl: response.upldate
                 }
-                
-                var a = visualF(name, "id_file_"+id, "id")
-                ids.push("id_file_"+id)
+
+                ids_data[id] = JSON.stringify(filedata)
+
+                var a = visualF(name, "id_file_"+id, "id", filedata)
+                ids.push(id)
+
                 ids_nms[id] = JSON.stringify({name:name});
-                document.getElementById("C_FILES").innerHTML += '<br><br>'+a+'<br><br>'
+                document.getElementById("C_FILES").innerHTML += a
             },
             error: (xhr) => {
                 console.log(xhr);
@@ -323,46 +378,38 @@
                     var aes = new AES(k);
                     const hash = cryptolib['HASH'].SHA256;
                     const [NAM, CTX, IMP, SIZ, MME] = fobj.ENCRYPT(aes, hash);
-                    var [fn, url, blob] = GET_FILE_EXE(NAM, CTX, aes);
-                    var a = visualF(file.name, url, "href")
-                    document.getElementById("C_FILES").innerHTML += '<br><br>'+a+'<br><br>'
                     $.ajax({
                         type: 'POST',
                         url: "../../back-end/class/client_resource_handler.php",
                         data: {NAM: NAM, CTX: CTX, IMP: IMP, SIZ: SIZ, MME: MME},
                         success: (response) => {
-                            console.log(response);
-                            n_uploads++;
-                            console.log(n_uploads)
-                            sleep(100).then(() => {
-                                if (n_uploads === 10) 
-                                    location.reload();
-                            })
-                            
-                            $("#ID_FILE_UPLOADER").val("");
+                            console.log(response)
                         },
                         error: (xhr) => {
                             console.log(xhr);
                         }
                     });
                 })
-                .catch((error) => {
-                    alert("Errore nel caricamento del file")
-                })
         })
+
+        $("#CONT_FILES").css('display','none')
+        setLoading("block");
+        $("#ID_FILE_UPLOADER").val("");
+
+        sleep(300).then(() => {
+            document.getElementById("C_FILES").innerHTML = ""
+            syncData();
+        })
+
     });
 
-    const GET_FILE_EXE = (NAM, CTX, aes) => {
-        NAM = aes.decrypt(NAM, true);
+    const GET_FILE_EXE = (CTX, aes) => {
         CTX = aes.decrypt(CTX, true);
         var BLOB = FILE_URL.B64_2_BLOB(CTX);
         var BLOB_URL =  FILE_URL.GET_BLOB_URL(BLOB);
-        return [NAM, BLOB_URL, BLOB]
+        return [BLOB_URL, BLOB]
     }
 
-    const createVisualObj = async (blob_url, filename) => {
-        document.getElementById("C_FILES").innerHTML += '<br><br><a href='+blob_url+' download='+filename+'>'+filename+'</a><br><br>';
-    }
 
     $('#OTP_YN').on('change', () => {
         const otp = $('#OTP_YN').prop('checked')? 1 : 0;
@@ -402,228 +449,60 @@
 
 <style>
 
-    .FILE_CARDS {
-        border: 2px solid white;
-        border-radius: 25px;
-        width: 80%;
-        color: white;
-        margin-left: auto;
-        margin-right: auto;
-        text-align: center;
-    }
- 
-
     input {
         color: white;
         border: 2px solid white;
         outline: none;
     }
 
+    #CONT_FILES {
+        width: 90%;
+        margin-left: auto;
+        margin-right: auto;
+        border-radius: 25px;
+        padding-top: 50px;
+        padding-bottom: 50px;
+        box-shadow: rgba(49,210,242,.5) 0px 7px 29px 0px;
+    }
 
-    .file-box {
-        float: left;
-        width: 220px;
+    .cardmy {
+        margin: 20px;
+        width: 200px;
     }
-    .file-manager h5 {
-    text-transform: uppercase;
-    }
-    .file-manager {
-    list-style: none outside none;
-    margin: 0;
-    padding: 0;
-    }
-    .folder-list li a {
-    color: #666666;
-    display: block;
-    padding: 5px 0;
-    }
-    .folder-list li {
-    border-bottom: 1px solid #e7eaec;
-    display: block;
-    }
-    .folder-list li i {
-    margin-right: 8px;
-    color: #3d4d5d;
-    }
-    .category-list li a {
-    color: #666666;
-    display: block;
-    padding: 5px 0;
-    }
-    .category-list li {
-    display: block;
-    }
-    .category-list li i {
-    margin-right: 8px;
-    color: #3d4d5d;
-    }
-    .category-list li a .text-navy {
-    color: #1ab394;
-    }
-    .category-list li a .text-primary {
-    color: #1c84c6;
-    }
-    .category-list li a .text-info {
-    color: #23c6c8;
-    }
-    .category-list li a .text-danger {
-    color: #EF5352;
-    }
-    .category-list li a .text-warning {
-    color: #F8AC59;
-    }
-    .file-manager h5.tag-title {
-    margin-top: 20px;
-    }
-    .tag-list li {
-    float: left;
-    }
-    .tag-list li a {
-    font-size: 10px;
-    background-color: #f3f3f4;
-    padding: 5px 12px;
-    color: inherit;
-    border-radius: 2px;
-    border: 1px solid #e7eaec;
-    margin-right: 5px;
-    margin-top: 5px;
-    display: block;
-    }
-    .file {
-    border: 1px solid #e7eaec;
-    padding: 0;
-    background-color: #ffffff;
-    position: relative;
-    margin-bottom: 20px;
-    margin-right: 20px;
-    }
-    .file-manager .hr-line-dashed {
-    margin: 15px 0;
-    }
-    .file .icon,
-    .file .image {
-    height: 100px;
-    overflow: hidden;
-    }
-    .file .icon {
-    padding: 15px 10px;
-    text-align: center;
-    }
-    .file-control {
-    color: inherit;
-    font-size: 11px;
-    margin-right: 10px;
-    }
-    .file-control.active {
-    text-decoration: underline;
-    }
-    .file .icon i {
-    font-size: 70px;
-    color: #dadada;
-    }
-    .file .file-name {
-    padding: 10px;
-    background-color: #f8f8f8;
-    border-top: 1px solid #e7eaec;
-    }
-    .file-name small {
-    color: #676a6c;
-    }
-    ul.tag-list li {
-    list-style: none;
-    }
-    .corner {
-    position: absolute;
-    display: inline-block;
-    width: 0;
-    height: 0;
-    line-height: 0;
-    border: 0.6em solid transparent;
-    border-right: 0.6em solid #f1f1f1;
-    border-bottom: 0.6em solid #f1f1f1;
-    right: 0em;
-    bottom: 0em;
-    }
-    a.compose-mail {
-    padding: 8px 10px;
-    }
-    .mail-search {
-    max-width: 300px;
-    }
-    .ibox {
-    clear: both;
-    margin-bottom: 25px;
-    margin-top: 0;
-    padding: 0;
-    }
-    .ibox.collapsed .ibox-content {
-    display: none;
-    }
-    .ibox.collapsed .fa.fa-chevron-up:before {
-    content: "\f078";
-    }
-    .ibox.collapsed .fa.fa-chevron-down:before {
-    content: "\f077";
-    }
-    .ibox:after,
-    .ibox:before {
-    display: table;
-    }
-    .ibox-title {
-    -moz-border-bottom-colors: none;
-    -moz-border-left-colors: none;
-    -moz-border-right-colors: none;
-    -moz-border-top-colors: none;
-    background-color: #ffffff;
-    border-color: #e7eaec;
-    border-image: none;
-    border-style: solid solid none;
-    border-width: 3px 0 0;
-    color: inherit;
-    margin-bottom: 0;
-    padding: 14px 15px 7px;
-    min-height: 48px;
-    }
-    .ibox-content {
-    background-color: #ffffff;
-    color: inherit;
-    padding: 15px 20px 20px 20px;
-    border-color: #e7eaec;
-    border-image: none;
-    border-style: solid solid none;
-    border-width: 1px 0;
-    }
-    .ibox-footer {
-    color: inherit;
-    border-top: 1px solid #e7eaec;
-    font-size: 90%;
-    background: #ffffff;
-    padding: 10px 15px;
+
+    .nfs {
+
+        color: white;
+        font-size: 4rem;
+        font-weight: 100;
+        text-align: center;
     }
 
     .lds-dual-ring {
-    display: inline-block;
-    width: 80px;
-    height: 80px;
+        display: inline-block;
+        width: 80px;
+        height: 80px;
     }
+
     .lds-dual-ring:after {
-    content: " ";
-    display: block;
-    width: 64px;
-    height: 64px;
-    margin: 8px;
-    border-radius: 50%;
-    border: 6px solid #fff;
-    border-color: #fff transparent #fff transparent;
-    animation: lds-dual-ring 1.2s linear infinite;
+        content: " ";
+        display: block;
+        width: 64px;
+        height: 64px;
+        margin: 8px;
+        border-radius: 50%;
+        border: 6px solid #fff;
+        border-color: #fff transparent #fff transparent;
+        animation: lds-dual-ring 1.2s linear infinite;
     }
+
     @keyframes lds-dual-ring {
-    0% {
-    transform: rotate(0deg);
-    }
-    100% {
-    transform: rotate(360deg);
-    }
+        0% {
+            transform: rotate(0deg);
+        }
+        100% {
+            transform: rotate(360deg);
+        }
     }
 
 

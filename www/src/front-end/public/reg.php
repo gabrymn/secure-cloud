@@ -214,11 +214,5 @@
         $('#ID_COOKIE_BOX').css("display", "none")
     })
 
-    $('#ID_COOKIE_BOX').on('click', () => {
-        Cookie.Set("allow__", "false", 2)
-        $('#ID_COOKIE_BOX').css("display", "none")
-    })
-
-
 </script>
 
