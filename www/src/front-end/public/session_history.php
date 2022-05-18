@@ -135,10 +135,9 @@
 
         <br><br>
 
-        <table class="table table-dark" id="ID_SESSIONS">
+        <table class="table table-dark tbls" id="ID_SESSIONS">
             <thead>
-                <tr>
-                    <th scope="col">ID</th>
+                <tr class="chd">
                     <th scope="col">IP Address</th>
                     <th scope="col">Client</th>
                     <th scope="col">OS</th>
@@ -232,7 +231,6 @@
         var rowHTML = "";
         sd.session_status = sd.session_status? sd.id === SESSION_SC_ID ? 'Actual' : 'Active': 'Expired';
         rowHTML += "<tr>";
-            rowHTML += "<td>"+sd.id+"</td>";
             rowHTML += "<td>"+sd.ip+"</td>";
             rowHTML += "<td>"+sd.client+"</td>";
             rowHTML += "<td>"+sd.os+"</td>";
@@ -295,6 +293,18 @@
         color: white;
         border: 2px solid white;
         outline: none;
+    }
+
+    .tbls {
+
+        margin-left: auto;
+        margin-right: auto;
+        width: 80%;
+    }
+
+    .chd {
+
+        color: #30D2F2;
     }
 
 </style>

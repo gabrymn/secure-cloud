@@ -43,10 +43,10 @@
             "EXP_SESS" => "UPDATE `secure-cloud`.`sessions` SET session_status = 0 WHERE id = ?",
             "SEL_SESS_ALL" => "SELECT * FROM `secure-cloud`.`sessions` WHERE id_user = ? ORDER BY session_status DESC, last_time DESC",
             "SEL_SESS_STATUS" => "SELECT session_status FROM `secure-cloud`.`sessions` WHERE id = ?",
-            "INS_FILE_DATA" => "INSERT INTO `secure-cloud`.`files` (idf, fname, ref, size, mime, id_user) VALUES (?,?,?,?,'mimetype',?)",
+            "INS_FILE_DATA" => "INSERT INTO `secure-cloud`.`files` (idf, fname, ref, size, id_user, mime) VALUES (?,?,?,?,?,?)",
             "SEL_FILEIDS" => "SELECT idf FROM `secure-cloud`.`files` WHERE id_user = ?",
-            "SEL_FILE" => "SELECT * FROM `secure-cloud`.`files` WHERE idf = ?",
-            "TSF_TBL" => "SELECT f.fname AS filename, f.size AS filesize, t.tdate AS transfer_date, s.ip AS ip_address, t.type AS type FROM files f, transfers t, sessions s WHERE t.id_file = f.idf AND t.id_session = s.id AND t.id_user = ? GROUP BY t.id ORDER BY t.tdate"
+            "SEL_FILE" => "SELECT f.fname AS nam, f.size AS siz, f.mime AS mme, t.tdate AS dat FROM `secure-cloud`.`files` f, `secure-cloud`.`transfers` t WHERE f.idf = t.id_file AND f.idf = ?",
+            "TSF_TBL" => "SELECT f.fname AS filename, f.size AS filesize, t.tdate AS transfer_date, s.ip AS ip_address, t.type AS type FROM files f, transfers t, sessions s WHERE t.id_file = f.idf AND t.id_session = s.id AND t.id_user = ? GROUP BY t.id ORDER BY t.tdate DESC"
         ];
 
         public static function connect($address = "localhost", $name = "USER_STD", $dbname = "secure-cloud")
@@ -142,7 +142,7 @@
             }
             return isset($rows) ? $rows : 0;
         }
-
+        
         public static function sel_file($id_file)
         {
             self::prep(self::QRY["SEL_FILE"]);
@@ -263,10 +263,10 @@
             return self::$stmt->execute();
         }
 
-        public static function ins_file_data($id_file, $fname, $ref, $size, $id_user)
+        public static function ins_file_data($id_file, $fname, $ref, $size, $id_user, $mime)
         {
             self::prep(self::QRY['INS_FILE_DATA']);
-            self::$stmt->bind_param("sssii", $id_file, $fname, $ref, $size, $id_user);
+            self::$stmt->bind_param("sssiis", $id_file, $fname, $ref, $size, $id_user, $mime);
             return self::$stmt->execute();
         }
 

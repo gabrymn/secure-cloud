@@ -1,20 +1,4 @@
 
-/*
-    <body>
-        <script src="https://cdnjs.cloudflare.com/ajax/libs/crypto-js/3.1.2/rollups/aes.js"></script>
-    </body>
-
-    <script type="module">
-        import cryptolib from "crypto.js";
-        const aes = new cryptolib['AES']("mykey");
-        console.log(aes.decrypt(aes.encrypt("plaintext")));
-
-    </script>
-
-    const AES = cryptolib['AES'];
-
-*/
-
 var cryptolib = [];
 
 cryptolib['AES'] = class AES {

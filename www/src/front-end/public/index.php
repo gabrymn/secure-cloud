@@ -69,6 +69,7 @@
         <link href="../img/icon.svg" rel="icon" type="image/x-icon" >
         <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-1BmE4kWBq78iYhFldvKuhfTAU6auU8tT94WrHftjDbrCEXSU1oBoqyl2QvZ6jIW3" crossorigin="anonymous">
         <link href="../css/shared.css" rel="stylesheet">
+        <link href="../css/cookie.css" rel="stylesheet">
     </head>
     <body>
         <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
@@ -80,9 +81,6 @@
             <div class="collapse navbar-collapse" id="navbarNav">
             <ul class="navbar-nav">
                 <li class="nav-item">
-                <a class="nav-link active" aria-current="page" href="#">end-to-end</a>
-                </li>
-                <li class="nav-item">
                 <a class="nav-link" href="log.php">Sign in</a>
                 </li>
                 <li class="nav-item">
@@ -93,10 +91,21 @@
         </div>
         </nav>
 
-        <div id="ID_COOKIE_BOX" class="divCenter" style="display:none">
-            <div class="d-flex align-items-center align-self-center card p-3 text-center cookies"><img src="../img/COOKIE_IMG.png" width="50"><span class="mt-2">Utilizziamo i cookie per offrirti la miglior esperienza possibile sul nostro sito Web.</span>
-                <button id="ID_COOKIE_A" class="btn btn-dark mt-3 px-4" type="button">Accetta</button>
-                <button id="ID_COOKIE_R" class="btn btn-dark mt-3 px-4" type="button">Rifiuta</button>
+        <div id="ID_COOKIE_BOX" class="row" style="display:none">
+            <div class="col-md-4 col-sm-12 button-fixed">
+            <div class="p-3 pb-4 bg-custom text-white">
+            <div class="row">
+            <div class="col-10">
+            <a id="ID_COOKIE_R" style="float:right;cursor:pointer">&#10005;</a>
+            <h1>Allow Cookies</h1>
+            </div>
+            <div class="col-2 text-center">
+            <i class="fas fa-times"></i>
+            </div>
+            </div>
+            <p>Utilizziamo i cookie per migliorare la tua esperienza</p>
+            <button id="ID_COOKIE_A" type="button" class="btn btn-light w-100">Accept</button>
+            </div>
             </div>
         </div>
 
@@ -110,58 +119,19 @@
     import Cookie from "../class/cookie.js"
 
     $('document').ready(() => {
-        //Cookie.Req()
-        $('#ID_COOKIE_BOX').css("display", "block")
+        if (Cookie.Get("allow__") === null)
+            $('#ID_COOKIE_BOX').css("display", "block")
     })
 
     $('#ID_COOKIE_A').on('click', () => {
-        Cookie.Set("allow__", "true", 2)
+        Cookie.Set("allow__", "true", 1)
         $('#ID_COOKIE_BOX').css("display", "none")
     })
 
     $('#ID_COOKIE_R').on('click', () => {
-        Cookie.Set("allow__", "false", 2)
+        Cookie.Set("allow__", "false", 1)
         $('#ID_COOKIE_BOX').css("display", "none")
     })
 
 
-
 </script>
-
-
-<style>
-
-    .divCenter {
-        margin-left: auto;
-        margin-right: auto;
-        margin-top: 30px;
-    }
-
-    .card {
-        width: 350px;
-        flex-direction: column;
-        min-width: 0;
-        word-wrap: break-word;
-        background-color: #fff;
-        background-clip: border-box;
-        border: 1px solid #d2d2dc;
-        border-radius: 6px;
-        -webkit-box-shadow: 0px 0px 5px 0px rgb(249, 249, 250);
-        -moz-box-shadow: 0px 0px 5px 0px rgba(212, 182, 212, 1);
-        box-shadow: 0px 0px 5px 0px rgb(161, 163, 164);
-    }
-
-    .cookies a {
-        text-decoration: none;
-        color: #000;
-        margin-top: 8px;
-    }
-
-    .cookies a:hover {
-        text-decoration: none;
-        color: blue;
-        margin-top: 8px;
-    }
-
-
-</style>

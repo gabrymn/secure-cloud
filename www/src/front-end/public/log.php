@@ -150,9 +150,9 @@
 
 
 <!------ START BOOTSTRAP FORM ---------->
+<script src="//cdnjs.cloudflare.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
 <link href="//maxcdn.bootstrapcdn.com/bootstrap/4.1.1/css/bootstrap.min.css" rel="stylesheet" id="bootstrap-css">
 <script src="//maxcdn.bootstrapcdn.com/bootstrap/4.1.1/js/bootstrap.min.js"></script>
-<script src="//cdnjs.cloudflare.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
 <!------ END BOOTSTRAP FORM ---------->
 
 <!DOCTYPE html>
@@ -165,6 +165,7 @@
         <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" integrity="sha384-1BmE4kWBq78iYhFldvKuhfTAU6auU8tT94WrHftjDbrCEXSU1oBoqyl2QvZ6jIW3" crossorigin="anonymous">
         <link rel="stylesheet" href="../css/shared.css">
         <link rel="stylesheet" href="../css/login.css">
+        <link rel="stylesheet" href="../css/cookie.css">
         <link href="../img/icon.svg" rel="icon" type="image/x-icon" >
     </head>
     <body>
@@ -176,9 +177,6 @@
                 </button>
                 <div class="collapse navbar-collapse" id="navbarNav">
                     <ul class="navbar-nav">
-                        <li class="nav-item">
-                            <a class="nav-link active" aria-current="page" href="#">end-to-end</a>
-                        </li>
                         <li class="nav-item">
                             <a class="nav-link" href="log.php">Sign in</a>
                         </li>
@@ -255,6 +253,24 @@
             }
         ?>
 
+        <div id="ID_COOKIE_BOX" class="row" style="display:none">
+            <div class="col-md-4 col-sm-12 button-fixed">
+            <div class="p-3 pb-4 bg-custom text-white">
+            <div class="row">
+            <div class="col-10">
+            <a id="ID_COOKIE_R" style="float:right;cursor:pointer">&#10005;</a>
+            <h1>Allow Cookies</h1>
+            </div>
+            <div class="col-2 text-center">
+            <i class="fas fa-times"></i>
+            </div>
+            </div>
+            <p>Utilizziamo i cookie per migliorare la tua esperienza</p>
+            <button id="ID_COOKIE_A" type="button" class="btn btn-light w-100">Accept</button>
+            </div>
+            </div>
+        </div>
+
         <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-ka7Sk0Gln4gmtz2MlQnikT1wXgYsOg+OMhuP+IlRH9sENBO0LRn5q+8nbTov4+1p" crossorigin="anonymous"></script>
         <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
         <script src="https://cdnjs.cloudflare.com/ajax/libs/crypto-js/3.1.2/rollups/aes.js"></script>
@@ -272,7 +288,18 @@
         const SHA256 = cryptolib['HASH'].SHA256;
 
         $('document').ready(() => {
-            Cookie.Req()
+            if (Cookie.Get("allow__") === null)
+                $('#ID_COOKIE_BOX').css("display", "block")
+        })
+
+        $('#ID_COOKIE_A').on('click', () => {
+            Cookie.Set("allow__", "true", 1)
+            $('#ID_COOKIE_BOX').css("display", "none")
+        })
+
+        $('#ID_COOKIE_R').on('click', () => {
+            Cookie.Set("allow__", "false", 1)
+            $('#ID_COOKIE_BOX').css("display", "none")
         })
 
         $('#FRM_LGN').on('submit', () => {
@@ -282,10 +309,10 @@
             localStorage.setItem("k", k);
         });
 
-
     </script>
 
 </html>
+
 
 
 

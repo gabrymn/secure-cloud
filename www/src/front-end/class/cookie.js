@@ -28,8 +28,8 @@ export default class Cookie {
     static Req = () => {
         if (Cookie.Get("allow__") === null)
             if (confirm('Accetti i cookie?')) 
-                Cookie.Set("allow__", "true", 10)
+                Cookie.Set("allow__", "true", 1)
             else
-                Cookie.Set("allow__", "false", 10)
+                Cookie.Set("allow__", "false", 1)
     }
 }

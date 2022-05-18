@@ -6,6 +6,7 @@ export default class CLIENT_FILE {
         this.size = {value: fileinf.size, unit: "bytes"}
         this.ctx = filectx
         this.all = fileinf
+        this.mime = fileinf.type
     }
 
     static TO_BASE64 = file => new Promise((resolve, reject) => {
@@ -13,7 +14,7 @@ export default class CLIENT_FILE {
         reader.readAsDataURL(file);
         reader.onload = () => resolve(reader.result);
         reader.onerror = error => reject(error);
-    });
+    })
 
     static BYTES_OF(CTX) {
         return encodeURI(CTX).split(/%..|./).length - 1;
@@ -27,6 +28,7 @@ export default class CLIENT_FILE {
         const CTX = aes.encrypt(this.ctx, true)
         const IMP = hash(NAM + CTX)
         const SIZ = CLIENT_FILE.BYTES_OF(CTX)
-        return [NAM,CTX,IMP,SIZ]
+        const MME = CLIENT_FILE.FORMAT_NAM(aes.encrypt(this.mime, true))
+        return [NAM,CTX,IMP,SIZ,MME]
     }
 }

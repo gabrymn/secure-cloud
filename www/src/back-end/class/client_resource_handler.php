@@ -27,7 +27,7 @@
                     {
                         case 'PREVIEW': default: {
                             $d = sqlc::sel_file($_GET['ID']);
-                            response::successful(200, false, array("name" => $d['fname']));
+                            response::successful(200, false, array("name" => $d['nam'], "size" => $d['siz'], "mme" => $d['mme'], "upldate" => $d['dat']));
                             break;
                         }
                         case 'CONTENT': {
@@ -65,12 +65,13 @@
             }
             case 'POST':
             {
-                if (isset($_POST['NAM']) && isset($_POST['CTX']) && isset($_POST['SIZ']) && isset($_POST['IMP']) && count($_POST) === 4)
+                if (isset($_POST['NAM']) && isset($_POST['CTX']) && isset($_POST['SIZ']) && isset($_POST['IMP']) && isset($_POST['MME']) && count($_POST) === 5)
                 {
                     // upload file
                     $filename = $_POST['NAM'];
                     $filedata = $_POST['CTX'];
                     $client_hash = $_POST['IMP'];
+                    $mime = $_POST['MME'];
                     $server_hash = hash("sha256", $filename.$filedata);
 
                     if ($client_hash === $server_hash)
@@ -94,7 +95,7 @@
                         $id_file = $id_file->val();
 
                         sqlc::ins_tsf_data("u", $id, $id_session_sc, $id_file);
-                        sqlc::ins_file_data($id_file, $filename, $ref, $size, $id);
+                        sqlc::ins_file_data($id_file, $filename, $ref, $size, $id, $mime);
                         
                         response::successful(201);
                         exit;

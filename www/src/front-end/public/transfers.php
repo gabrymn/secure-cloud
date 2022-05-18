@@ -149,9 +149,9 @@
         </nav>
 
         <br><br>
-        <table class="table table-dark" id="ID_TSF_HEAD">
+        <table class="table table-dark tbls" id="ID_TSF_HEAD">
             <thead>
-                <tr>
+                <tr class="chd">
                     <th scope="col">Name</th>
                     <th scope="col">Transfer date</th>
                     <th scope="col">IP address</th>
@@ -223,6 +223,22 @@
 
 
 </script>
+
+<style>
+
+    .tbls {
+
+    margin-left: auto;
+    margin-right: auto;
+    width: 80%;
+    }
+
+    .chd {
+
+    color: #30D2F2;
+    }
+
+</style>
 
 
 

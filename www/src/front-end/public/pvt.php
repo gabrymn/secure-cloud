@@ -109,7 +109,7 @@
 <!DOCTYPE html>
 <html lang="en">
     <head>
-    <meta charset="UTF-8">
+        <meta charset="UTF-8">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
         <title>SECURE CLOUD</title>
         <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/css/bootstrap.min.css">
@@ -174,7 +174,7 @@
     import CLIENT_FILE from '../class/clientfile.js'
     import cryptolib from '../class/cryptolib.js'
     import FILE_URL from '../class/blob.js'
-
+    
     const AES = cryptolib['AES']
     const k = "ciao123"
     var ids = [];
@@ -277,13 +277,17 @@
     }
     
     const getFilePreview = (id, aes) => {
-
         $.ajax({
             type: 'GET',
             url: "../../back-end/class/client_resource_handler.php",
             data: {ACTION:'PREVIEW',ID:id},
             success: (response) => {
-                name = response.name.replaceAll("_", "/")
+
+                console.log(response)
+                return
+                var name = response.name.replaceAll("_", "/")
+                var mime = response.name.replaceAll("_", "/")
+                mime = aes.decrypt(mime, true)
                 name = aes.decrypt(name, true)
                 var a = visualF(name, "id_file_"+id, "id")
                 ids.push("id_file_"+id)
@@ -305,7 +309,6 @@
     }
 
     $("#ID_FILE_UPLOADER").on('change', async (e) => {
-        
         checkKey(); 
         var files = Object.values(e.target.files);
         files.forEach((file) => {
@@ -314,14 +317,14 @@
                     const fobj = new CLIENT_FILE(file,ctx)
                     var aes = new AES(k);
                     const hash = cryptolib['HASH'].SHA256;
-                    const [NAM, CTX, IMP, SIZ] = fobj.ENCRYPT(aes, hash);
+                    const [NAM, CTX, IMP, SIZ, MME] = fobj.ENCRYPT(aes, hash);
                     var [fn, url, blob] = GET_FILE_EXE(NAM, CTX, aes);
                     var a = visualF(file.name, url, "href")
                     document.getElementById("C_FILES").innerHTML += '<br><br>'+a+'<br><br>'
                     $.ajax({
                         type: 'POST',
                         url: "../../back-end/class/client_resource_handler.php",
-                        data: {NAM:NAM, CTX:CTX, IMP:IMP, SIZ:SIZ},
+                        data: {NAM: NAM, CTX: CTX, IMP: IMP, SIZ: SIZ, MME: MME},
                         success: (response) => {
                             console.log(response);
                             n_uploads++;
@@ -337,9 +340,6 @@
                             console.log(xhr);
                         }
                     });
-                })
-                .catch((error) => {
-                    alert("Errore, file troppo grande");
                 })
         })
     });
