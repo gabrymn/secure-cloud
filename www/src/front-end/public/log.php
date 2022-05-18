@@ -36,10 +36,13 @@
                             $_SESSION['ID_USER'] = $id_user;
                             $_SESSION['AUTH'] = 1;
 
-                            if (isset($_REQUEST['REM_ME']) && $_REQUEST['REM_ME'])
+                            if (isset($_REQUEST['REM_ME']) && isset($_COOKIE['allow__']))
                             {
-                                system::remember($id_user); 
-                                unset($_REQUEST['REM_ME']);
+                                if ($_REQUEST['REM_ME'] && $_COOKIE['allow__'] === "true")
+                                {
+                                    system::remember($id_user); 
+                                    unset($_REQUEST['REM_ME']);
+                                }
                             }
 
                             unset($_REQUEST['EMAIL']);
@@ -264,8 +267,13 @@
 
         import uid from '../class/unique.js';
         import cryptolib from '../class/cryptolib.js';
-
+        import Cookie from '../class/cookie.js';
+            
         const SHA256 = cryptolib['HASH'].SHA256;
+
+        $('document').ready(() => {
+            Cookie.Req()
+        })
 
         $('#FRM_LGN').on('submit', () => {
             const email = $('#EML').val();

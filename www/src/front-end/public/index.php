@@ -54,9 +54,9 @@
 ?>
 
 <!------ START BOOTSTRAP FORM ---------->
+<script src="//cdnjs.cloudflare.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
 <link href="//maxcdn.bootstrapcdn.com/bootstrap/4.1.1/css/bootstrap.min.css" rel="stylesheet" id="bootstrap-css">
 <script src="//maxcdn.bootstrapcdn.com/bootstrap/4.1.1/js/bootstrap.min.js"></script>
-<script src="//cdnjs.cloudflare.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
 <!------ END BOOTSTRAP FORM ---------->
 
 <!DOCTYPE html>
@@ -92,6 +92,76 @@
             </div>
         </div>
         </nav>
+
+        <div id="ID_COOKIE_BOX" class="divCenter" style="display:none">
+            <div class="d-flex align-items-center align-self-center card p-3 text-center cookies"><img src="../img/COOKIE_IMG.png" width="50"><span class="mt-2">Utilizziamo i cookie per offrirti la miglior esperienza possibile sul nostro sito Web.</span>
+                <button id="ID_COOKIE_A" class="btn btn-dark mt-3 px-4" type="button">Accetta</button>
+                <button id="ID_COOKIE_R" class="btn btn-dark mt-3 px-4" type="button">Rifiuta</button>
+            </div>
+        </div>
+
         <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-ka7Sk0Gln4gmtz2MlQnikT1wXgYsOg+OMhuP+IlRH9sENBO0LRn5q+8nbTov4+1p" crossorigin="anonymous"></script>
     </body>
 </html>
+
+
+<script type="module">
+
+    import Cookie from "../class/cookie.js"
+
+    $('document').ready(() => {
+        //Cookie.Req()
+        $('#ID_COOKIE_BOX').css("display", "block")
+    })
+
+    $('#ID_COOKIE_A').on('click', () => {
+        Cookie.Set("allow__", "true", 2)
+        $('#ID_COOKIE_BOX').css("display", "none")
+    })
+
+    $('#ID_COOKIE_R').on('click', () => {
+        Cookie.Set("allow__", "false", 2)
+        $('#ID_COOKIE_BOX').css("display", "none")
+    })
+
+
+
+</script>
+
+
+<style>
+
+    .divCenter {
+        margin-left: auto;
+        margin-right: auto;
+        margin-top: 30px;
+    }
+
+    .card {
+        width: 350px;
+        flex-direction: column;
+        min-width: 0;
+        word-wrap: break-word;
+        background-color: #fff;
+        background-clip: border-box;
+        border: 1px solid #d2d2dc;
+        border-radius: 6px;
+        -webkit-box-shadow: 0px 0px 5px 0px rgb(249, 249, 250);
+        -moz-box-shadow: 0px 0px 5px 0px rgba(212, 182, 212, 1);
+        box-shadow: 0px 0px 5px 0px rgb(161, 163, 164);
+    }
+
+    .cookies a {
+        text-decoration: none;
+        color: #000;
+        margin-top: 8px;
+    }
+
+    .cookies a:hover {
+        text-decoration: none;
+        color: blue;
+        margin-top: 8px;
+    }
+
+
+</style>

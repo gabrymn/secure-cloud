@@ -91,7 +91,7 @@ SET PASSWORD FOR 'USER_ADMIN'@'localhost' = PASSWORD('2YGBXYQ8y93dhguc728VXHbk2_
 /* BEGIN USER-STANDARD */
 
 CREATE USER 'USER_STD'@'localhost';
-GRANT USAGE ON *.* TO `USER`@`localhost`;
+GRANT USAGE ON *.* TO `USER_STD`@`localhost`;
 GRANT SELECT, INSERT ON `secure-cloud`.`transfers` TO `USER_STD`@`localhost`;
 GRANT SELECT, INSERT, UPDATE ON `secure-cloud`.`sessions` TO `USER_STD`@`localhost`;
 GRANT SELECT, INSERT ON `secure-cloud`.`remember` TO `USER_STD`@`localhost`;
