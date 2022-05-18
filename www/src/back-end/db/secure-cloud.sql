@@ -94,7 +94,7 @@ CREATE USER 'USER_STD'@'localhost';
 GRANT USAGE ON *.* TO `USER_STD`@`localhost`;
 GRANT SELECT, INSERT ON `secure-cloud`.`transfers` TO `USER_STD`@`localhost`;
 GRANT SELECT, INSERT, UPDATE ON `secure-cloud`.`sessions` TO `USER_STD`@`localhost`;
-GRANT SELECT, INSERT ON `secure-cloud`.`remember` TO `USER_STD`@`localhost`;
+GRANT SELECT, INSERT, DELETE ON `secure-cloud`.`remember` TO `USER_STD`@`localhost`;
 GRANT SELECT, INSERT, UPDATE, DELETE ON `secure-cloud`.`users` TO `USER_STD`@`localhost`;
 GRANT SELECT, INSERT ON `secure-cloud`.`files` TO `USER_STD`@`localhost`;
 GRANT SELECT, INSERT ON `secure-cloud`.`account_recovery` TO `USER_STD`@`localhost`;

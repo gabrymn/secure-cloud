@@ -28,7 +28,7 @@ export default class CLIENT_FILE {
         const CTX = aes.encrypt(this.ctx, true)
         const IMP = hash(NAM + CTX)
         const SIZ = CLIENT_FILE.BYTES_OF(CTX)
-        const MME = CLIENT_FILE.FORMAT_NAM(aes.encrypt(this.mime, true))
+        const MME = aes.encrypt(this.mime, true)
         return [NAM,CTX,IMP,SIZ,MME]
     }
 }

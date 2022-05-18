@@ -227,9 +227,9 @@
     const visualF = (fname, x, ttype) => {
         var aline = ""
         if (ttype === 'id')
-            aline = `<a id=${x} class='btn btn-info' role='button'>Download</a>`;
+            aline = `<a id=${x} class='btn btn-info' role='button'>&#9679;&#9679;&#9679;</a>`;
         else if (ttype === 'href')
-            aline = `<a href='${x}' class='btn btn-info' role='button' download='${fname}' style='color:white'>Download</a>`
+            aline = `<a href='${x}' class='btn btn-info' role='button' download='${fname}' style='color:white'>&#9679;&#9679;&#9679;</a>`
 
         return ( `
             <div class="col-md-9 animated fadeInRight">
@@ -245,7 +245,7 @@
                                 ${fname}
                                 <br>
                                 ${aline}
-                            </div>
+                                </div>
                             </div>
                         </a>
                     </div>
@@ -283,12 +283,17 @@
             data: {ACTION:'PREVIEW',ID:id},
             success: (response) => {
 
-                console.log(response)
-                return
                 var name = response.name.replaceAll("_", "/")
-                var mime = response.name.replaceAll("_", "/")
-                mime = aes.decrypt(mime, true)
-                name = aes.decrypt(name, true)
+                var mime = aes.decrypt(response.mme, true)
+                name = aes.decrypt(response.name, true)
+
+                var filedata = {
+                    name: name,
+                    mime: mime,
+                    size: response.size,
+                    upl: response.upldate
+                }
+                
                 var a = visualF(name, "id_file_"+id, "id")
                 ids.push("id_file_"+id)
                 ids_nms[id] = JSON.stringify({name:name});
@@ -340,6 +345,9 @@
                             console.log(xhr);
                         }
                     });
+                })
+                .catch((error) => {
+                    alert("Errore nel caricamento del file")
                 })
         })
     });

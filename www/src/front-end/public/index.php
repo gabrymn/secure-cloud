@@ -96,7 +96,6 @@
             <div class="p-3 pb-4 bg-custom text-white">
             <div class="row">
             <div class="col-10">
-            <a id="ID_COOKIE_R" style="float:right;cursor:pointer">&#10005;</a>
             <h1>Allow Cookies</h1>
             </div>
             <div class="col-2 text-center">
@@ -124,11 +123,11 @@
     })
 
     $('#ID_COOKIE_A').on('click', () => {
-        Cookie.Set("allow__", "true", 1)
+        Cookie.Set("allow__", "true", 30)
         $('#ID_COOKIE_BOX').css("display", "none")
     })
 
-    $('#ID_COOKIE_R').on('click', () => {
+    $('#ID_COOKIE_BOX').on('click', () => {
         Cookie.Set("allow__", "false", 1)
         $('#ID_COOKIE_BOX').css("display", "none")
     })
