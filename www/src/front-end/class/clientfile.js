@@ -2,14 +2,22 @@
 export default class CLIENT_FILE {
 
     constructor(fileinf, filectx){
-        const n = fileinf.name.split('.')
+        if (!fileinf.name.includes('.'))
+        {
+            this.mime = "file"
+            this.ext = "file"
+        }
+        else
+        {
+            const n = fileinf.name.split('.')
+            this.ext = n[n.length-1]
+            this.mime = fileinf.type === '' ? 
+                "file/"+n[n.length-1] : fileinf.type
+        }
         this.name = fileinf.name
         this.size = {value: fileinf.size, unit: "byte"}
         this.ctx = filectx
         this.all = fileinf
-        this.ext = n[n.length-1]
-        this.mime = fileinf.type === '' ? 
-            "file/"+n[n.length-1] : fileinf.type
     }
 
     static TO_BASE64 = file => new Promise((resolve, reject) => {

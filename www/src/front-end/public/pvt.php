@@ -276,8 +276,13 @@
         else if (ttype === 'href')
             aline = `<a href='${x}' class='btn btn-info' role='button' download='${fname}' style='color:white' data-toggle="modal" data-target="#exampleModal">&#9679;&#9679;&#9679;</a>`
 
-        const arrayName = fname.split(".")
-        var ext = arrayName[arrayName.length-1]
+        var ext = ""
+
+        if (fname.includes('.'))
+        {
+            const arrayName = fname.split(".")
+            var ext = "."+arrayName[arrayName.length-1]
+        }
 
         if (fname.length > 17)
         {    
@@ -286,7 +291,7 @@
             for (let i=0; i<10 - ext.length; i++)
                 t += fname[i]
             t += " [...]"
-            t += "."+ext
+            t += ext
             fname = t
         }
         
@@ -381,7 +386,7 @@
                         url: "../../back-end/class/client_resource_handler.php",
                         data: {NAM: NAM, CTX: CTX, IMP: IMP, SIZ: SIZ, MME: MME},
                         success: (response) => {
-                            console.log(response)
+                            location.reload()
                         },
                         error: (xhr) => {
                             console.log(xhr);
@@ -389,17 +394,6 @@
                     });
                 })
         })
-
-        $("#ID_NFS").css('display','none')
-        $("#CONT_FILES").css('display','none')
-        setLoading("block");
-        $("#ID_FILE_UPLOADER").val("");
-
-        sleep(300).then(() => {
-            document.getElementById("C_FILES").innerHTML = ""
-            syncData();
-        })
-
     });
 
     const GET_FILE_EXE = (CTX, aes) => {
