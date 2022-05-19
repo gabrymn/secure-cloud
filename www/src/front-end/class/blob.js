@@ -1,19 +1,9 @@
-/*
-<body>
-    <input id="inp" type='file'> // input file
-    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
-</body>
-<script>
-    document.getElementById("inp").addEventListener("change", FILE_URL.READ_FILE, false);
-</script>
-*/
-
 export default class FILE_URL {
 
     static B64_2_BLOB = (b64data, filename) => {
-        const mime = FILE_URL.#GET_MIME(b64data);
-        var file = FILE_URL.#DATAURL_2_FILE(b64data, filename);
-        const blob = new Blob([file], {type: mime});
+        const mime = b64data === "data:" ? false : FILE_URL.#GET_MIME(b64data); 
+        var file = !mime? "" : FILE_URL.#DATAURL_2_FILE(b64data, filename);
+        const blob = !mime? new Blob([file]) : new Blob([file], {type: mime});
         return blob;
     }
 

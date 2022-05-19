@@ -225,7 +225,6 @@
                 $("#id_file_"+key).on('click', (e) => {
                     const id = e.target.id.replaceAll("id_file_", "")
                     var data = JSON.parse(ids_data[id])
-                    console.log(data)
                     $('#ID_MODAL_TITLE').html(data.name)
                     $('#ID_MODAL_BODY').html("<strong>Type</strong>: "+data.mime+"<br><strong>Size</strong>: "+data.size+ " byte<br><strong>Upload date</strong>: "+data.upl)
                     $('#ID_MODAL_DOWNLOAD').prop("onclick",null).off("click");
@@ -280,13 +279,13 @@
         const arrayName = fname.split(".")
         var ext = arrayName[arrayName.length-1]
 
-        if (fname.length > 18)
+        if (fname.length > 17)
         {    
             var t = "";
             if (ext.length > 10) ext = "" 
             for (let i=0; i<10 - ext.length; i++)
                 t += fname[i]
-            t += " [...] "
+            t += " [...]"
             t += "."+ext
             fname = t
         }
@@ -307,7 +306,6 @@
     }
 
     const getCTX = id => {
-        console.log(id)
         $.ajax({
             type: 'GET',
             url: "../../back-end/class/client_resource_handler.php",
@@ -368,7 +366,7 @@
         };
     }
 
-    $("#ID_FILE_UPLOADER").on('change', async (e) => {
+    $("#ID_FILE_UPLOADER").on('change', (e) => {
         checkKey(); 
         var files = Object.values(e.target.files);
         files.forEach((file) => {
@@ -392,6 +390,7 @@
                 })
         })
 
+        $("#ID_NFS").css('display','none')
         $("#CONT_FILES").css('display','none')
         setLoading("block");
         $("#ID_FILE_UPLOADER").val("");
@@ -462,7 +461,7 @@
         border-radius: 25px;
         padding-top: 50px;
         padding-bottom: 50px;
-        box-shadow: rgba(49,210,242,.5) 0px 7px 29px 0px;
+        background-color: rgb(90,90,90);
     }
 
     .cardmy {

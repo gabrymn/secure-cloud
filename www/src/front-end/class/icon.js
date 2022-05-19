@@ -20,6 +20,8 @@ export default function getIcon (extension) {
         case 'java':
         case 'json':
         case 'xml':
+        case 'php':
+        case 'js':
             return 'fa fa-file-code-o' 
         case 'txt':
         case 'rft':

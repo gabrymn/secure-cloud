@@ -1,10 +1,10 @@
 
+CREATE DATABASE IF NOT EXISTS `secure-cloud` DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci;
+USE `secure-cloud`;
+
 SET SQL_MODE = "NO_AUTO_VALUE_ON_ZERO";
 START TRANSACTION;
 SET time_zone = "+00:00";
-
-CREATE DATABASE IF NOT EXISTS `secure-cloud` DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci;
-USE `secure-cloud`;
 
 CREATE TABLE `account_recovery` (
   `id_user` int(11) NOT NULL,
@@ -30,7 +30,7 @@ CREATE TABLE `files` (
   `fname` varchar(500) NOT NULL,
   `ref` varchar(1000) NOT NULL,
   `size` int(11) NOT NULL,
-  `mime` varchar(30) NOT NULL,
+  `mime` varchar(200) NOT NULL,
   `id_user` int(11) NOT NULL,
    PRIMARY KEY(`idf`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
