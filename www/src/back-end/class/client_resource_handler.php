@@ -33,7 +33,10 @@
                         case 'CONTENT': {
                             session_start();
                             $d = sqlc::sel_file($_GET['ID']);
-                            sqlc::ins_tsf_data("d", $_SESSION['ID_USER'], $_SESSION['SESSION_SC_ID'], $_GET['ID']);
+                            
+                            if (isset($_GET['DOWNLOAD']))
+                                sqlc::ins_tsf_data("d", $_SESSION['ID_USER'], $_SESSION['SESSION_SC_ID'], $_GET['ID']);
+                            
                             $ctx = file_get_contents($d['ref']);
                             
                             $ar = array("ctx" => $ctx, "name" => $d['nam']);

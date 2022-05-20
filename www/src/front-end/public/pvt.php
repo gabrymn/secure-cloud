@@ -333,7 +333,7 @@
         $.ajax({
             type: 'GET',
             url: "../../back-end/class/client_resource_handler.php",
-            data: {ACTION:"CONTENT", ID:id},
+            data: {ACTION:"CONTENT", ID:id, DOWNLOAD:true},
             success: response => {
                 var a = document.createElement("a");
                 document.body.appendChild(a);
