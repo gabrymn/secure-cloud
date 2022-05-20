@@ -1,6 +1,8 @@
 export default function getIcon (extension) {
 
-    switch (extension.toLowerCase())
+    extension = extension.includes(".") ? extension.replaceAll(".", "").toLowerCase() : extension.toLowerCase()
+
+    switch (extension)
     {
         case 'png':
         case 'jpeg':

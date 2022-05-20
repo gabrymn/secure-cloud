@@ -20,7 +20,7 @@
                     response::successful(200, false, array("file_ids" => $ids));
                     exit;
                 }
-                else if (isset($_GET['ACTION']) && isset($_GET['ID']) && count($_GET) === 2)
+                else if (isset($_GET['ACTION']) && isset($_GET['ID']))
                 {
                     sqlc::connect();
                     switch ($_GET['ACTION'])
@@ -35,7 +35,15 @@
                             $d = sqlc::sel_file($_GET['ID']);
                             sqlc::ins_tsf_data("d", $_SESSION['ID_USER'], $_SESSION['SESSION_SC_ID'], $_GET['ID']);
                             $ctx = file_get_contents($d['ref']);
-                            response::successful(200, false, array("ctx" => $ctx, "name" => $d['nam']));
+                            
+                            $ar = array("ctx" => $ctx, "name" => $d['nam']);
+                            
+                            if (isset($_GET['MIME']) && $_GET['MIME'])
+                            {
+                                $ar['mime'] = $d['mme'];
+                            }
+
+                            response::successful(200, false, $ar);
                             break;
                         }
                     }

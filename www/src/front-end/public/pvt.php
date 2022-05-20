@@ -160,8 +160,9 @@
             <div class="modal-body" id="ID_MODAL_BODY">
             </div>
             <div class="modal-footer">
-            <button type="button" class="btn btn-primary" id="ID_MODAL_DOWNLOAD">Download</button>
-            <button type="button" class="btn btn-danger">Delete</button>
+            <button type="button" class="btn btn-success" id="ID_MODAL_SHOW">SHOW</button>
+            <button type="button" class="btn btn-primary" id="ID_MODAL_DOWNLOAD">DOWNLOAD</button>
+            <button type="button" class="btn btn-danger" id="ID_MODAL_DEL">DELETE</button>
             </div>
             </div>
             </div>
@@ -229,6 +230,9 @@
                     $('#ID_MODAL_BODY').html("<strong>Type</strong>: "+data.mime+"<br><strong>Size</strong>: "+data.size+ " byte<br><strong>Upload date</strong>: "+data.upl)
                     $('#ID_MODAL_DOWNLOAD').prop("onclick",null).off("click");
                     $('#ID_MODAL_DOWNLOAD').on('click', () => getCTX(id))
+
+                    $('#ID_MODAL_SHOW').prop("onclick",null).off("click");
+                    $('#ID_MODAL_SHOW').on('click', () => showFILE(id))
                 })
             }
 
@@ -310,6 +314,91 @@
         `)
     }
 
+    const openFILE = (fname, ext, b64, mime) => {
+
+        ext = ext.toLowerCase()
+        switch (ext) 
+        {
+            case 'pdf': 
+            {
+               showPDF(b64, fname)
+               break     
+            }
+            case 'txt':
+            {
+                showTXT(b64, fname)
+                break
+            }
+            case 'jpeg':
+            case 'jpg':
+            case 'png':
+            {
+                showIMG(b64, fname, mime)
+                break;
+            }
+            case 'default': {
+                break;
+            }   
+        }
+    }
+
+    const showIMG = (base64, filename, mime) => {
+
+        var img = '<img src="'+base64+'" alt="ciao">'
+        var win = window.open("#","_blank");
+        var title = filename;
+        win.document.write('<html><title>'+ title +'</title><body style="margin-top:0px; margin-left: 0px; margin-right: 0px; margin-bottom: 0px;">');
+        win.document.write(img);
+        win.document.write('</body></html>');
+        jQuery(win.document);
+    }
+
+    const showTXT = (base64, filename) => {
+        var txt = '<pre>'+base64+'</pre>';
+        var win = window.open("#","_blank");
+        var title = filename;
+        win.document.write('<html><title>'+ title +'</title><body style="margin-top:0px; margin-left: 0px; margin-right: 0px; margin-bottom: 0px;">');
+        win.document.write(txt);
+        win.document.write('</body></html>');
+        jQuery(win.document);
+    }
+
+    const showFILE = id => {
+
+        $.ajax({
+            type: 'GET',
+            url: "../../back-end/class/client_resource_handler.php",
+            data: {ACTION:"CONTENT", ID:id, MIME:true},
+            success: response => {
+
+                var aes = new AES(k)   
+                var name = response.name.replaceAll("_", "/")
+
+                const fname = aes.decrypt(name, true)
+                const b64 = aes.decrypt(response.ctx, true)
+                const mime = aes.decrypt(response.mime, true)
+                const ext = fname.includes('.') ? fname.split(".")[fname.split(".").length-1] : "file"
+                openFILE(fname, ext, b64, mime)                
+
+            },
+            error: xhr => {
+                console.log(xhr)
+            }
+        })
+
+    }
+
+    const showPDF = (base64, filename) => {
+
+        var objbuilder = '<object width="100%" height="100%" type="application/pdf" data="'+base64+'"></object>'
+        var win = window.open("#","_blank");
+        var title = filename;
+        win.document.write('<html><title>'+ title +'</title><body style="margin-top:0px; margin-left: 0px; margin-right: 0px; margin-bottom: 0px;">');
+        win.document.write(objbuilder);
+        win.document.write('</body></html>');
+        jQuery(win.document);
+    }
+
     const getCTX = id => {
         $.ajax({
             type: 'GET',
@@ -321,6 +410,7 @@
                 a.style = "display:none";
                 var aes = new AES(k);
                 var [url, blob] = GET_FILE_EXE(response.ctx, aes);
+
                 a.href = url;
                 a.download = JSON.parse(ids_nms[id]).name;
                 a.click();
