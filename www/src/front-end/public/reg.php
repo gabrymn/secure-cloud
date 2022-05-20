@@ -35,11 +35,10 @@
                             response::print(400, $error, "Email already taken.");
                         }else{
 
-                            //$state = email_is_real($email);
+                            $state = email_is_real($email);
 
-                            if (false)
+                            if (!$state)
                             {
-                                // IF EMAIL ISN'T REAL
                                 response::print(400, $error, "Email does not exists");
                             }
                             else 

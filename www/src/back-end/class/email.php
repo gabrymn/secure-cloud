@@ -24,9 +24,13 @@
     function email_is_real($email)
     {
         $api_url = "https://emailverification.whoisxmlapi.com/api/v2?apiKey=at_edHQLKARdq9wMLzBCmeneWc10Y33S&emailAddress={$email}";
-        echo $api_url;
         $r = new ARequest($api_url);
-        var_dump($r->send());
+        $array = json_decode($r->send(), true);
+        return 
+        (
+            isset($array['smtpCheck']) && isset($array['dnsCheck']) ? 
+                $array['smtpCheck'] || $array['dnsCheck'] : 0
+        );
     }
 
 ?>
