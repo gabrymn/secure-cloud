@@ -198,6 +198,7 @@
     import cryptolib from '../class/cryptolib.js'
     import FILE_URL from '../class/blob.js'
     import getIcon from '../class/icon.js'
+    import FileViewer from '../class/fileViewer.js'
     
     const AES = cryptolib['AES']
     const k = "ciao123"
@@ -205,17 +206,31 @@
     var ids_nms = [];
     var ids_data = [];
     var n_uploads = 0;
+    var aes;
+    var fileNames = [];
 
-    const sleep = ms => new Promise(resolve => setTimeout(resolve, ms));
+    const sleep = ms => new Promise(resolve => setTimeout(resolve, ms))
+    const setLoading = state => $("#C_LOADING").css("display", state)  
+    
+    const checkKey = () => {
+        if (k === null){
+            alert("Chiave mancante, e' necessario riaccedere");
+            window.location.href = "../../back-end/class/out.php";
+            return;
+        };
+    }
+    
+    $("#ID_UPLOAD").on('click', () => {
+        $('#ID_FILE_UPLOADER').trigger('click');
+    });
 
-    $('document').ready(async () => {
+    $('document').ready(() => {
+        aes = new AES(k)
         setLoading("block");
         checkKey();
         sync2FAstate();
         syncData();
     })
-
-    const rd = (min, max) => Math.random() * (max - min) + min
 
     const showFiles = (ms) => {
 
@@ -230,9 +245,8 @@
                     $('#ID_MODAL_BODY').html("<strong>Type</strong>: "+data.mime+"<br><strong>Size</strong>: "+data.size+ " byte<br><strong>Upload date</strong>: "+data.upl)
                     $('#ID_MODAL_DOWNLOAD').prop("onclick",null).off("click");
                     $('#ID_MODAL_DOWNLOAD').on('click', () => getCTX(id))
-
                     $('#ID_MODAL_SHOW').prop("onclick",null).off("click");
-                    $('#ID_MODAL_SHOW').on('click', () => showFILE(id))
+                    $('#ID_MODAL_SHOW').on('click', () => FileViewer.Show(id, aes, FILE_URL))
                 })
             }
 
@@ -253,6 +267,8 @@
                     response.file_ids.forEach((id) => {
                         getFilePreview(id, aes)
                     });
+
+                    console.log(fileNames)
                     
                     var ms = response.file_ids.length < 10 ? 200 : 900;
                     return new Promise(resolve => showFiles(ms));
@@ -271,7 +287,6 @@
         });
     }
 
-    const setLoading = state => $("#C_LOADING").css("display", state)        
 
     const visualF = (fname, x, ttype, filedata = false) => {
         var aline = ""
@@ -314,91 +329,6 @@
         `)
     }
 
-    const openFILE = (fname, ext, b64, mime) => {
-
-        ext = ext.toLowerCase()
-        switch (ext) 
-        {
-            case 'pdf': 
-            {
-               showPDF(b64, fname)
-               break     
-            }
-            case 'txt':
-            {
-                showTXT(b64, fname)
-                break
-            }
-            case 'jpeg':
-            case 'jpg':
-            case 'png':
-            {
-                showIMG(b64, fname, mime)
-                break;
-            }
-            case 'default': {
-                break;
-            }   
-        }
-    }
-
-    const showIMG = (base64, filename, mime) => {
-
-        var img = '<img src="'+base64+'" alt="ciao">'
-        var win = window.open("#","_blank");
-        var title = filename;
-        win.document.write('<html><title>'+ title +'</title><body style="margin-top:0px; margin-left: 0px; margin-right: 0px; margin-bottom: 0px;">');
-        win.document.write(img);
-        win.document.write('</body></html>');
-        jQuery(win.document);
-    }
-
-    const showTXT = (base64, filename) => {
-        var txt = '<pre>'+base64+'</pre>';
-        var win = window.open("#","_blank");
-        var title = filename;
-        win.document.write('<html><title>'+ title +'</title><body style="margin-top:0px; margin-left: 0px; margin-right: 0px; margin-bottom: 0px;">');
-        win.document.write(txt);
-        win.document.write('</body></html>');
-        jQuery(win.document);
-    }
-
-    const showFILE = id => {
-
-        $.ajax({
-            type: 'GET',
-            url: "../../back-end/class/client_resource_handler.php",
-            data: {ACTION:"CONTENT", ID:id, MIME:true},
-            success: response => {
-
-                var aes = new AES(k)   
-                var name = response.name.replaceAll("_", "/")
-
-                const fname = aes.decrypt(name, true)
-                const b64 = aes.decrypt(response.ctx, true)
-                const mime = aes.decrypt(response.mime, true)
-                const ext = fname.includes('.') ? fname.split(".")[fname.split(".").length-1] : "file"
-                openFILE(fname, ext, b64, mime)                
-
-            },
-            error: xhr => {
-                console.log(xhr)
-            }
-        })
-
-    }
-
-    const showPDF = (base64, filename) => {
-
-        var objbuilder = '<object width="100%" height="100%" type="application/pdf" data="'+base64+'"></object>'
-        var win = window.open("#","_blank");
-        var title = filename;
-        win.document.write('<html><title>'+ title +'</title><body style="margin-top:0px; margin-left: 0px; margin-right: 0px; margin-bottom: 0px;">');
-        win.document.write(objbuilder);
-        win.document.write('</body></html>');
-        jQuery(win.document);
-    }
-
     const getCTX = id => {
         $.ajax({
             type: 'GET',
@@ -439,6 +369,8 @@
                     upl: response.upldate
                 }
 
+                fileNames.push(name)
+
                 ids_data[id] = JSON.stringify(filedata)
 
                 var a = visualF(name, "id_file_"+id, "id", filedata)
@@ -453,12 +385,21 @@
         });
     }
 
-    const checkKey = () => {
-        if (k === null){
-            alert("Chiave mancante, e' necessario riaccedere");
-            window.location.href = "../../back-end/class/out.php";
-            return;
-        };
+    const handleExists = (filename) => {
+
+        if (fileNames.includes(filename))
+        {
+            const ext = filename.includes('.') ? "."+filename.split('.')[filename.split('.').length-1] : ""
+            const name = ext === '' ? filename : filename.replace(ext, '')
+            
+            var add = 1;
+            while (fileNames.includes(filename)) 
+            {
+                filename = name+"("+add+')'+ext;
+                add++;
+            }
+        }
+        return filename
     }
 
     $("#ID_FILE_UPLOADER").on('change', (e) => {
@@ -467,7 +408,10 @@
         files.forEach((file) => {
             CLIENT_FILE.TO_BASE64(file)
                 .then((ctx) => {
-                    const fobj = new CLIENT_FILE(file,ctx)
+
+                    var name = handleExists(file.name)
+                    const fobj = new CLIENT_FILE(file,ctx,name)
+
                     var aes = new AES(k);
                     const hash = cryptolib['HASH'].SHA256;
                     const [NAM, CTX, IMP, SIZ, MME] = fobj.ENCRYPT(aes, hash);
@@ -492,7 +436,6 @@
         var BLOB_URL =  FILE_URL.GET_BLOB_URL(BLOB);
         return [BLOB_URL, BLOB]
     }
-
 
     $('#OTP_YN').on('change', () => {
         const otp = $('#OTP_YN').prop('checked')? 1 : 0;
@@ -523,10 +466,6 @@
             }
         })
     }
-
-    $("#ID_UPLOAD").on('click', () => {
-        $('#ID_FILE_UPLOADER').trigger('click');
-    });
 
 </script>
 

@@ -1,20 +1,20 @@
 
 export default class CLIENT_FILE {
 
-    constructor(fileinf, filectx){
-        if (!fileinf.name.includes('.'))
+    constructor(fileinf, filectx, filename){
+        if (!filename.includes('.'))
         {
             this.mime = "file"
             this.ext = "file"
         }
         else
         {
-            const n = fileinf.name.split('.')
+            const n = filename.split('.')
             this.ext = n[n.length-1]
             this.mime = fileinf.type === '' ? 
                 "file/"+n[n.length-1] : fileinf.type
         }
-        this.name = fileinf.name
+        this.name = filename
         this.size = {value: fileinf.size, unit: "byte"}
         this.ctx = filectx
         this.all = fileinf
