@@ -31,6 +31,8 @@
             "TSF_FILE" => "INSERT INTO `secure-cloud`.`transfers` (tdate, `type`, id_user, id_session, id_file) VALUES (NOW(), ?, ?, ?, ?)",
             "SET_2FA" => "UPDATE `secure-cloud`.`users` SET 2FA = ? WHERE id = ?",
             "GET_2FA" => "SELECT 2FA FROM `secure-cloud`.`users` WHERE id = ?",
+            "DEL_FILE" => "DELETE FROM `secure-cloud`.`files` WHERE idf = ?",
+            "SEL_REF" => "SELECT ref FROM `secure-cloud`.`files` WHERE idf = ?",
             "IS_VER" => "SELECT verified FROM `secure-cloud`.`users` WHERE id = ?",
             "UPD_IS_VER" => "UPDATE `secure-cloud`.`users` SET verified = ? WHERE id = ?",
             "INS_TKN_VER" => "INSERT INTO `secure-cloud`.`account_verify` (id_user, htkn, expires) VALUES (?, ?, ADDTIME(NOW(), 10000))",
@@ -99,6 +101,22 @@
             if ($value !== 0 && $value !== 1) return false;
             self::prep(self::QRY['SET_2FA']);
             self::$stmt->bind_param("ii", $value, $id_user);
+            return self::$stmt->execute();
+        }
+
+        public static function sel_ref($idf)
+        {
+            self::prep(self::QRY['SEL_REF']);
+            self::$stmt->bind_param("s", $idf);
+            self::$stmt->execute();
+            $row = self::$stmt->get_result()->fetch_assoc();
+            return isset($row['ref']) ? $row['ref'] : 0;
+        }
+
+        public static function del_file($idf)
+        {
+            self::prep(self::QRY["DEL_FILE"]);
+            self::$stmt->bind_param("s", $idf);
             return self::$stmt->execute();
         }
 

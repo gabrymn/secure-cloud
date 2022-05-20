@@ -132,6 +132,16 @@
 
                 break;
             }
+            case 'DELETE': {
+                $id = $_REQUEST['id'];
+                sqlc::connect();
+                $ref = sqlc::sel_ref($id);
+                unlink($ref);
+                sqlc::del_file($id);
+                echo "File deleted";
+                exit;
+                break;
+            }
             default:
             {
                 response::client_error(405);

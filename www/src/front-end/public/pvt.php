@@ -162,7 +162,7 @@
             <div class="modal-footer">
             <button type="button" class="btn btn-success" id="ID_MODAL_SHOW">SHOW</button>
             <button type="button" class="btn btn-primary" id="ID_MODAL_DOWNLOAD">DOWNLOAD</button>
-            <button type="button" class="btn btn-danger" id="ID_MODAL_DEL">DELETE</button>
+            <button type="button" class="btn btn-danger" data-dismiss="modal" id="ID_MODAL_DEL">DELETE</button>
             </div>
             </div>
             </div>
@@ -172,7 +172,7 @@
 
         <div id="C_LOADING" style="display:none;margin-left:auto;margin-right:auto" class="lds-dual-ring"></div>
 
-        <h1 id="ID_NFS" class="nfs" style="display:none">Nessun file trovato<h1>
+        <h1 id="ID_NFS" class="nfs" style="display:none">Empty cloud<h1>
 
         <div id="CONT_FILES" class="container" style="display:none">
             <div id="C_FILES" class="row">
@@ -208,6 +208,7 @@
     var n_uploads = 0;
     var aes;
     var fileNames = [];
+    var fid = [];
 
     const sleep = ms => new Promise(resolve => setTimeout(resolve, ms))
     const setLoading = state => $("#C_LOADING").css("display", state)  
@@ -247,12 +248,40 @@
                     $('#ID_MODAL_DOWNLOAD').on('click', () => getCTX(id))
                     $('#ID_MODAL_SHOW').prop("onclick",null).off("click");
                     $('#ID_MODAL_SHOW').on('click', () => FileViewer.Show(id, aes, FILE_URL))
+                    $('#ID_MODAL_DEL').prop("onclick",null).off("click");
+                    $('#ID_MODAL_DEL').on('click', () => fdel(id))
                 })
             }
 
             setLoading("none");
             $("#CONT_FILES").css("display", "block")
         })
+    }
+
+    const fdel = id => {
+        $("#id_view_"+id).remove()
+
+        $.ajax({
+            type: 'DELETE',
+            url: "../../back-end/class/client_resource_handler.php?id="+id,
+            success: response => {
+                console.log(response)
+            },
+            error: xhr => {
+                console.log(xhr)
+            }
+        })
+
+        const name = fid[id];
+        const index = fileNames.indexOf(name);
+        fileNames.splice(index, 1);
+
+        if (fileNames.length === 0)
+        {
+            $("#CONT_FILES").css("display", "none")
+            $('#ID_NFS').css("display","block")
+        }
+
     }
 
     const syncData = () => {
@@ -315,9 +344,10 @@
         }
         
         const iconFile = getIcon(ext)
+        const viewID = x.replace("id_file_", "")
 
         return (`
-            <div class="col-6 cardmy">
+            <div id="id_view_${viewID}" class="col-6 cardmy">
                 <div class="card bg-light">
                     <div class="card-body">
                         <br><center><h1 class="${iconFile}" style="font-size:48px;"></h1></center><br>
@@ -370,6 +400,7 @@
                 }
 
                 fileNames.push(name)
+                fid[id] = name
 
                 ids_data[id] = JSON.stringify(filedata)
 

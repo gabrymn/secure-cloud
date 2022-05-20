@@ -65,7 +65,7 @@
         public static function successful(int $status_code = 200, $status_msg = false, array $array = array(), $file = false){
 
             if (!self::status_code_valid($status_code, self::ID_SUCCESSFUL)) response::server_error(500);
-
+            
             http_response_code($status_code);
             $status_msg = self::get_status_msg(self::ID_SUCCESSFUL, $status_code, $status_msg);
 
