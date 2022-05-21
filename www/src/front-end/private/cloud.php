@@ -1,9 +1,8 @@
 <?php
 
-    require_once 'backend-dir.php';
-    require_once __BACKEND__ . 'class/sqlc.php';
-    require_once __BACKEND__ . 'class/response.php';
-    require_once __BACKEND__ . 'class/system.php';
+    require_once '../../back-end/class/sqlc.php';
+    require_once '../../back-end/class/response.php';
+    require_once '../../back-end/class/system.php';
 
     if (isset($_SERVER['REQUEST_METHOD'])){
 
@@ -18,7 +17,7 @@
                     {
                         if (isset($_SESSION['HOTP']))
                         {
-                            header("Location: otp-form.php");
+                            header("Location: otp.php");
                             exit;
                         }
 
@@ -61,12 +60,12 @@
                         }
 
                     }
-                    else header("Location: log.php");
+                    else header("Location: ../public/signin.php");
                 }
                 else if (isset($_COOKIE['rm_tkn'])){
                     system::redirect_remember($_COOKIE['rm_tkn']);
                 }
-                else header("Location: log.php");
+                else header("Location: ../public/signin.php");
 
                 break;
             }
@@ -120,14 +119,35 @@
     </head>
     <body>
 
-        <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+        <nav class="navbar navbar-expand-lg navbar-dark bg-dark" style="border-bottom:1px solid #157EFB">
             <div class="container-fluid">
-                <a class="navbar-brand" href="index.php">Cloud Drive</a>
+                <a class="navbar-brand" style="font-weight:900" href="cloud.php">CLOUD</a>
                 <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
                 <span class="navbar-toggler-icon"></span>
                 </button>
                 <div class="collapse navbar-collapse" id="navbarNav">
                     <ul class="navbar-nav">
+                        <li class="nav-item">
+                            <a class="nav-link active" aria-current="page" href="storage.php">Storage</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link active" aria-current="page" href="transfers.php">Transfers</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link active" aria-current="page" href="sessions.php">Sessions</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link active" aria-current="page" href="settings.php">Settings</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link active" style="font-weight:900" aria-current="page"></a>
+                        </li>
+                        <button onclick="window.location.href='../../back-end/class/out.php'" class="btn btn-dark btn-secondary">
+                          <i class="fa fa-sign-out"></i>
+                          <span>Logout</span>
+                        </button>
+
+                        <!--
                         <li class="nav-item">
                             <a class="nav-link active" aria-current="page" href="../../back-end/class/out.php">Logout</a>
                         </li>
@@ -142,7 +162,7 @@
                         </li>
                         <li class="nav-item">
                             <input id="OTP_YN" type="checkbox">
-                        </li>
+                        </li>-->
                     </ul>
                 </div>
             </div>
@@ -169,10 +189,10 @@
         </div>
 
         <br><br><br>
+        <h1 id="ID_NFS" class="nfs" style="display:none">Empty cloud<h1>
 
         <div id="C_LOADING" style="display:none;margin-left:auto;margin-right:auto" class="lds-dual-ring"></div>
 
-        <h1 id="ID_NFS" class="nfs" style="display:none">Empty cloud<h1>
 
         <div id="CONT_FILES" class="container" style="display:none">
             <div id="C_FILES" class="row">
@@ -524,7 +544,6 @@
     }
 
     .nfs {
-
         color: white;
         font-size: 4rem;
         font-weight: 100;

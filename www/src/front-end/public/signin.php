@@ -1,10 +1,8 @@
 <?php   
 
-    require_once 'backend-dir.php';
-
-    require_once __BACKEND__ . 'class/system.php';
-    require_once __BACKEND__ . 'class/sqlc.php';
-    require_once __BACKEND__ . 'class/response.php';
+    require_once '../../back-end/class/system.php';
+    require_once '../../back-end/class/sqlc.php';
+    require_once '../../back-end/class/response.php';
     
     $success = "";
     $error = "";
@@ -52,7 +50,7 @@
                             if ($status_2FA)
                                 system::redirect_otp_form($id_user);
                             else
-                                header("Location: pvt.php");
+                                header("Location: ../private/cloud.php");
                             
                             exit;
 
@@ -78,14 +76,14 @@
                     {
                         if ($_SESSION['AUTH'] === 2)
                         {
-                            header("Location: pvt.php");
+                            header("Location: ../private/cloud.php");
                             exit;
                         }
                         if ($_SESSION['AUTH'] === 1)
                         {
                             if (!isset($_SESSION['HOTP']))
                             {
-                                header("Location: pvt.php");
+                                header("Location: ../private/cloud.php");
                                 exit;
                             }
                         }
@@ -127,9 +125,7 @@
                         response::print(400, $error, "Invalid or expired email verify link.");
                     }
 
-                    $change_url = "log.php";
-
-                    goto front_end;
+                    $change_url = "signin.php";
                 }
 
                 break;
@@ -143,8 +139,6 @@
         }
     }
     else response::server_error(500);
-
-    front_end:
 
 ?>
 
@@ -169,25 +163,25 @@
         <link href="../img/icon.svg" rel="icon" type="image/x-icon" >
     </head>
     <body>
-        <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+        <nav class="navbar navbar-expand-lg navbar-dark bg-dark" style="border-bottom:1px solid white">
             <div class="container-fluid">
-                <a class="navbar-brand" href="index.php">HOME</a>
+                <a class="navbar-brand" href="../public/">HOME</a>
                 <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
                 <span class="navbar-toggler-icon"></span>
                 </button>
                 <div class="collapse navbar-collapse" id="navbarNav">
                     <ul class="navbar-nav">
                         <li class="nav-item">
-                            <a class="nav-link" href="log.php">Sign in</a>
+                            <a class="nav-link" style="font-weight:900;color:white" href="signin.php">Sign in</a>
                         </li>
                         <li class="nav-item">
-                            <a class="nav-link" href="reg.php">Sign up</a>
+                            <a class="nav-link" style="color:white" href="signup.php">Sign up</a>
                         </li>
                     </ul>
                 </div>
             </div>
         </nav>
-
+        <br>
         <main class="login-form">
             <div class="cotainer">
                 <div class="row justify-content-center">
@@ -210,13 +204,13 @@
                                     <div class="form-group row">
                                         <label for="email_address" class="col-md-4 col-form-label text-md-right">E-Mail Address</label>
                                         <div class="col-md-6">
-                                            <input name="EMAIL" type="email" id="EML" class="form-control" required autofocus>
+                                            <input name="EMAIL" type="email" id="EML" class="form-control" placeholder="user@example.com" required autofocus>
                                         </div>
                                     </div>
                                     <div class="form-group row">
                                         <label for="password" class="col-md-4 col-form-label text-md-right">Password</label>
                                         <div class="col-md-6">
-                                            <input name="PASS" type="password" id="PSW" class="form-control" required>
+                                            <input name="PASS" type="password" id="PSW" class="form-control" placeholder="••••••" required>
                                         </div>
                                     </div>
                                     <div class="form-group row">
@@ -232,7 +226,7 @@
                                         <button type="submit" class="btn btn-primary">
                                             Submit
                                         </button>
-                                        <a href="password-reset/password_reset.php" class="btn btn-link">
+                                        <a href="password-reset/" class="btn btn-link">
                                             Forgot Your Password?
                                         </a>
                                     </div>

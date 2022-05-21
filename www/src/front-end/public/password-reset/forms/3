@@ -5,7 +5,7 @@
 				<div class="card">
 					<div class="card-header">Password changed</div>
 					<div class="card-body">
-						<form onsubmit="return valForm('#QIDP1','#QIDP2');" id="FORM_ID_3" method="GET" action="../log.php">
+						<form onsubmit="return valForm('#QIDP1','#QIDP2');" id="FORM_ID_3" method="GET" action="../signin.php">
 							<div class="col-md-6 offset-md-4">
 								<button type="submit" class="btn btn-primary">
 									Return to sign in

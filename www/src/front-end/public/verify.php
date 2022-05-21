@@ -1,10 +1,8 @@
 <?php
 
-    require_once 'backend-dir.php';
-
-    require_once __BACKEND__ . 'class/system.php';
-    require_once __BACKEND__ . 'class/sqlc.php';
-    require_once __BACKEND__ . 'class/response.php';
+    require_once '../../back-end/class/system.php';
+    require_once '../../back-end/class/sqlc.php';
+    require_once '../../back-end/class/response.php';
 
     $error = "";
 
@@ -17,7 +15,7 @@
                 session_start();
 
                 if (!isset($_SESSION['VERIFING_EMAIL'])){
-                    header("Location: log.php");
+                    header("Location: signin.php");
                     exit;
                 }
 
@@ -30,7 +28,7 @@
                     {
                         $p = "Ti abbiamo inviato un email di verifica, controlla la tua casella di posta";
                         $b = "Clicca per continuare";
-                        $r = 'log.php';
+                        $r = 'signin.php';
                     }
                     else
                     {   
@@ -47,7 +45,7 @@
                         $email = $_SESSION['EMAIL'];
                         system::send_email_verification($email, "verify.php?first=1");
                     }
-                    else header("Location: log.php");
+                    else header("Location: signin.php");
                 }
 
                 break;

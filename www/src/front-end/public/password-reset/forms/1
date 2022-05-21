@@ -5,7 +5,7 @@
 				<div class="card">
 					<div class="card-header">Password reset</div>
 					<div class="card-body">
-						<form id="FORM_ID_1" action="../log.php" method="GET">
+						<form id="FORM_ID_1" action="../signin.php" method="GET">
 							<div class="col-md-6 offset-md-4" style="text-align: left;">
                                 <p>
                                     Check your email for a link to reset your<br>

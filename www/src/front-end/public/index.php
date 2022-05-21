@@ -1,10 +1,8 @@
 <?php
 
-    require_once 'backend-dir.php';
-
-    require_once __BACKEND__ . 'class/system.php';
-    require_once __BACKEND__ . 'class/sqlc.php';
-    require_once __BACKEND__ . 'class/response.php';
+    require_once '../../back-end/class/system.php';
+    require_once '../../back-end/class/sqlc.php';
+    require_once '../../back-end/class/response.php';
 
     if (isset($_SERVER['REQUEST_METHOD']))
     {
@@ -19,14 +17,14 @@
                     {
                         if ($_SESSION['AUTH'] === 2)
                         {
-                            header("Location: pvt.php");
+                            header("Location: ../private/cloud.php");
                             exit;
                         }
                         if ($_SESSION['AUTH'] === 1)
                         {
                             if (!isset($_SESSION['HOTP']))
                             {
-                                header("Location: pvt.php");
+                                header("Location: ../private/cloud.php");
                                 exit;
                             }
                         }
@@ -72,24 +70,40 @@
         <link href="../css/cookie.css" rel="stylesheet">
     </head>
     <body>
-        <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+        <nav class="navbar navbar-expand-lg navbar-dark bg-dark" style="border-bottom:1px solid #157EFB">
         <div class="container-fluid">
-            <a class="navbar-brand" href="index.php">HOME</a>
+            <a class="navbar-brand" style="font-weight:900" href="">HOME</a>
             <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
             <span class="navbar-toggler-icon"></span>
             </button>
             <div class="collapse navbar-collapse" id="navbarNav">
             <ul class="navbar-nav">
                 <li class="nav-item">
-                <a class="nav-link" href="log.php">Sign in</a>
+                <a class="nav-link" style="color:white" href="signin.php">Sign in</a>
                 </li>
                 <li class="nav-item">
-                <a class="nav-link" href="reg.php">Sign up</a>
+                <a class="nav-link" style="color:white" href="signup.php">Sign up</a>
                 </li>
             </ul>
             </div>
         </div>
         </nav>
+
+        <br><br>
+        <div class="jumbotron mainbox">
+
+            <div id="photo" style="text-align: left">
+                <span class="display-4" style="vertical-align:middle">Secure Cloud </span>
+                <img style="vertical-align:middle" src="../img/l.png" width="auto" height="100px" alt="">
+            </div>
+            <br>
+            <p class="lead">Spazio di archiviazione cloud e comunicazione sicura.</p>
+            <p class="lead">I tuoi dati sono cifrati attraverso la crittografia AES.</p>
+            <hr class="my-4">
+            <p class="lead">
+                <a class="btn btn-primary btn-lg" href="signin.php" role="button">Inizia</a>
+            </p>
+        </div>
 
         <div id="ID_COOKIE_BOX" class="row" style="display:none">
             <div class="col-md-4 col-sm-12 button-fixed">
@@ -129,3 +143,14 @@
 
 
 </script>
+
+<style>
+
+    .mainbox {
+
+        width: 90%;
+        margin-left: auto;
+        margin-right: auto;
+    }
+
+</style>

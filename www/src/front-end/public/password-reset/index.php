@@ -1,12 +1,10 @@
 <?php
 
-    define('__BACKEND__', '../../../back-end/');
-
-    require_once __BACKEND__ . 'class/response.php';
-    require_once __BACKEND__ . 'class/sqlc.php';
-    require_once __BACKEND__ . 'class/token.php';
-    require_once __BACKEND__ . 'class/email.php';
-    require_once __BACKEND__ . 'class/dmn.php';
+    require_once '../../../back-end/class/response.php';
+    require_once '../../../back-end/class/sqlc.php';
+    require_once '../../../back-end/class/token.php';
+    require_once '../../../back-end/class/email.php';
+    require_once '../../../back-end/class/dmn.php';
 
     if (!defined('DMN')) define('DMN', get_dmn()); 
 
@@ -43,7 +41,7 @@
 
                     $subject = 'RESET YOUR PASSWORD';
                     $ltkn = $tkn->val();
-                    $message = "click ".DMN."/secure-cloud/www/src/front-end/public/password-reset/password_reset.php?TKN=$ltkn for reset your password";
+                    $message = "click ".DMN."/secure-cloud/www/src/front-end/public/password-reset/?TKN=$ltkn for reset your password";
 
                     send_email($_REQUEST['EMAIL'], $subject, $message);
                     $html_ctx = file_get_contents("forms/1");
@@ -146,9 +144,9 @@
 ?>
 
 <!------ START BOOTSTRAP FORM ---------->
+<script src="//cdnjs.cloudflare.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
 <link href="//maxcdn.bootstrapcdn.com/bootstrap/4.1.1/css/bootstrap.min.css" rel="stylesheet" id="bootstrap-css">
 <script src="//maxcdn.bootstrapcdn.com/bootstrap/4.1.1/js/bootstrap.min.js"></script>
-<script src="//cdnjs.cloudflare.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
 <!------ END BOOTSTRAP FORM ---------->
 
 <!DOCTYPE html>
@@ -167,28 +165,27 @@
 
     <body>
 
-        <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+        <nav class="navbar navbar-expand-lg navbar-dark bg-dark" style="border-bottom:1px solid white">
         <div class="container-fluid">
-            <a class="navbar-brand" href="../index.php">HOME</a>
+            <a class="navbar-brand" href="../../public/">HOME</a>
             <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
             <span class="navbar-toggler-icon"></span>
             </button>
             <div class="collapse navbar-collapse" id="navbarNav">
             <ul class="navbar-nav">
                 <li class="nav-item">
-                <a class="nav-link active" aria-current="page" href="#">end-to-end</a>
                 </li>
                 <li class="nav-item">
-                <a class="nav-link" href="../log.php">Sign in</a>
+                <a class="nav-link" style="color:white" href="../signin.php">Sign in</a>
                 </li>
                 <li class="nav-item">
-                <a class="nav-link" href="../reg.php">Sign up</a>
+                <a class="nav-link" style="color:white" href="../signup.php">Sign up</a>
                 </li>
             </ul>
             </div>
         </div>
         </nav>
-
+        <br>
         <?php
             if (isset($html_ctx))
             { 

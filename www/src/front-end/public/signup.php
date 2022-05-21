@@ -1,11 +1,9 @@
 <?php
 
-    require_once 'backend-dir.php';
-
-    require_once __BACKEND__ . 'class/system.php';
-    require_once __BACKEND__ . 'class/sqlc.php';
-    require_once __BACKEND__ . 'class/response.php';
-    require_once __BACKEND__ . 'class/email.php';
+    require_once '../../back-end/class/system.php';
+    require_once '../../back-end/class/sqlc.php';
+    require_once '../../back-end/class/response.php';
+    require_once '../../back-end/class/email.php';
     
     $error = "";
 
@@ -15,7 +13,7 @@
 
             case 'POST': {
             
-                if (isset($_POST['EMAIL']) && isset($_POST['PASS1']) && isset($_POST['PASS2'])){
+                if (isset($_POST['EMAIL']) && isset($_POST['PASS']) && isset($_POST['NAME']) && isset($_POST['SURNAME'])){
                     
                     $email = $_POST['EMAIL'];
 
@@ -27,8 +25,7 @@
                     }
                     else
                     {                    
-
-                        $pass = $_POST['PASS1'];
+                        $pass = $_POST['PASS'];
                         sqlc::connect();
 
                         if (sqlc::get_id_user($email) > 0){
@@ -43,19 +40,18 @@
                             }
                             else 
                             {
-                                sqlc::insert_cred($email, password_hash($pass, PASSWORD_BCRYPT));
-                                if (!system::mk_dir($email, __BACKEND__))
+                                $name = $_POST['NAME'];
+                                $surname = $_POST['SURNAME'];
+                                sqlc::insert_cred($email, password_hash($pass, PASSWORD_BCRYPT), $name, $surname);
+                                if (!system::mk_dir($email, '../../back-end/'))
                                 {
                                     sqlc::del_user_with_email($email);
                                     response::print(500, $error, "Internal server error, try again.");
                                 }
-                                unset($_POST['EMAIL']);
-                                unset($_POST['PASS1']);
-                                unset($_POST['PASS2']); 
 
                                 session_start();
                                 $_SESSION['VERIFING_EMAIL'] = 1;
-                                system::verify($_REQUEST['EMAIL'], 1);
+                                system::verify($email, 1);
                                 exit;
                             }
                         }
@@ -101,24 +97,25 @@
     <link href="../img/icon.svg" rel="icon" type="image/x-icon" >
 </head>
 <body>
-    <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+    <nav class="navbar navbar-expand-lg navbar-dark bg-dark" style="border-bottom:1px solid white">
         <div class="container-fluid">
-            <a class="navbar-brand" href="index.php">HOME</a>
+            <a class="navbar-brand" href="../public/">HOME</a>
             <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
             <span class="navbar-toggler-icon"></span>
             </button>
             <div class="collapse navbar-collapse" id="navbarNav">
                 <ul class="navbar-nav">
                     <li class="nav-item">
-                        <a class="nav-link" href="log.php">Sign in</a>
+                        <a class="nav-link" style="color:white" href="signin.php">Sign in</a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link" href="reg.php">Sign up</a>
+                        <a class="nav-link" style="font-weight:900;color:white" href="signup.php">Sign up</a>
                     </li>
                 </ul>
             </div>
         </div>
     </nav>
+    <br>
     <main class="login-form">
         <div class="cotainer">
             <div class="row justify-content-center">
@@ -134,21 +131,33 @@
                         <div class="card-body">
                             <form id="ID_REG_FORM" action="<?php $_SERVER['PHP_SELF']; ?>" method="POST">
                                 <div class="form-group row">
+                                    <label for="email_address" class="col-md-4 col-form-label text-md-right">Name</label>
+                                    <div class="col-md-6">
+                                        <input name="NAME" type="text" id="NAME_" class="form-control" maxlength="30" placeholder="John" required autofocus>
+                                    </div>
+                                </div>
+                                <div class="form-group row">
+                                    <label for="email_address" class="col-md-4 col-form-label text-md-right">Surname</label>
+                                    <div class="col-md-6">
+                                        <input name="SURNAME" type="text" id="SURNAME_" class="form-control" maxlength="30" placeholder="Smith" required autofocus>
+                                    </div>
+                                </div>
+                                <div class="form-group row">
                                     <label for="email_address" class="col-md-4 col-form-label text-md-right">E-Mail Address</label>
                                     <div class="col-md-6">
-                                        <input name="EMAIL" type="email" id="EMAIL_" class="form-control" required autofocus>
+                                        <input name="EMAIL" type="email" id="EMAIL_" class="form-control" placeholder="user@example.com" required autofocus>
                                     </div>
                                 </div>
                                 <div class="form-group row">
-                                    <label for="password" class="col-md-4 col-form-label text-md-right">Password</label>
+                                    <label for="password" class="col-md-4 col-form-label text-md-right">New password</label>
                                     <div class="col-md-6">
-                                        <input name="PASS1" type="password" id="PASS_1" class="form-control" required>
+                                        <input name="PASS" type="password" id="PASS_1" class="form-control"  placeholder="••••••" required>
                                     </div>
                                 </div>
                                 <div class="form-group row">
-                                    <label for="password" class="col-md-4 col-form-label text-md-right">Confirm</label>
+                                    <label for="password" class="col-md-4 col-form-label text-md-right">Confirm password</label>
                                     <div class="col-md-6">
-                                        <input name="PASS2" type="password" id="PASS_2" class="form-control" required>
+                                        <input name="PASS2" type="password" id="PASS_2" class="form-control"  placeholder="••••••" required>
                                     </div>
                                 </div>
                                 <div class="col-md-6 offset-md-4">

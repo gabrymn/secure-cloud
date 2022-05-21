@@ -2,7 +2,7 @@
 
     require_once 'request.php';
 
-    function send_email($t, $sbjct, $msg, $red = "log.php")
+    function send_email($t, $sbjct, $msg, $red = "signin.php")
     {
         $sbjct = base64_encode($sbjct);
         $msg = base64_encode($msg);

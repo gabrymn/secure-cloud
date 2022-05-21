@@ -25,6 +25,6 @@
         }
 	}
 
-	header("Location: ../../front-end/public/log.php");
+	header("Location: ../../front-end/public/");
 	exit;
 ?>

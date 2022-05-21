@@ -82,13 +82,13 @@
         public static function send_email_verification($email, $red)
         {
             $token = new token(15, "", "", array("a-z", "0-9"));
-
+            
             sqlc::connect();
             $id_user = sqlc::get_id_user($email);
             sqlc::ins_tkn_verify(intval($id_user), $token->hashed());
-        
+            
             $sub = "Secure-cloud: verify your email";
-            $link = DMN."/secure-cloud/www/src/front-end/public/log.php?";
+            $link = DMN."/secure-cloud/www/src/front-end/public/signin.php?";
             $link .= "tkn={$token->val()}";
             $msg = "Click this link: $link";
 

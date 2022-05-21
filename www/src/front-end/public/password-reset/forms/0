@@ -6,11 +6,11 @@
 				<div class="card">
 					<div class="card-header">Password reset</div>
 					<div class="card-body">
-						<form action="password_reset.php" method="POST">
+						<form action="../password-reset/" method="POST">
 							<div class="form-group row">
 								<label for="email_address" class="col-md-4 col-form-label text-md-right">E-Mail Address</label>
 								<div class="col-md-6">
-									<input name="EMAIL" type="email" id="email_address" class="form-control" required autofocus>
+									<input name="EMAIL" type="email" id="email_address" class="form-control"  placeholder="user@example.com" required autofocus>
 								</div>
 							</div>
 							<div class="col-md-6 offset-md-4">

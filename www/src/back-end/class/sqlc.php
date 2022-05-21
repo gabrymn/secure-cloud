@@ -15,7 +15,7 @@
 
         private const QRY =
         [
-            "INS_CRED" => "INSERT INTO `secure-cloud`.`users` (email, pass, logged_with, 2FA, verified) VALUES (?, ?, 'EMAIL', 0, 0)",
+            "INS_CRED" => "INSERT INTO `secure-cloud`.`users` (email, pass, `name`, surname, logged_with, 2FA, verified) VALUES (?, ?, ?, ?, 'EMAIL', 0, 0)",
             "LOGIN" => "SELECT * FROM `secure-cloud`.`users` WHERE email = ? AND logged_with = 'EMAIL'",
             "ACC_REC" => "INSERT INTO `secure-cloud`.`account_recovery` (id_user, htkn, expires) VALUES (?, ?, ADDTIME(NOW(), 1000))",
             "ID_FROM_EMAIL" => "SELECT id FROM `secure-cloud`.`users` WHERE email = ?",
@@ -25,8 +25,6 @@
             "CH_PASS" => "UPDATE `secure-cloud`.`users` SET pass = ? WHERE email = ?",
             "REM_DEL" => "DELETE FROM `secure-cloud`.`remember` WHERE htkn = ?",
             "REM_SEL" => "SELECT * FROM `secure-cloud`.`remember` WHERE htkn = ? AND expires > NOW()",
-            "OAUTH2_INS" => "INSERT INTO `secure-cloud`.`users` (email, logged_with, 2FA, verified) VALUES (?, 'GOOGLE_OAUTH2')",
-            "OAUTH2_SEL" => "SELECT * FROM `secure-cloud`.`users` WHERE email = ?",
             "DEL_USER_WITH_EMAIL" => "DELETE FROM `secure-cloud`.`users` WHERE email = ?",
             "TSF_FILE" => "INSERT INTO `secure-cloud`.`transfers` (tdate, `type`, id_user, id_session, id_file) VALUES (NOW(), ?, ?, ?, ?)",
             "SET_2FA" => "UPDATE `secure-cloud`.`users` SET 2FA = ? WHERE id = ?",
@@ -327,9 +325,9 @@
             }
         }
 
-        public static function insert_cred($email, $hpass){
+        public static function insert_cred($email, $hpass, $name, $surname){
             self::prep(self::QRY['INS_CRED']);
-            self::$stmt->bind_param("ss", $email, $hpass);
+            self::$stmt->bind_param("ssss", $email, $hpass, $name, $surname);
             return self::$stmt->execute();
         }
 
