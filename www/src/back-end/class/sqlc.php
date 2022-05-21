@@ -15,21 +15,22 @@
 
         private const QRY =
         [
-            "INS_CRED" => "INSERT INTO `secure-cloud`.`users` (email, pass, `name`, surname, logged_with, 2FA, verified) VALUES (?, ?, ?, ?, 'EMAIL', 0, 0)",
-            "LOGIN" => "SELECT * FROM `secure-cloud`.`users` WHERE email = ? AND logged_with = 'EMAIL'",
+            "INS_CRED" => "INSERT INTO `secure-cloud`.`users` (email, pass, `name`, surname, joined, 2FA, verified) VALUES (?, ?, ?, ?, CURDATE(), 0, 0)",
+            "LOGIN" => "SELECT * FROM `secure-cloud`.`users` WHERE email = ?",
             "ACC_REC" => "INSERT INTO `secure-cloud`.`account_recovery` (id_user, htkn, expires) VALUES (?, ?, ADDTIME(NOW(), 1000))",
             "ID_FROM_EMAIL" => "SELECT id FROM `secure-cloud`.`users` WHERE email = ?",
             "EMAIL_FROM_ID" => "SELECT email FROM `secure-cloud`.`users` WHERE id = ?",
             "TKN_ROW" => "SELECT u.email, r.expires FROM `secure-cloud`.`account_recovery` AS r, `secure-cloud`.`users` AS u WHERE u.id = r.id_user AND r.htkn = ? AND r.expires > NOW()",
             "DEL_TKN" => "DELETE FROM `secure-cloud`.`account_recovery` WHERE htkn = ?",
             "CH_PASS" => "UPDATE `secure-cloud`.`users` SET pass = ? WHERE email = ?",
+            "CH_PASS_ID" => "UPDATE `secure-cloud`.`users` SET pass = ? WHERE id = ?",
             "REM_DEL" => "DELETE FROM `secure-cloud`.`remember` WHERE htkn = ?",
             "REM_SEL" => "SELECT * FROM `secure-cloud`.`remember` WHERE htkn = ? AND expires > NOW()",
             "DEL_USER_WITH_EMAIL" => "DELETE FROM `secure-cloud`.`users` WHERE email = ?",
             "TSF_FILE" => "INSERT INTO `secure-cloud`.`transfers` (tdate, `type`, id_user, id_session, id_file) VALUES (NOW(), ?, ?, ?, ?)",
             "SET_2FA" => "UPDATE `secure-cloud`.`users` SET 2FA = ? WHERE id = ?",
             "GET_2FA" => "SELECT 2FA FROM `secure-cloud`.`users` WHERE id = ?",
-            "DEL_FILE" => "DELETE FROM `secure-cloud`.`files` WHERE idf = ?",
+            "DEL_FILE" => "UPDATE `secure-cloud`.`files` SET view = 0 WHERE idf = ?",
             "SEL_REF" => "SELECT ref FROM `secure-cloud`.`files` WHERE idf = ?",
             "IS_VER" => "SELECT verified FROM `secure-cloud`.`users` WHERE id = ?",
             "UPD_IS_VER" => "UPDATE `secure-cloud`.`users` SET verified = ? WHERE id = ?",
@@ -44,9 +45,12 @@
             "SEL_SESS_ALL" => "SELECT * FROM `secure-cloud`.`sessions` WHERE id_user = ? ORDER BY session_status DESC, last_time DESC",
             "SEL_SESS_STATUS" => "SELECT session_status FROM `secure-cloud`.`sessions` WHERE id = ?",
             "INS_FILE_DATA" => "INSERT INTO `secure-cloud`.`files` (idf, fname, ref, size, id_user, mime) VALUES (?,?,?,?,?,?)",
-            "SEL_FILEIDS" => "SELECT idf FROM `secure-cloud`.`files` WHERE id_user = ?",
+            "SEL_FILEIDS" => "SELECT idf FROM `secure-cloud`.`files` WHERE view = 1 AND id_user = ?",
             "SEL_FILE" => "SELECT f.ref AS ref, f.fname AS nam, f.size AS siz, f.mime AS mme, t.tdate AS dat FROM `secure-cloud`.`files` f, `secure-cloud`.`transfers` t WHERE f.idf = t.id_file AND f.idf = ?",
-            "TSF_TBL" => "SELECT f.fname AS filename, f.size AS filesize, t.tdate AS transfer_date, s.ip AS ip_address, t.type AS type FROM files f, transfers t, sessions s WHERE t.id_file = f.idf AND t.id_session = s.id AND t.id_user = ? GROUP BY t.id ORDER BY t.tdate DESC"
+            "TSF_TBL" => "SELECT f.fname AS filename, f.size AS filesize, t.tdate AS transfer_date, s.ip AS ip_address, t.type AS type FROM files f, transfers t, sessions s WHERE t.id_file = f.idf AND t.id_session = s.id AND t.id_user = ? GROUP BY t.id ORDER BY t.tdate DESC",
+            "SEL_USER_BY_ID" => "SELECT `name`, surname, email, notes, 2FA, joined FROM  `secure-cloud`.`users` WHERE id = ?",
+            "UPD_USER_BY_ID" => "UPDATE `secure-cloud`.`users` SET `name` = ?, surname = ?, email = ?, notes = ? WHERE id = ?",
+            "SEL_PASS" => "SELECT pass FROM `secure-cloud`.`users` WHERE id = ?"
         ];
 
         public static function connect($address = "localhost", $name = "USER_STD", $dbname = "secure-cloud")
@@ -117,6 +121,7 @@
             self::$stmt->bind_param("s", $idf);
             return self::$stmt->execute();
         }
+
 
         public static function get_tsf_table($id_user)
         {
@@ -300,30 +305,24 @@
             return self::$stmt->execute();
         }
 
-        public static function ins_OAuth2($email){
-            self::prep(self::QRY['OAUTH2_INS']);
-            self::$stmt->bind_param("s", $email);
+
+        public static function sel_user($id_user)
+        {
+            self::prep(self::QRY['SEL_USER_BY_ID']);
+            self::$stmt->bind_param("i", $id_user);
+            self::$stmt->execute();
+            $row = self::$stmt->get_result()->fetch_assoc();
+            $row['joined'] = date("d-m-Y", strtotime($row['joined']));
+            return $row;
+        }
+
+        public static function upd_user($name, $surname, $email, $notes, $id_user)
+        {
+            self::prep(self::QRY['UPD_USER_BY_ID']);
+            self::$stmt->bind_param("ssssi", $name, $surname, $email, $notes, $id_user);
             return self::$stmt->execute();
         }
-
-        public static function sel_OAuth2($email){
-
-            self::prep(self::QRY['OAUTH2_SEL']);
-            self::$stmt->bind_param("s", $email);
-            self::$stmt->execute();
-            $data = self::$stmt->get_result()->fetch_assoc();
-
-            if (isset($data['id'])){
-                if ($data['logged_with'] === "EMAIL"){
-                    return -1;
-                }else{
-                    return 1;
-                    // gia' registrato con google oauth OK
-                }
-            } else {
-                return 0;
-            }
-        }
+ 
 
         public static function insert_cred($email, $hpass, $name, $surname){
             self::prep(self::QRY['INS_CRED']);
@@ -339,6 +338,21 @@
             if ($data === NULL) return 0;
             if (password_verify($pass, $data['pass'])) return 1;
             else return 0;
+        }
+
+        public static function pwd_ok($pwd, $id_user){
+            self::prep(self::QRY['SEL_PASS']);
+            self::$stmt->bind_param("i", $id_user);
+            self::$stmt->execute();
+            $data = self::$stmt->get_result()->fetch_assoc();
+            if ($data === NULL) return 0;
+            if (password_verify($pwd, $data['pass'])) return 1;
+            else return 0;
+        }
+        public static function pwd_ch($pwd, $id_user){
+            self::prep(self::QRY['CH_PASS_ID']);
+            self::$stmt->bind_param("si", $pwd, $id_user);
+            return self::$stmt->execute();
         }
 
         public static function rec_account($htkn, $id_user){
@@ -399,7 +413,6 @@
             return self::$stmt->execute();
         }
 
-        // funzione query usata solo per gestire acessi tramite OAuth
         public static function qry_exec($qry, $data = true){
             $result = self::$conn->query($qry);
             if ($data === false){

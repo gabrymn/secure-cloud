@@ -152,11 +152,8 @@
             </div>
         </nav>
 
-        <br><br><br>
-        <h1 id="ID_NFS" class="nfs" style="display:none">No transfers<h1>
-
         <br><br>
-        <table class="table table-dark tbls" id="ID_TSF_HEAD" style="display:none">
+        <table class="table table-dark tbls" id="ID_TSF_HEAD">
             <thead>
                 <tr class="chd">
                     <th scope="col">Name</th>
@@ -169,6 +166,8 @@
             </tbody>
         </table>
 
+        <br>
+        <h1 id="ID_NFS" class="nfs" style="display:none">No transfers<h1>
 
         <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-ka7Sk0Gln4gmtz2MlQnikT1wXgYsOg+OMhuP+IlRH9sENBO0LRn5q+8nbTov4+1p" crossorigin="anonymous"></script>
         <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
@@ -199,9 +198,10 @@
                 console.log(response)
                 var tsf = response.TSF
                 if (tsf === 0)
+                {
+                    $('#ID_TSF_HEAD').css("display", "none");
                     $('#ID_NFS').css("display", "block");
-                else
-                    $('#ID_TSF_HEAD').css("display", "block");
+                }
 
                 for (let i = 0; i < tsf.length; i++)
                 {
@@ -238,6 +238,16 @@
 
 <style>
 
+    .FILE_CARDS {
+
+        border: 2px solid white;
+        border-radius: 25px;
+        width: 80%;
+        color: white;
+        margin-left: auto;
+        margin-right: auto;
+        text-align: center;
+    }
 
     .nfs {
         color: white;
@@ -246,13 +256,26 @@
         text-align: center;
     }
 
+    a, h1, h3 {
+
+        color: white;
+    }
+
+    input {
+        color: white;
+        border: 2px solid white;
+        outline: none;
+    }
+
     .tbls {
+
         margin-left: auto;
         margin-right: auto;
         width: 80%;
     }
 
     .chd {
+
         color: #30D2F2;
     }
 

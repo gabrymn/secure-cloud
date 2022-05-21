@@ -189,10 +189,13 @@
         </div>
 
         <br><br><br>
-        <h1 id="ID_NFS" class="nfs" style="display:none">Empty cloud<h1>
+
+        <div class="uploader"><button id="ID_UPLOAD" type="button" class="btn btn-primary btn-lg btn-block">Upload File <i class="fa fa-cloud-upload" aria-hidden="true"></i></i></button></div>
+
+        <br><br>
+        <h1 id="ID_NFS" class="nfs" style="display:none">...<h1>
 
         <div id="C_LOADING" style="display:none;margin-left:auto;margin-right:auto" class="lds-dual-ring"></div>
-
 
         <div id="CONT_FILES" class="container" style="display:none">
             <div id="C_FILES" class="row">
@@ -219,6 +222,7 @@
     import FILE_URL from '../class/blob.js'
     import getIcon from '../class/icon.js'
     import FileViewer from '../class/fileViewer.js'
+    import Cookie from '../class/cookie.js';
     
     const AES = cryptolib['AES']
     const k = "ciao123"
@@ -263,7 +267,7 @@
                     const id = e.target.id.replaceAll("id_file_", "")
                     var data = JSON.parse(ids_data[id])
                     $('#ID_MODAL_TITLE').html(data.name)
-                    $('#ID_MODAL_BODY').html("<strong>Type</strong>: "+data.mime+"<br><strong>Size</strong>: "+data.size+ " byte<br><strong>Upload date</strong>: "+data.upl)
+                    $('#ID_MODAL_BODY').html("<strong>Type</strong>: "+data.mime+"<br><strong>Size: </strong>"+getSizeString(data.size)+"<br><strong>Upload date</strong>: "+data.upl)
                     $('#ID_MODAL_DOWNLOAD').prop("onclick",null).off("click");
                     $('#ID_MODAL_DOWNLOAD').on('click', () => getCTX(id))
                     $('#ID_MODAL_SHOW').prop("onclick",null).off("click");
@@ -277,6 +281,8 @@
             $("#CONT_FILES").css("display", "block")
         })
     }
+
+    const getSizeString = (bytes) => bytes < 1000 ? Math.round(bytes*100)/100 + " B" : bytes >= 1000 && bytes < 1000000 ? Math.round(bytes/1000*100)/100 + " kB" : bytes >= 1000000  && bytes < 1000000000 ? Math.round(bytes/1000000*100)/100 + " MB" : Math.round(bytes/1000000000*100)/100 + " GB"; 
 
     const fdel = id => {
         $("#id_view_"+id).remove()
@@ -380,6 +386,7 @@
     }
 
     const getCTX = id => {
+
         $.ajax({
             type: 'GET',
             url: "../../back-end/class/client_resource_handler.php",
@@ -390,7 +397,6 @@
                 a.style = "display:none";
                 var aes = new AES(k);
                 var [url, blob] = GET_FILE_EXE(response.ctx, aes);
-
                 a.href = url;
                 a.download = JSON.parse(ids_nms[id]).name;
                 a.click();
@@ -526,6 +532,13 @@
         color: white;
         border: 2px solid white;
         outline: none;
+    }
+
+    .uploader {
+
+        width: 70%;
+        margin-left: auto;
+        margin-right: auto;
     }
 
     #CONT_FILES {

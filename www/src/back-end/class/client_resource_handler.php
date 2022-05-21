@@ -135,9 +135,9 @@
             case 'DELETE': {
                 $id = $_REQUEST['id'];
                 sqlc::connect();
+                sqlc::del_file($id);
                 $ref = sqlc::sel_ref($id);
                 unlink($ref);
-                sqlc::del_file($id);
                 echo "File deleted";
                 exit;
                 break;
