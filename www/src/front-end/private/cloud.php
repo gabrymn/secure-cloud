@@ -161,7 +161,7 @@
                             <a class="nav-link active" aria-current="page" href="transfers.php" id="ID_UPLOADY">Transfers</a>
                         </li>
                         <li class="nav-item">
-                            <input id="OTP_YN" type="checkbox">
+                            <input id="OTP_YN" type="checKBox">
                         </li>-->
                     </ul>
                 </div>
@@ -282,7 +282,7 @@
         })
     }
 
-    const getSizeString = (bytes) => bytes < 1000 ? Math.round(bytes*100)/100 + " B" : bytes >= 1000 && bytes < 1000000 ? Math.round(bytes/1000*100)/100 + " kB" : bytes >= 1000000  && bytes < 1000000000 ? Math.round(bytes/1000000*100)/100 + " MB" : Math.round(bytes/1000000000*100)/100 + " GB"; 
+    const getSizeString = (bytes) => bytes < 1000 ? Math.round(bytes*100)/100 + " B" : bytes >= 1000 && bytes < 1000000 ? Math.round(bytes/1000*100)/100 + " KB" : bytes >= 1000000  && bytes < 1000000000 ? Math.round(bytes/1000000*100)/100 + " MB" : Math.round(bytes/1000000000*100)/100 + " GB"; 
 
     const fdel = id => {
         $("#id_view_"+id).remove()

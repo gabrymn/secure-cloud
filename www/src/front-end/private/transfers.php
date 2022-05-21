@@ -153,7 +153,9 @@
         </nav>
 
         <br><br>
-        <table class="table table-dark tbls" id="ID_TSF_HEAD">
+        <h1 id="ID_NFS" class="nfs" style="display:none">No transfers<h1>
+
+        <table style="visibility: hidden;" class="table table-dark tbls" id="ID_TSF_HEAD">
             <thead>
                 <tr class="chd">
                     <th scope="col">Name</th>
@@ -167,7 +169,6 @@
         </table>
 
         <br>
-        <h1 id="ID_NFS" class="nfs" style="display:none">No transfers<h1>
 
         <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-ka7Sk0Gln4gmtz2MlQnikT1wXgYsOg+OMhuP+IlRH9sENBO0LRn5q+8nbTov4+1p" crossorigin="anonymous"></script>
         <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
@@ -198,10 +199,9 @@
                 console.log(response)
                 var tsf = response.TSF
                 if (tsf === 0)
-                {
-                    $('#ID_TSF_HEAD').css("display", "none");
                     $('#ID_NFS').css("display", "block");
-                }
+                else
+                    $('#ID_TSF_HEAD').css("visibility", "visible");
 
                 for (let i = 0; i < tsf.length; i++)
                 {
