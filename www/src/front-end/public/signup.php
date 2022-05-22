@@ -26,12 +26,14 @@
                     else
                     {                    
                         $pass = $_POST['PASS'];
-                        sqlc::connect();
+                        
+                        sqlc::connect("USER_STD_SEL");
 
                         if (sqlc::get_id_user($email) > 0){
                             response::print(400, $error, "Email already taken.");
+                            sqlc::close();
                         }else{
-
+                            sqlc::close();
                             $state = email_is_real($email);
 
                             if (!$state)
@@ -42,10 +44,14 @@
                             {
                                 $name = $_POST['NAME'];
                                 $surname = $_POST['SURNAME'];
+                                sqlc::connect("USER_STD_INS");
                                 sqlc::insert_cred($email, password_hash($pass, PASSWORD_BCRYPT), $name, $surname);
+                                sqlc::close();
                                 if (!system::mk_dir($email, '../../back-end/'))
                                 {
+                                    sqlc::connect("USER_STD_DEL");
                                     sqlc::del_user_with_email($email);
+                                    sqlc::close();
                                     response::print(500, $error, "Internal server error, try again.");
                                 }
 

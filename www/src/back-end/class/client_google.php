@@ -1,5 +1,5 @@
 <?php
-
+    /*
     class client_google {
 
         public static function get_object(){
@@ -35,5 +35,5 @@
             return $value;
         }
     }
-
+    */
 ?>

@@ -7,23 +7,16 @@ START TRANSACTION;
 SET time_zone = "+00:00";
 
 CREATE TABLE `account_recovery` (
-  `id_user` int(11) NOT NULL,
   `htkn` varchar(80) NOT NULL,
+  `id_user` int(11) NOT NULL,
   `expires` datetime NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 CREATE TABLE `account_verify` (
-  `id_user` int(11) NOT NULL,
   `htkn` varchar(64) NOT NULL,
+  `id_user` int(11) NOT NULL,
   `expires` datetime NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
-
-CREATE TABLE `env` (
-  `id` varchar(10) NOT NULL,
-  `key` varchar(30) NOT NULL,
-  `value` varchar(120) NOT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
-
 
 CREATE TABLE `files` (
   `idf` varchar(16) NOT NULL,
@@ -32,6 +25,7 @@ CREATE TABLE `files` (
   `size` int(11) NOT NULL,
   `mime` varchar(200) NOT NULL,
   `id_user` int(11) NOT NULL,
+  `view` int(1) DEFAULT 1,
    PRIMARY KEY(`idf`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
@@ -42,6 +36,11 @@ CREATE TABLE `remember` (
   `id_user` int(11) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
+CREATE TABLE `plans`(
+  `id` int NOT NULL AUTO_INCREMENT,
+  `name` varchar(20) NOT NULL UNIQUE,
+  `gb` int NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 CREATE TABLE `sessions` (
   `id` varchar(20) NOT NULL,
@@ -58,16 +57,17 @@ CREATE TABLE `sessions` (
 
 CREATE TABLE `users` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
+  `name` varchar(40) NOT NULL,
+  `surname` varchar(40) NOT NULL,
   `email` varchar(50) NOT NULL,
-  `pass` varchar(100) NOT NULL,
-  `logged_with` varchar(20) NOT NULL,
-  `2FA` int(11) NOT NULL,
+  `notes` text DEFAULT NULL,
+  `pass` varchar(64) NOT NULL,
+  `2FA` int(1) NOT NULL,
   `verified` int(1) NOT NULL,
+  `joined` date NOT NULL,
+  `id_plan` int(1) DEFAULT 1,
   PRIMARY KEY(`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
-
-INSERT INTO `users` (`id`, `email`, `pass`, `logged_with`, `2FA`, `verified`) VALUES
-(34, 'gabrieledevs@gmail.com', '$2y$10$/VyUb5nT6h1Ppl4HUfB9wujeeLm8SU61PnmtVwPkm2ulURDuq8OxC', 'EMAIL', 0, 1);
 
 CREATE TABLE `transfers` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
@@ -79,26 +79,46 @@ CREATE TABLE `transfers` (
   PRIMARY KEY(`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
-
-/* BEGIN USER-ADMIN */
-
 CREATE USER 'USER_ADMIN'@'localhost';
 GRANT ALL PRIVILEGES ON *.* TO `USER_ADMIN`@`localhost` WITH GRANT OPTION;
 SET PASSWORD FOR 'USER_ADMIN'@'localhost' = PASSWORD('2YGBXYQ8y93dhguc728VXHbk2_h3g782iwkjapzsoj92njl');
 
-/* END USER-ADMIN */
+CREATE USER 'USER_STD_SEL'@'localhost';
+GRANT USAGE ON *.* TO `USER_STD_SEL`@`localhost`;
+GRANT SELECT ON `secure-cloud`.`remember` TO `USER_STD_SEL`@`localhost`;
+GRANT SELECT ON `secure-cloud`.`transfers` TO `USER_STD_SEL`@`localhost`;
+GRANT SELECT ON `secure-cloud`.`account_verify` TO `USER_STD_SEL`@`localhost`;
+GRANT SELECT ON `secure-cloud`.`account_recovery` TO `USER_STD_SEL`@`localhost`;
+GRANT SELECT ON `secure-cloud`.`sessions` TO `USER_STD_SEL`@`localhost`;
+GRANT SELECT ON `secure-cloud`.`plans` TO `USER_STD_SEL`@`localhost`;
+GRANT SELECT ON `secure-cloud`.`users` TO `USER_STD_SEL`@`localhost`;
+GRANT SELECT ON `secure-cloud`.`files` TO `USER_STD_SEL`@`localhost`;
+SET PASSWORD FOR 'USER_STD_SEL'@'localhost' = PASSWORD('stduserzqSxYvjck7e5ORpc9kg0');
 
-/* BEGIN USER-STANDARD */
+CREATE USER 'USER_STD_DEL'@'localhost';
+GRANT USAGE ON *.* TO `USER_STD_DEL`@`localhost`;
+GRANT SELECT, UPDATE, DELETE ON `secure-cloud`.`remember` TO `USER_STD_DEL`@`localhost`;
+GRANT SELECT, UPDATE, DELETE ON `secure-cloud`.`users` TO `USER_STD_DEL`@`localhost`;
+GRANT SELECT, UPDATE, DELETE ON `secure-cloud`.`account_verify` TO `USER_STD_DEL`@`localhost`;
+GRANT SELECT, UPDATE, DELETE ON `secure-cloud`.`account_recovery` TO `USER_STD_DEL`@`localhost`;
+GRANT SELECT, UPDATE, DELETE ON `secure-cloud`.`files` TO `USER_STD_DEL`@`localhost`;
+SET PASSWORD FOR 'USER_STD_DEL'@'localhost' = PASSWORD('stduserwicpjo0dowijckxwn');
 
-CREATE USER 'USER_STD'@'localhost';
-GRANT USAGE ON *.* TO `USER_STD`@`localhost`;
-GRANT SELECT, INSERT ON `secure-cloud`.`transfers` TO `USER_STD`@`localhost`;
-GRANT SELECT, INSERT, UPDATE ON `secure-cloud`.`sessions` TO `USER_STD`@`localhost`;
-GRANT SELECT, INSERT, DELETE ON `secure-cloud`.`remember` TO `USER_STD`@`localhost`;
-GRANT SELECT, INSERT, UPDATE, DELETE ON `secure-cloud`.`users` TO `USER_STD`@`localhost`;
-GRANT SELECT, INSERT, DELETE ON `secure-cloud`.`files` TO `USER_STD`@`localhost`;
-GRANT SELECT, INSERT, DELETE ON `secure-cloud`.`account_recovery` TO `USER_STD`@`localhost`;
-GRANT SELECT, INSERT, DELETE ON `secure-cloud`.`account_verify` TO `USER_STD`@`localhost`;
-SET PASSWORD FOR 'USER_STD'@'localhost' = PASSWORD('zqSxYvjck7e5ORpc9kg0');
+CREATE USER 'USER_STD_INS'@'localhost';
+GRANT USAGE ON *.* TO `USER_STD_INS`@`localhost`;
+GRANT INSERT ON `secure-cloud`.`remember` TO `USER_STD_INS`@`localhost`;
+GRANT INSERT ON `secure-cloud`.`transfers` TO `USER_STD_INS`@`localhost`;
+GRANT INSERT ON `secure-cloud`.`account_verify` TO `USER_STD_INS`@`localhost`;
+GRANT INSERT ON `secure-cloud`.`account_recovery` TO `USER_STD_INS`@`localhost`;
+GRANT INSERT ON `secure-cloud`.`sessions` TO `USER_STD_INS`@`localhost`;
+GRANT INSERT ON `secure-cloud`.`users` TO `USER_STD_INS`@`localhost`;
+GRANT INSERT ON `secure-cloud`.`files` TO `USER_STD_INS`@`localhost`;
+SET PASSWORD FOR 'USER_STD_INS'@'localhost' = PASSWORD('stdusercw8hic3hujxn8y3xbsaq');
 
-/* END USER-STANDARD */
+CREATE USER 'USER_STD_UPD'@'localhost';
+GRANT USAGE ON *.* TO `USER_STD_UPD`@`localhost`;
+GRANT SELECT, UPDATE ON `secure-cloud`.`sessions` TO `USER_STD_UPD`@`localhost`;
+GRANT SELECT, UPDATE ON `secure-cloud`.`plans` TO `USER_STD_UPD`@`localhost`;
+GRANT SELECT, UPDATE ON `secure-cloud`.`files` TO `USER_STD_UPD`@`localhost`;
+GRANT SELECT, UPDATE ON `secure-cloud`.`users` TO `USER_STD_UPD`@`localhost`;
+SET PASSWORD FOR 'USER_STD_UPD'@'localhost' = PASSWORD('stduser823NXWhd2hxiwkl3');

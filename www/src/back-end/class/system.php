@@ -21,11 +21,11 @@
             $t_sql = self::ONE_DAY_SQL * $days;
             $t_cookie = self::ONE_DAY_COOKIE * $days;
 
-            sqlc::connect();
-
+            sqlc::connect("USER_STD_INS");
             $tkn = new token(36, "", "", array("a-z", "0-9"));
             $state = sqlc::rem_ins(hash("sha256", $tkn->val()), $id_user, $t_sql);
-            
+            sqlc::close();
+
             if ($state){
                 setcookie('rm_tkn', $tkn->val(), time() + $t_cookie, "/");
                 return true;
@@ -39,9 +39,10 @@
             $otp = new token("OTP");
             $_SESSION['HOTP'] = array("value" => $otp->hashed(), "exp" => time() + 60*5);
 
-            sqlc::connect();
+            sqlc::connect("USER_STD_SEL");
 
             $email = sqlc::get_email($id_user);
+            sqlc::close();
             $sub = "Verifica OTP";
             $msg = "OTP code: " . $otp->val();
             
@@ -49,25 +50,26 @@
                 header("Location: otp.php");
             else
                 header("Location: signin.php");
-
             exit;
         }
 
         public static function redirect_remember($rm_token){
             $tkn = $rm_token;
             $htkn = hash("sha256", $tkn);
-            sqlc::connect();
+            sqlc::connect("USER_STD_SEL");
             $data = sqlc::rem_sel($htkn);
+            sqlc::close();
             session_start();
             $_SESSION['ID_USER'] = $data['id_user'];
             $_SESSION['AUTH'] = 0;
-            header("Location: pvt.php");
+            header("Location: cloud.php");
         }
         
         public static function mk_dir($email, $dir)
         {
-            sqlc::connect();
+            sqlc::connect("USER_STD_SEL");
             $id_user = sqlc::get_id_user($email);
+            sqlc::close();
             $email_user = $email;
             $dir_user = md5("dir" . $id_user . $email_user);
             return mkdir($dir . "users/" . $dir_user);
@@ -83,10 +85,13 @@
         {
             $token = new token(15, "", "", array("a-z", "0-9"));
             
-            sqlc::connect();
+            sqlc::connect("USER_STD_SEL");
             $id_user = sqlc::get_id_user($email);
+            sqlc::close();
+            sqlc::connect("USER_STD_INS");
             sqlc::ins_tkn_verify(intval($id_user), $token->hashed());
-            
+            sqlc::close();
+
             $sub = "Secure-cloud: verify your email";
             $link = DMN."/secure-cloud/www/src/front-end/public/signin.php?";
             $link .= "tkn={$token->val()}";

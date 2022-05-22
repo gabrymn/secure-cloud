@@ -24,8 +24,9 @@
                     $tkn = new token(150);
                     $htkn = hash('sha256', $tkn->val());
 
-                    sqlc::connect();
+                    sqlc::connect("USER_STD_SEL");
                     $id = sqlc::get_id_user($_REQUEST['EMAIL']);
+                    sqlc::close();
 
                     if ($id === 0)
                     {
@@ -33,11 +34,13 @@
                         goto front_end;
                     }
 
+                    sqlc::connect("USER_STD_INS");
                     if (sqlc::rec_account($htkn, $id) === 0)
                     {
                         response::print(400, $error, "Internal server error. Try again.");
                         goto front_end;
                     }
+                    sqlc::close();
 
                     $subject = 'RESET YOUR PASSWORD';
                     $ltkn = $tkn->val();
@@ -59,20 +62,22 @@
                     // [turn back] <-
                     // [change password](2): error, !EXPIRED URL!
                     {
-                        sqlc::connect();
+                        sqlc::connect("USER_STD_SEL");
                         if (sqlc::get_tkn_row($_REQUEST['HTKN']) === 0)
                         {
                             $html_ctx = file_get_contents("forms/0")."<script>$('#ERROR').css('display','block');$('#ERROR').html('Invalid or expired password reset link.')</script>";
                             $change_url = "password_reset.php"; 
                             goto front_end;
                         }
+                        sqlc::close();
                     }
 
                     $hpass = password_hash($_REQUEST['NEW_PASSWORD'], PASSWORD_BCRYPT);
 
-                    sqlc::connect();
+                    sqlc::connect("USER_STD_DEL");
                     sqlc::del_tkn($_REQUEST['HTKN']);
-                    
+                    sqlc::close();
+
                     if (sqlc::ch_pass($_REQUEST['EMAIL'], $hpass) === 0){
                         response::server_error(500);
                     }
@@ -109,9 +114,10 @@
                     }
 
                     $htkn = hash("sha256", $tkn);
-                    sqlc::connect();
+                    sqlc::connect("USER_STD_SEL");
                     $data = sqlc::get_tkn_row($htkn);
-                    
+                    sqlc::close();
+
                     if ($data === 0)
                     {
                         $html_ctx = file_get_contents("forms/0")."<script>$('#ERROR').css('display','block');$('#ERROR').html('Invalid or expired password reset link.')</script>";

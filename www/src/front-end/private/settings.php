@@ -13,16 +13,15 @@
             case 'GET': {
                 if (isset($_GET['PLANS']) && count($_GET) === 1)
                 {
-                    sqlc::connect();
+                    sqlc::connect("USER_STD_UPD");
                     $plans = sqlc::sel_plans();
                     session_start();
-                    sqlc::connect();
                     $myplan = sqlc::sel_plan($_SESSION['ID_USER']);
                     if (($key = array_search($myplan, $plans)) !== false) 
                     {
                         unset($plans[$key]);
                     }
-
+                    sqlc::close();
                     response::successful(200, false, array("myplan" => $myplan, "plans" => array_values($plans)));
                     exit;
                 }
@@ -40,13 +39,14 @@
 
                         // START SESSION
                         {
-                            sqlc::connect();
 
                             // SESSION IS ACTIVE, UPDATE LAST ACTIVITY
                             if (isset($_SESSION['SESSION_STATUS_ACTIVE']))
                             {
+                                sqlc::connect("USER_STD_UPD");
                                 $session_sc_id = $_SESSION['SESSION_SC_ID'];
                                 sqlc::upd_session($session_sc_id);
+                                sqlc::close();
                             }
                             else
                             // remember me token setted
@@ -90,11 +90,14 @@
                 if (isset($_POST['CHANGE_PLAN']))
                 {
                     $plan = $_POST['CHANGE_PLAN'];
-                    sqlc::connect();
+                    sqlc::connect("USER_STD_SEL");
                     $id_plan = sqlc::sel_id_from_planame($plan);
+                    sqlc::close();
                     session_start();
                     $id_user = $_SESSION['ID_USER'];
+                    sqlc::connect("USER_STD_UPD");
                     sqlc::upd_plan($id_user, $id_plan);
+                    sqlc::close();
                     response::successful(200, "Plan updated: $plan");
                     exit;
                 }
@@ -105,14 +108,15 @@
                     $notes = $_POST['notes'];
 
                     session_start();
-                    sqlc::connect();
 
                     if (isset($_POST['new1']) && isset($_POST['old']))
                     {
                         $psw = $_POST['new1'];
                         $old = $_POST['old'];
 
+                        sqlc::connect("USER_STD_SEL");
                         $old_ok = sqlc::pwd_ok($old, $_SESSION['ID_USER']);
+                        sqlc::close();
 
                         if ($old_ok)
                         {
@@ -120,7 +124,9 @@
                             if ($r === 1)
                             {
                                 $psw = password_hash($psw, PASSWORD_BCRYPT);
+                                sqlc::connect("USER_STD_UPD");
                                 sqlc::pwd_ch($psw, $_SESSION['ID_USER']);
+                                sqlc::close();
                             }
                             else
                             {
@@ -136,13 +142,14 @@
                             exit;
                         }
                     }
-    
+
+                    sqlc::connect("USER_STD_UPD");
                     sqlc::upd_user($name, $surname, $notes, $_SESSION['ID_USER']);
+                    sqlc::close();
                     http_response_code(200);
                     echo "Changes saved correctly";
                     exit;
                 }
-
 
                 break;  
             }
@@ -156,8 +163,10 @@
     }
     else response::server_error(500);
 
-    sqlc::connect();
+    sqlc::connect("USER_STD_SEL");
     $user = sqlc::sel_user($_SESSION['ID_USER']);
+    sqlc::close();
+
 ?>
 
 <!------ START BOOTSTRAP FORM ---------->
@@ -480,6 +489,7 @@
             url: "<?php $_SERVER['PHP_SELF']; ?>",
             data: {PLANS:true},
             success: (response) => {
+                console.log(response)
                 document.getElementById('ID_PLANS').innerHTML += "<option selected=''>"+response.myplan.name+ " (" + response.myplan.gb+ " GB)" +"</option>";
                 changePlanCSS(response.myplan.name);
                 response.plans.forEach((plan) => 

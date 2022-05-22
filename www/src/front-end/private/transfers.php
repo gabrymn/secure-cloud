@@ -7,7 +7,7 @@
     if (isset($_SERVER['REQUEST_METHOD'])){
 
         switch ($_SERVER['REQUEST_METHOD']) {
-            
+
             case 'GET': {
 
                 if (isset($_COOKIE['PHPSESSID']))
@@ -23,26 +23,31 @@
 
                         // START SESSION
                         {
-                            sqlc::connect();
 
                             // SESSION IS ACTIVE, UPDATE LAST ACTIVITY
                             if (isset($_SESSION['SESSION_STATUS_ACTIVE']))
                             {
                                 $session_sc_id = $_SESSION['SESSION_SC_ID'];
+                                sqlc::connect("USER_STD_UPD");
                                 sqlc::upd_session($session_sc_id);
+                                sqlc::close();
                             }
                             else
                             // remember me token setted
                             if (isset($_COOKIE['rm_tkn']))
                             {
+                                sqlc::connect("USER_STD_SEL");
                                 $session = sqlc::sel_session("HTKN", $_COOKIE['rm_tkn']);
+                                sqlc::close();
                                 if ($session)
                                 {
                                     // RESUME
                                     $_SESSION['SESSION_STATUS_ACTIVE'] = 1;
                                     $_SESSION['SESSION_SC_ID'] = $session['id'];
                                     $session_sc_id = $_SESSION['SESSION_SC_ID'];
+                                    sqlc::connect("USER_STD_UPD");
                                     sqlc::upd_session($session_sc_id);
+                                    sqlc::close();
                                 }
                                 else
                                 {
@@ -56,7 +61,9 @@
                                 create_session();
                             }
 
+                            sqlc::connect("USER_STD_SEL");
                             $email = sqlc::get_email($_SESSION['ID_USER']);
+                            sqlc::close();
                         }
 
                     }
@@ -91,7 +98,9 @@
         $http_user_agent = $_SERVER['HTTP_USER_AGENT'];
         $ip = $_SERVER['REMOTE_ADDR'];
         $htkn = isset($_COOKIE['rm_tkn']) ? $_COOKIE['rm_tkn'] : null;
+        sqlc::connect("USER_STD_INS");
         sqlc::add_session($session_id, $http_user_agent, $ip, $_SESSION['ID_USER'], $htkn); 
+        sqlc::close();
         $_SESSION['SESSION_STATUS_ACTIVE'] = 1;
         $_SESSION['SESSION_SC_ID'] = $session_id;
     }

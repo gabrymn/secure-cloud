@@ -14,29 +14,35 @@
                 {
                     session_start();
                     $id_user = $_SESSION['ID_USER'];
-                    sqlc::connect();
+                    sqlc::connect("USER_STD_SEL");
                     $ids = sqlc::sel_fileids($id_user);
+                    sqlc::close();
                     $ids = $ids?$ids:array();
                     response::successful(200, false, array("file_ids" => $ids));
                     exit;
                 }
                 else if (isset($_GET['ACTION']) && isset($_GET['ID']))
-                {
-                    sqlc::connect();
+                {   
+
                     switch ($_GET['ACTION'])
                     {
                         case 'PREVIEW': default: {
+                            sqlc::connect("USER_STD_SEL");
                             $d = sqlc::sel_file($_GET['ID']);
+                            sqlc::close();
                             response::successful(200, false, array("name" => $d['nam'], "size" => $d['siz'], "mme" => $d['mme'], "upldate" => $d['dat']));
                             break;
                         }
                         case 'CONTENT': {
                             session_start();
+                            sqlc::connect("USER_STD_SEL");
                             $d = sqlc::sel_file($_GET['ID']);
-                            
-                            if (isset($_GET['DOWNLOAD']))
+                            sqlc::close();                            
+                            if (isset($_GET['DOWNLOAD'])){
+                                sqlc::connect("USER_STD_INS");
                                 sqlc::ins_tsf_data("d", $_SESSION['ID_USER'], $_SESSION['SESSION_SC_ID'], $_GET['ID']);
-                            
+                                sqlc::close();
+                            }
                             $ctx = file_get_contents($d['ref']);
                             
                             $ar = array("ctx" => $ctx, "name" => $d['nam']);
@@ -56,8 +62,9 @@
                 {
                     session_start();
                     $id_user = $_SESSION['ID_USER'];
-                    sqlc::connect();
+                    sqlc::connect("USER_STD_SEL");
                     $val = intval(sqlc::get_2fa($id_user));
+                    sqlc::close();
                     response::successful(200, false, array("2FA" => $val));
                     exit;
                 }
@@ -65,8 +72,9 @@
                 {
                     session_start();
                     $id_user = $_SESSION['ID_USER'];
-                    sqlc::connect();
+                    sqlc::connect("USER_STD_SEL");
                     $tsf = sqlc::get_tsf_table($id_user);
+                    sqlc::close();
                     response::successful(200, false, array("TSF" => $tsf));
                     exit;
                 }
@@ -88,10 +96,11 @@
                     if ($client_hash === $server_hash)
                     {
                         session_start();
-                        sqlc::connect();
+                        sqlc::connect("USER_STD_SEL");
     
                         $id = $_SESSION['ID_USER'];
                         $email = sqlc::get_email($id);
+                        sqlc::close();
                         $size = $_POST['SIZ'];
                         
                         $dir = md5("dir" . $id . $email);
@@ -105,8 +114,10 @@
                         $id_file = new token(16,"","",array("A-Z", "a-z", "0-9"));
                         $id_file = $id_file->val();
 
+                        sqlc::connect("USER_STD_INS");
                         sqlc::ins_tsf_data("u", $id, $id_session_sc, $id_file);
                         sqlc::ins_file_data($id_file, $filename, $ref, $size, $id, $mime);
+                        sqlc::close();
                         
                         response::successful(201, false, array("id" => $id_file));
                         exit;
@@ -122,8 +133,9 @@
                     session_start();
                     $id_user = $_SESSION['ID_USER'];
                     $val = $_POST['OTP'];
-                    sqlc::connect();
+                    sqlc::connect("USER_STD_UPD");
                     sqlc::set_2fa($id_user, intval($val));
+                    sqlc::close();
                     $msg = $val ? "2FA activated" : "2FA disabled"; 
                     response::successful(201, $msg);
 
@@ -134,9 +146,14 @@
             }
             case 'DELETE': {
                 $id = $_REQUEST['id'];
-                sqlc::connect();
+                
+                sqlc::connect("USER_STD_DEL");
                 sqlc::del_file($id);
+                sqlc::close();
+
+                sqlc::connect("USER_STD_SEL");
                 $ref = sqlc::sel_ref($id);
+                sqlc::close();
                 unlink($ref);
                 echo "File deleted";
                 exit;

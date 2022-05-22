@@ -10,7 +10,10 @@
     {
         private static $conn = null;
         private static $stmt = null;
-        const USER_STD_KEY = "zqSxYvjck7e5ORpc9kg0";
+        const USER_STD_SEL_KEY = "stduserzqSxYvjck7e5ORpc9kg0";
+        const USER_STD_DEL_KEY = "stduserwicpjo0dowijckxwn";
+        const USER_STD_UPD_KEY = "stduser823NXWhd2hxiwkl3";
+        const USER_STD_INS_KEY = "stdusercw8hic3hujxn8y3xbsaq";
         const USER_ADMIN_KEY = "2YGBXYQ8y93dhguc728VXHbk2_h3g782iwkjapzsoj92njl";
 
         private const QRY =
@@ -57,18 +60,10 @@
             "GET_USED_SPACE" => "SELECT SUM(size) AS size FROM `secure-cloud`.`files` WHERE view = 1 AND id_user = ?"
         ];
 
-        public static function connect($address = "localhost", $name = "USER_STD", $dbname = "secure-cloud")
-        {
-            if ($name !== "USER_STD" && $name !== "USER_ADMIN")
-            {
-                //self::$conn = new mysqli("localhost", "root", "", $dbname);
-                response::server_error(400, "Invalid credentials, connection failed");
-            }
-            else
-            {
-                $password = $name==="USER_ADMIN"?self::USER_ADMIN_KEY:self::USER_STD_KEY;
-                self::$conn = new mysqli($address, $name, $password, $dbname);
-            }
+        public static function connect($user, $address = "localhost", $dbname = "secure-cloud")
+        {   
+            $pwd = self::get_pwd($user);
+            self::$conn = new mysqli($address, $user, $pwd, $dbname);
 
             if (self::$conn->connect_error)
             {
@@ -80,6 +75,46 @@
                 //self::del_expired_rows();
                 // connection ok
                 return 1;
+            }
+        }
+
+        public static function close()
+        {
+            if (is_resource(self::$conn) !== false)
+            {
+                self::$conn->close();
+            }
+        }
+
+        private static function get_pwd($user)
+        {
+            switch ($user)
+            {
+                case 'USER_STD_INS': 
+                {
+                    return self::USER_STD_INS_KEY;
+                    break;
+                }
+                case 'USER_STD_SEL': 
+                {
+                    return self::USER_STD_SEL_KEY;
+                    break;
+                }
+                case 'USER_STD_DEL': 
+                {
+                    return self::USER_STD_DEL_KEY;
+                    break;
+                }
+                case 'USER_STD_UPD': 
+                {
+                    return self::USER_STD_UPD_KEY;
+                    break;
+                }
+                case 'USER_ADMIN':
+                {
+                    return self::USER_ADMIN_KEY;
+                    break;
+                }
             }
         }
 
@@ -426,7 +461,6 @@
                     $names[] = array("name" => $row['name'], "gb" => $row['gb']);
                 }
             }
-            self::$conn->close();
             return $names;
         }
 

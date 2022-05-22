@@ -16,7 +16,7 @@
 
                     if (filter_var($_REQUEST['EMAIL'], FILTER_VALIDATE_EMAIL)){
 
-                        sqlc::connect();
+                        sqlc::connect("USER_STD_SEL");
 
                         if (sqlc::login($_REQUEST['EMAIL'], $_REQUEST['PASS'])){
 
@@ -45,13 +45,17 @@
 
                             unset($_REQUEST['EMAIL']);
                             unset($_REQUEST['PASS']);
-
+                            
+                            sqlc::close();
+                            sqlc::connect("USER_STD_SEL");
                             $status_2FA = sqlc::get_2fa($id_user);
+                            sqlc::close();
                             if ($status_2FA)
                                 system::redirect_otp_form($id_user);
                             else
                                 header("Location: ../private/cloud.php");
-                            
+    
+                            sqlc::close();
                             exit;
 
                         }else { 
@@ -107,8 +111,9 @@
 
                 if (isset($_GET['tkn']))
                 {
-                    sqlc::connect();
+                    sqlc::connect("USER_STD_SEL");
                     $id_user = sqlc::get_tkn_verify(hash("sha256", $_GET['tkn']));
+                    sqlc::close();
                     if ($id_user)
                     {
                         if (!session_status()) session_start();
@@ -116,9 +121,13 @@
                         {
                             unset($_SESSION['VERIFING_EMAIL']);
                         }
+                        sqlc::connect("USER_STD_UPD");
                         sqlc::upd_verified(intval($id_user));
+                        sqlc::close();
                         response::print(200, $success, "Hai verificato la tua email, accedi.");
+                        sqlc::connect("USER_STD_DEL");
                         sqlc::del_tkn_verify(intval($id_user));
+                        sqlc::close();
                     }
                     else
                     {

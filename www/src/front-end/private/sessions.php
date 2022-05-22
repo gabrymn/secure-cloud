@@ -23,13 +23,14 @@
 
                         // START SESSION
                         {
-                            sqlc::connect();
 
                             // SESSION IS ACTIVE, UPDATE LAST ACTIVITY
                             if (isset($_SESSION['SESSION_STATUS_ACTIVE']))
                             {
+                                sqlc::connect("USER_STD_UPD");
                                 $session_sc_id = $_SESSION['SESSION_SC_ID'];
                                 sqlc::upd_session($session_sc_id);
+                                sqlc::close();
                             }
                             else
                             // remember me token setted
