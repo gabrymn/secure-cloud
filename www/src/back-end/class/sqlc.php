@@ -49,8 +49,12 @@
             "SEL_FILE" => "SELECT f.ref AS ref, f.fname AS nam, f.size AS siz, f.mime AS mme, t.tdate AS dat FROM `secure-cloud`.`files` f, `secure-cloud`.`transfers` t WHERE f.idf = t.id_file AND f.idf = ?",
             "TSF_TBL" => "SELECT f.fname AS filename, f.size AS filesize, t.tdate AS transfer_date, s.ip AS ip_address, t.type AS type FROM files f, transfers t, sessions s WHERE t.id_file = f.idf AND t.id_session = s.id AND t.id_user = ? GROUP BY t.id ORDER BY t.tdate DESC",
             "SEL_USER_BY_ID" => "SELECT `name`, surname, email, notes, 2FA, joined FROM  `secure-cloud`.`users` WHERE id = ?",
-            "UPD_USER_BY_ID" => "UPDATE `secure-cloud`.`users` SET `name` = ?, surname = ?, email = ?, notes = ? WHERE id = ?",
-            "SEL_PASS" => "SELECT pass FROM `secure-cloud`.`users` WHERE id = ?"
+            "UPD_USER_BY_ID" => "UPDATE `secure-cloud`.`users` SET `name` = ?, surname = ?, notes = ? WHERE id = ?",
+            "SEL_PASS" => "SELECT pass FROM `secure-cloud`.`users` WHERE id = ?",
+            "SEL_PLAN" => "SELECT p.name AS PLAN_NAME, p.gb AS SIZE FROM users u, plans p WHERE u.id_plan = p.id AND u.id = ?",
+            "SEL_ID_FROM_PLANAME" => "SELECT id FROM plans WHERE name = ?",
+            "UPD_PLAN" => "UPDATE `secure-cloud`.`users` SET `id_plan` = ? WHERE id = ?",
+            "GET_USED_SPACE" => "SELECT SUM(size) AS size FROM `secure-cloud`.`files` WHERE view = 1 AND id_user = ?"
         ];
 
         public static function connect($address = "localhost", $name = "USER_STD", $dbname = "secure-cloud")
@@ -316,10 +320,10 @@
             return $row;
         }
 
-        public static function upd_user($name, $surname, $email, $notes, $id_user)
+        public static function upd_user($name, $surname, $notes, $id_user)
         {
             self::prep(self::QRY['UPD_USER_BY_ID']);
-            self::$stmt->bind_param("ssssi", $name, $surname, $email, $notes, $id_user);
+            self::$stmt->bind_param("sssi", $name, $surname, $notes, $id_user);
             return self::$stmt->execute();
         }
  
@@ -411,6 +415,53 @@
             self::prep(self::QRY['DEL_USER_WITH_EMAIL']);
             self::$stmt->bind_param("s", $email);
             return self::$stmt->execute();
+        }
+
+        public static function sel_plans(){
+            $sql = "SELECT name, gb FROM plans";
+            $result = self::$conn->query($sql);
+            $names = array();
+            if ($result->num_rows > 0) {
+                while($row = $result->fetch_assoc()) {
+                    $names[] = array("name" => $row['name'], "gb" => $row['gb']);
+                }
+            }
+            self::$conn->close();
+            return $names;
+        }
+
+        public static function sel_plan($id_user)
+        {
+            self::prep(self::QRY['SEL_PLAN']);
+            self::$stmt->bind_param("i", $id_user);
+            self::$stmt->execute();
+            $row = self::$stmt->get_result()->fetch_assoc();
+            return isset($row['PLAN_NAME']) ? array("name" => $row['PLAN_NAME'], "gb" => $row['SIZE']) : 0;
+        }
+
+        public static function sel_id_from_planame($name)
+        {
+            self::prep(self::QRY['SEL_ID_FROM_PLANAME']);
+            self::$stmt->bind_param("s", $name);
+            self::$stmt->execute();
+            $data = self::$stmt->get_result()->fetch_assoc();
+            return isset($data['id']) ? intval($data['id']) : 0;
+        }
+
+        public static function upd_plan($id_user, $id_plan)
+        {
+            self::prep(self::QRY['UPD_PLAN']);
+            self::$stmt->bind_param("ii", $id_plan, $id_user);
+            return self::$stmt->execute();
+        }
+
+        public static function get_used_space($id_user)
+        {
+            self::prep(self::QRY['GET_USED_SPACE']);
+            self::$stmt->bind_param("i", $id_user);
+            self::$stmt->execute();
+            $data = self::$stmt->get_result()->fetch_assoc();
+            return isset($data['size']) ? $data['size'] : 0;
         }
 
         public static function qry_exec($qry, $data = true){

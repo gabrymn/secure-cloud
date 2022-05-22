@@ -45,10 +45,10 @@
             $sub = "Verifica OTP";
             $msg = "OTP code: " . $otp->val();
             
-            if (send_email($email, $sub, $msg, "otp-form.php"))
-                header("Location: otp-form.php");
+            if (send_email($email, $sub, $msg, "otp.php"))
+                header("Location: otp.php");
             else
-                header("Location: log.php");
+                header("Location: signin.php");
 
             exit;
         }

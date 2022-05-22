@@ -17,7 +17,7 @@
                     {
                         if (isset($_SESSION['HOTP']))
                         {
-                            header("Location: otp.php");
+                            header("Location: ../public/otp.php");
                             exit;
                         }
 
@@ -96,6 +96,9 @@
         $_SESSION['SESSION_SC_ID'] = $session_id;
     }
 
+    sqlc::connect();
+    $size = sqlc::get_used_space($_SESSION['ID_USER']);
+    $tot = sqlc::sel_plan($_SESSION['ID_USER'])['gb'];
 ?>
 
 <!------ START BOOTSTRAP FORM ---------->
@@ -153,6 +156,15 @@
 
         <br><br><br>
 
+
+        <h5 id="ID_NFS" class="nfs">Spazio occupato<h5>
+        <br><br>
+        <div class="progress" style="width:80%;margin-left:auto;margin-right:auto;">
+            <div id="ID_PB" class="progress-bar" role="progressbar" aria-valuenow="25" aria-valuemin="0" aria-valuemax="100"></div>
+        </div>
+        <br><br>
+        <p id="ID_FS" style="font-size:1.7rem" class="nfs" >Hai a disposizione ancora </p>
+
         <div id="C_LOADING" style="display:none;margin-left:auto;margin-right:auto" class="lds-dual-ring"></div>
 
         <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-ka7Sk0Gln4gmtz2MlQnikT1wXgYsOg+OMhuP+IlRH9sENBO0LRn5q+8nbTov4+1p" crossorigin="anonymous"></script>
@@ -166,9 +178,40 @@
 
 <script type="module">
     
+
+    $('document').ready(() => {
+        draw();
+    })
+
+    const draw = () => {
+        const s = "<?php echo $size; ?>";
+        console.log(s);
+        var t = "<?php echo $tot; ?>";
+        const tot = t;
+        t *= 1000000000;
+        const perc = s/t*100;
+        console.log(perc)
+        $('#ID_PB').css("width", (perc) + "%")
+        if (perc >= 70 && perc <= 90)
+            $('#ID_PB').css("background-color", "yellow")
+        else if (perc >= 90 && perc <= 100)
+            $('#ID_PB').css("background-color", "#FE130F")
+        else 
+            $('#ID_PB').css("background-color", "#00FF00")
+        $('#ID_NFS').html($('#ID_NFS').html() +": "+Math.round(s/t*100*100)/100 + "%" + " (" +Math.round(s/1000000000*10000)/10000+ " GB)");
+        $('#ID_FS').html($('#ID_FS').html() +" "+Math.round((parseInt(t)-parseInt(s))/1000000000*10000)/10000+" GB su "+tot+" GB");
+    }   
+
 </script>
 
 <style>
+
+    .nfs {
+        color: white;
+        font-size: 4rem;
+        font-weight: 100;
+        text-align: center;
+    }
 
     input {
         color: white;

@@ -11,6 +11,22 @@
         {
 
             case 'GET': {
+                if (isset($_GET['PLANS']) && count($_GET) === 1)
+                {
+                    sqlc::connect();
+                    $plans = sqlc::sel_plans();
+                    session_start();
+                    sqlc::connect();
+                    $myplan = sqlc::sel_plan($_SESSION['ID_USER']);
+                    if (($key = array_search($myplan, $plans)) !== false) 
+                    {
+                        unset($plans[$key]);
+                    }
+
+                    response::successful(200, false, array("myplan" => $myplan, "plans" => array_values($plans)));
+                    exit;
+                }
+
                 if (isset($_COOKIE['PHPSESSID']))
                 {
                     session_start();
@@ -18,7 +34,7 @@
                     {
                         if (isset($_SESSION['HOTP']))
                         {
-                            header("Location: otp.php");
+                            header("Location: ../public/otp.php");
                             exit;
                         }
 
@@ -71,39 +87,62 @@
 
             case 'POST': {
 
-                $name = $_POST['NAME'];
-                $surname = $_POST['SURNAME'];
-                $email = $_POST['EMAIL'];
-                $notes = $_POST['NOTES'];
-                $old = $_POST['OLD_PSS'];
-                $new1 = $_POST['NEW_PSS1'];
-                $new2 = $_POST['NEW_PSS2'];
-
-                session_start();
-                sqlc::connect();
-
-                if ($old !== "") 
+                if (isset($_POST['CHANGE_PLAN']))
                 {
-                    if ($new1 !== $new2)
+                    $plan = $_POST['CHANGE_PLAN'];
+                    sqlc::connect();
+                    $id_plan = sqlc::sel_id_from_planame($plan);
+                    session_start();
+                    $id_user = $_SESSION['ID_USER'];
+                    sqlc::upd_plan($id_user, $id_plan);
+                    response::successful(200, "Plan updated: $plan");
+                    exit;
+                }
+                else
+                {
+                    $name = $_POST['name'];
+                    $surname = $_POST['surname'];
+                    $notes = $_POST['notes'];
+
+                    session_start();
+                    sqlc::connect();
+
+                    if (isset($_POST['new1']) && isset($_POST['old']))
                     {
-                        response::client_error(400);
-                    }
-                    $r = check_pwd(true, $new1);
-                    if ($r === 1)
-                    {
-                        $old_ok = sqlc::pwd_ok($old, $id_user);
+                        $psw = $_POST['new1'];
+                        $old = $_POST['old'];
+
+                        $old_ok = sqlc::pwd_ok($old, $_SESSION['ID_USER']);
+
                         if ($old_ok)
                         {
-                            sqlc::pwd_ch($new1, $_SESSION['ID_USER']);
+                            $r = check_pwd(true, $psw);
+                            if ($r === 1)
+                            {
+                                $psw = password_hash($psw, PASSWORD_BCRYPT);
+                                sqlc::pwd_ch($psw, $_SESSION['ID_USER']);
+                            }
+                            else
+                            {
+                                http_response_code(400);
+                                echo $r;
+                                exit;
+                            }
+                        }
+                        else
+                        {
+                            http_response_code(400);
+                            echo "Password non corretta";
+                            exit;
                         }
                     }
-                    else
-                    {
-                        echo $r; exit;
-                    }
+    
+                    sqlc::upd_user($name, $surname, $notes, $_SESSION['ID_USER']);
+                    http_response_code(200);
+                    echo "Changes saved correctly";
+                    exit;
                 }
 
-                sqlc::upd_user($name, $surname, $email, $notes, $_SESSION['ID_USER']);
 
                 break;  
             }
@@ -196,7 +235,7 @@
     <br>
     </div>
     <div class="text-center text-sm-right">
-    <span class="badge badge-secondary">standard plan</span>
+    <span id="ID_BOX_PLAN" class="badge badge-secondary"></span>
     <div class="text-muted"><small>Joined <?php echo $user['joined'] ?></small></div>
     </div>
     </div>
@@ -206,20 +245,20 @@
     </ul>
     <div class="tab-content pt-3">
     <div class="tab-pane active">
-    <form class="form" action="<?php $_SERVER['PHP_SELF']; ?>" method="POST">
+    <form id="ID_INF_FORM" class="form" onsubmit="return false">
     <div class="row">
     <div class="col">
     <div class="row">
     <div class="col">
     <div class="form-group">
     <label>Name</label>
-    <input class="form-control" type="text" name="NAME" placeholder="John" value="<?php echo $user['name']; ?>" required>
+    <input id="ID_NAME" class="form-control" type="text" name="NAME" placeholder="John" value="<?php echo $user['name']; ?>" required>
     </div>
     </div>
     <div class="col">
     <div class="form-group">
     <label>Surname</label>
-    <input class="form-control" type="text" name="SURNAME" placeholder="Smith" value="<?php echo $user['surname']; ?>" required>
+    <input id="ID_SURNAME" class="form-control" type="text" name="SURNAME" placeholder="Smith" value="<?php echo $user['surname']; ?>" required>
     </div>
     </div>
     </div>
@@ -227,7 +266,7 @@
     <div class="col">
     <div class="form-group">
     <label>E-Mail Address</label>
-    <input class="form-control" type="text" name="EMAIL" placeholder="user@example.com" value="<?php echo $user['email']; ?>" required>
+    <input class="form-control" type="text" placeholder="user@example.com" value="<?php echo $user['email']; ?>" readonly>
     </div>
     </div>
     </div>
@@ -235,12 +274,24 @@
     <div class="col mb-3">
     <div class="form-group">
     <label>Notes</label>
-    <textarea name="NOTES" maxlength="65535" class="form-control" rows="5" placeholder="Notes"><?php echo $user['notes']; ?></textarea>
+    <textarea id="ID_NOTES_" name="NOTES" maxlength="65535" class="form-control" rows="5" placeholder="Notes"></textarea>
     </div>
     </div>
     </div>
     </div>
     </div>
+    <br>
+    <li class="nav-item">
+        <p class="checkboxtext">2-Factor Authentication (2FA) &nbsp;&nbsp;</p> 
+        <input id="OTP_YN" type="checKBox">
+    </li>
+    <br>
+    <li class="nav-item">
+        <p class="checkboxtext">Your plan: &nbsp;&nbsp;</p>
+        <select id="ID_PLANS" class="browser-default custom-select" style="width:40%">
+        </select>
+    </li>
+    <br><br>
     <div class="row">
     <div class="col-12 col-sm-6 mb-3">
     <div class="mb-2"><b>Change Password</b></div>
@@ -248,7 +299,7 @@
     <div class="col">
     <div class="form-group">
     <label>Current Password</label>
-    <input name="OLD_PSS" class="form-control" type="password" placeholder="••••••">
+    <input id="OLD_PSS" class="form-control" type="password" placeholder="••••••">
     </div>
     </div>
     </div>
@@ -256,7 +307,7 @@
     <div class="col">
     <div class="form-group">
     <label>New Password</label>
-    <input name="NEW_PSS1" class="form-control" type="password" placeholder="••••••">
+    <input id="NEW_PSS1" class="form-control" type="password" placeholder="••••••">
     </div>
     </div>
     </div>
@@ -264,16 +315,16 @@
     <div class="col">
     <div class="form-group">
     <label>Confirm <span class="d-none d-xl-inline">Password</span></label>
-    <input name="NEW_PSS2" class="form-control" type="password" placeholder="••••••"></div>
+    <input id="NEW_PSS2" class="form-control" type="password" placeholder="••••••"></div>
     </div>
     </div>
     </div>
     </div>
-    <div class="row">
-    <div class="col d-flex justify-content-end">
-    <button class="btn btn-primary" type="submit">Save Changes</button>
-    </div>
-    </div>
+        <div class="row">
+            <div class="col d-flex justify-content-end">
+                <button id="ID_SAVE_CH" class="btn btn-primary" type="submit">Save Changes</button>
+            </div>
+        </div>
     </form>
     </div>
     </div>
@@ -303,15 +354,152 @@
 
 <script type="module">
 
-    "use strict";
+    "use strict"
+
+    import cryptolib from '../class/cryptolib.js'
+    
+    const AES = cryptolib['AES']
+    var aes = new AES("ciao123");
 
     $('document').ready(() => {
+        sync2FAstate()
+        getPlans()
+        decryptNotes()
     });
+
+    const decryptNotes = () => {
+        $('#ID_NOTES_').val(aes.decrypt("<?php echo $user['notes']; ?>", true))
+    }
+
+    $('#ID_SAVE_CH').on('click', () => {
+
+        const name = $('#ID_NAME').val();
+        const surname = $('#ID_SURNAME').val();
+        var notes = $('#ID_NOTES_').val();
+        const old = $('#OLD_PSS').val();
+        const new1 = $('#NEW_PSS1').val();
+        const new2 = $('#NEW_PSS2').val();
+        var data;
+
+        notes = aes.encrypt(notes, true);
+
+        if (old === "")
+            data = {name, surname, notes}
+        else
+        {
+            if (new1 === new2)
+                data = {name, surname, notes, new1, old}
+            else {
+                alert("Password differenti")
+                return
+            }
+        }
+
+        $.ajax({
+            type: 'POST',
+            url: "<?php echo $_SERVER['PHP_SELF']; ?>",
+            data: data,
+            success: response => {
+                alert(response);
+            },
+            error: xhr => {
+                alert(xhr.responseText);
+            }
+        })
+/*
+        const plain = $('#ID_NOTES_').html();
+        $('#ID_NOTES_').html((aes.encrypt(plain, true)));
+        
+        console.log($('#ID_NOTES_').html())
+        return*/
+    })
+
+    $('#OTP_YN').on('change', () => {
+        const otp = $('#OTP_YN').prop('checked')? 1 : 0;
+        $.ajax({
+            type: 'POST',
+            url: "../../back-end/class/client_resource_handler.php",
+            data: {OTP:otp},
+            success: (response) => {
+                console.log(response);
+            },
+            error: (xhr) => {
+                console.log(xhr);
+            }
+        })
+    })
+
+    const changePlanCSS = (planame) => {
+
+        $('#ID_BOX_PLAN').html(planame + " plan");
+        if (planame === "Standard")
+            $('#ID_BOX_PLAN').css("background-color", "var(--silver)");
+        else
+            $('#ID_BOX_PLAN').css("background-color", "var(--gold)");
+    }
+
+    $('#ID_PLANS').on('change', () => {
+        var val = $('#ID_PLANS').val().split("");
+        var planame = "";
+        for (let i=0; val[i] !== " "; i++)
+            planame += val[i];
+
+        changePlanCSS(planame);
+
+        $.ajax({
+            type: 'POST',
+            url: "<?php $_SERVER['PHP_SELF']; ?>",
+            data: {CHANGE_PLAN:planame},
+            success: (response) => {
+                console.log(response);
+            },
+            error: (xhr) => {
+                console.log(xhr);
+            }
+        })
+    })
+
+    const sync2FAstate = () => {
+        $.ajax({
+            type: 'GET',
+            url: "../../back-end/class/client_resource_handler.php",
+            data: {OTPSTATE:1},
+            success: (response) => {
+                const val = response["2FA"];
+                if (val === 1) $('#OTP_YN').prop('checked', true)     
+            },
+            error: (xhr) => {
+                console.log(xhr);
+            }
+        })
+    }
+
+    const getPlans = () => {
+        $.ajax({
+            type: 'GET',
+            url: "<?php $_SERVER['PHP_SELF']; ?>",
+            data: {PLANS:true},
+            success: (response) => {
+                document.getElementById('ID_PLANS').innerHTML += "<option selected=''>"+response.myplan.name+ " (" + response.myplan.gb+ " GB)" +"</option>";
+                changePlanCSS(response.myplan.name);
+                response.plans.forEach((plan) => 
+                    document.getElementById('ID_PLANS').innerHTML += "<option>"+plan.name + " (" + plan.gb+ " GB)" +"</option>"
+                )
+            },
+            error: (xhr) => {
+                console.log(xhr);
+            }
+        })
+    }
 
 </script>
 
 <style>
 
+    :root {
+        --gold: #BBA14F;
+        --silver: #6C757D;
+    }
 
     a, h1, h3 {
 
@@ -334,6 +522,28 @@
     .chd {
 
     color: #30D2F2;
+    }
+
+
+    input[type=checkbox]
+    {
+        -ms-transform: scale(2); /* IE */
+        -moz-transform: scale(2); /* FF */
+        -webkit-transform: scale(2); /* Safari and Chrome */
+        -o-transform: scale(2); /* Opera */
+        transform: scale(2);
+        padding: 10px;
+    }
+
+    input[type=checkbox]:hover
+    {
+        cursor: pointer;
+    }
+
+    .checkboxtext
+    {
+        font-size: 110%;
+        display: inline;
     }
 
 

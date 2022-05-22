@@ -17,7 +17,7 @@
                     {
                         if (isset($_SESSION['HOTP']))
                         {
-                            header("Location: otp.php");
+                            header("Location: ../public/otp.php");
                             exit;
                         }
 

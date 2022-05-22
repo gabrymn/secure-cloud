@@ -1,9 +1,7 @@
 <?php
 
-    require_once 'backend-dir.php';
-
-    require_once __BACKEND__ . 'class/response.php';
-    require_once __BACKEND__ . 'class/system.php';
+    require_once '../../back-end/class/response.php';
+    require_once '../../back-end/class/system.php';
 
     $error = "";
 
@@ -15,7 +13,7 @@
                     session_start();
                     
                     if (isset($_SESSION['AUTH']) && !isset($_SESSION['HOTP'])){
-                        header("Location: pvt.php");
+                        header("Location: ../private/cloud.php");
                         exit;
                     }
 
@@ -25,14 +23,14 @@
                     if (time() > $exp)
                     {
                         unset($_SESSION['HOTP']);
-                        header("Location: log.php");
+                        header("Location: signin.php");
                         exit;
                     }
                     if ($hotp === $_SESSION['HOTP']['value'])
                     {
                         unset($_SESSION['HOTP']);
                         $_SESSION['AUTH'] = 2;
-                        header("Location: pvt.php");
+                        header("Location: ../private/cloud.php");
                         exit;
                     }
                     else
@@ -100,6 +98,7 @@
         <link href="../img/icon.svg" rel="icon" type="image/x-icon" >
     </head>
     <body>
+        <br>
         <main class="login-form">
             <div class="cotainer">
                 <div class="row justify-content-center">

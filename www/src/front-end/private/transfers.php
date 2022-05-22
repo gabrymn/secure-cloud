@@ -7,7 +7,7 @@
     if (isset($_SERVER['REQUEST_METHOD'])){
 
         switch ($_SERVER['REQUEST_METHOD']) {
-
+            
             case 'GET': {
 
                 if (isset($_COOKIE['PHPSESSID']))
@@ -17,7 +17,7 @@
                     {
                         if (isset($_SESSION['HOTP']))
                         {
-                            header("Location: otp.php");
+                            header("Location: ../public/otp.php");
                             exit;
                         }
 
