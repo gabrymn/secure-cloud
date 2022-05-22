@@ -185,28 +185,92 @@
 
 <script type="module">
     
+    import Polling from '../class/polling.js'
+
+    var SESSION_SC_ID;
 
     $('document').ready(() => {
+        SESSION_SC_ID = ("<?php echo $_SESSION['SESSION_SC_ID']; ?>");
         draw();
+        syncSession();
+        var getSessionStatus = new Polling(sessionStatus, 5000);
+        getSessionStatus.Start();
     })
+
+    const sessionStatus = () => {
+        $.ajax({
+            url: "../../back-end/class/sessions_handler.php",
+            data: {SESSION_ID:SESSION_SC_ID},
+            type: "GET",
+            success: (response) => {
+                console.info("session status "+response);
+                if (response == 0)
+                {
+                    alert("Sessione terminata, clicca ok per continuare");
+                    window.location.href = "../../back-end/class/out.php"
+                }
+            },
+            error: (xhr) => {
+                console.log(xhr);
+            }
+        })
+    }
+    const syncSession = () => {
+
+        $.ajax({
+            url: "../../back-end/class/sessions_handler.php",
+            data: {SESSIONS_DATA:true},
+            type: "GET",
+            success: (response) => {
+                SESSION_SC_ID = "<?php echo $_SESSION['SESSION_SC_ID']; ?>";
+            },
+            error: (xhr) => {
+                console.log(xhr);
+            } 
+        });
+    }
 
     const draw = () => {
         const s = "<?php echo $size; ?>";
-        console.log(s);
         var t = "<?php echo $tot; ?>";
         const tot = t;
+        var u = "";
+        var used = "";
+        if (s < 1000)
+        {
+            used += s/100*100 
+            u = "B"
+        }else if (s >= 1000 && s < 1000000)
+        {
+            used += s/1000;
+            u = "KB";
+        }
+        else if (s >= 1000000 && s < 1000000)
+        {
+            used += s/1000000;
+            u = "MB";
+        }
+        else 
+        {
+            used += s/1000000000;
+            u = "GB";
+        }
+
+        used = Math.round(used*100)/100;
+
         t *= 1000000000;
-        const perc = s/t*100;
-        console.log(t)
-        $('#ID_PB').css("width", (perc) + "%")
-        if (perc >= 70 && perc <= 90)
+        var perc = Math.floor(s/t*100*100)/100;
+        $('#ID_PB').css("width", Math.floor(perc*10000)/10000 + "%")
+        if (perc === 0)
+            perc = " < 1";
+        if (perc >= 70 && perc < 80)
             $('#ID_PB').css("background-color", "yellow")
-        else if (perc >= 90 && perc <= 100)
+        else if (perc >= 80 && perc <= 100)
             $('#ID_PB').css("background-color", "#FE130F")
         else 
             $('#ID_PB').css("background-color", "#00FF00")
-        $('#ID_NFS').html($('#ID_NFS').html() +": "+Math.round(s/t*100*100)/100 + "%" + " (" +Math.round(s/1000000000*10000)/10000+ " GB)");
-        $('#ID_FS').html($('#ID_FS').html() +" "+Math.round((parseInt(t)-parseInt(s))/1000000000*10000)/10000+" GB su "+tot+" GB");
+        $('#ID_NFS').html($('#ID_NFS').html() +": " + perc + "%" + " (" + used + " " + u + ")");
+        $('#ID_FS').html($('#ID_FS').html() +" "+Math.floor((parseInt(t)-parseInt(s))/1000000000*100)/100+" GB su "+tot+" GB");
     }   
 
 </script>

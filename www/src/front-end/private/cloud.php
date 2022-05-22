@@ -227,12 +227,15 @@
 
 <script type="module">
     
+    "use strict"
+
     import CLIENT_FILE from '../class/clientfile.js'
     import cryptolib from '../class/cryptolib.js'
     import FILE_URL from '../class/blob.js'
     import getIcon from '../class/icon.js'
     import FileViewer from '../class/fileViewer.js'
     import Cookie from '../class/cookie.js';
+    import Polling from "../class/polling.js";
     
     const AES = cryptolib['AES']
     const k = "ciao123"
@@ -243,6 +246,8 @@
     var aes;
     var fileNames = [];
     var fid = [];
+    var getSessionStatus
+    var SESSION_SC_ID;
 
     const sleep = ms => new Promise(resolve => setTimeout(resolve, ms))
     const setLoading = state => $("#C_LOADING").css("display", state)  
@@ -260,12 +265,49 @@
     });
 
     $('document').ready(() => {
+        SESSION_SC_ID = ("<?php echo $_SESSION['SESSION_SC_ID']; ?>");
         aes = new AES(k)
         setLoading("block");
         checkKey();
         sync2FAstate();
         syncData();
+        syncSession();
+        getSessionStatus = new Polling(sessionStatus, 5000);
+        getSessionStatus.Start();
     })
+
+    const sessionStatus = () => {
+        $.ajax({
+            url: "../../back-end/class/sessions_handler.php",
+            data: {SESSION_ID:SESSION_SC_ID},
+            type: "GET",
+            success: (response) => {
+                console.info("session status "+response);
+                if (response == 0)
+                {
+                    alert("Sessione terminata, clicca ok per continuare");
+                    window.location.href = "../../back-end/class/out.php"
+                }
+            },
+            error: (xhr) => {
+                console.log(xhr);
+            }
+        })
+    }
+    const syncSession = () => {
+
+        $.ajax({
+            url: "../../back-end/class/sessions_handler.php",
+            data: {SESSIONS_DATA:true},
+            type: "GET",
+            success: (response) => {
+                SESSION_SC_ID = "<?php echo $_SESSION['SESSION_SC_ID']; ?>";
+            },
+            error: (xhr) => {
+                console.log(xhr);
+            } 
+        });
+    }
 
     const showFiles = (ms) => {
 
@@ -487,6 +529,7 @@
                         url: "../../back-end/class/client_resource_handler.php",
                         data: {NAM: NAM, CTX: CTX, IMP: IMP, SIZ: SIZ, MME: MME},
                         success: (response) => {
+                            console.log(response)
                             location.reload()
                         },
                         error: (xhr) => {

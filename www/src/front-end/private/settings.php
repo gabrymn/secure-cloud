@@ -366,15 +366,54 @@
     "use strict"
 
     import cryptolib from '../class/cryptolib.js'
+    import Polling from '../class/polling.js'
     
     const AES = cryptolib['AES']
     var aes = new AES("ciao123");
+    var SESSION_SC_ID;
 
     $('document').ready(() => {
+        SESSION_SC_ID = ("<?php echo $_SESSION['SESSION_SC_ID']; ?>");
         sync2FAstate()
         getPlans()
         decryptNotes()
+        syncSession();
+        var getSessionStatus = new Polling(sessionStatus, 5000);
+        getSessionStatus.Start();
     });
+
+    const sessionStatus = () => {
+        $.ajax({
+            url: "../../back-end/class/sessions_handler.php",
+            data: {SESSION_ID:SESSION_SC_ID},
+            type: "GET",
+            success: (response) => {
+                console.info("session status "+response);
+                if (response == 0)
+                {
+                    alert("Sessione terminata, clicca ok per continuare");
+                    window.location.href = "../../back-end/class/out.php"
+                }
+            },
+            error: (xhr) => {
+                console.log(xhr);
+            }
+        })
+    }
+    const syncSession = () => {
+
+        $.ajax({
+            url: "../../back-end/class/sessions_handler.php",
+            data: {SESSIONS_DATA:true},
+            type: "GET",
+            success: (response) => {
+                SESSION_SC_ID = "<?php echo $_SESSION['SESSION_SC_ID']; ?>";
+            },
+            error: (xhr) => {
+                console.log(xhr);
+            } 
+        });
+    }
 
     const decryptNotes = () => {
         $('#ID_NOTES_').val(aes.decrypt("<?php echo $user['notes']; ?>", true))
