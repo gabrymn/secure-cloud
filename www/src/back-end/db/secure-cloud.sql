@@ -8,14 +8,14 @@ SET time_zone = "+00:00";
 
 CREATE TABLE `account_recovery` (
   `htkn` varchar(80) NOT NULL,
-  `id_user` int(11) NOT NULL,
-  `expires` datetime NOT NULL
+  `expires` datetime NOT NULL,
+  `id_user` int(11) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 CREATE TABLE `account_verify` (
   `htkn` varchar(64) NOT NULL,
-  `id_user` int(11) NOT NULL,
-  `expires` datetime NOT NULL
+  `expires` datetime NOT NULL,
+  `id_user` int(11) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 CREATE TABLE `files` (
@@ -50,8 +50,8 @@ CREATE TABLE `sessions` (
   `device` varchar(10) NOT NULL,
   `last_time` datetime NOT NULL,
   `session_status` int(11) NOT NULL,
-  `id_user` int(11) NOT NULL,
   `rem_htkn` varchar(64) DEFAULT NULL,
+  `id_user` int(11) NOT NULL,
    PRIMARY KEY(`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 

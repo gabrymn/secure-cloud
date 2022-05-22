@@ -101,7 +101,7 @@
             <p class="lead">I tuoi dati sono cifrati attraverso la crittografia AES.</p>
             <hr class="my-4">
             <p class="lead">
-                <a class="btn btn-primary btn-lg" href="signin.php" role="button">Inizia</a>
+                <a class="btn btn-primary btn-lg" href="signup.php" role="button">Inizia</a>
             </p>
         </div>
 

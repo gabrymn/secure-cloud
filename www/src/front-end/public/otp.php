@@ -44,25 +44,26 @@
                 if (isset($_COOKIE['PHPSESSID'])){
                     session_start();
                     if (isset($_SESSION['AUTH']) && !isset($_SESSION['HOTP'])){
-                        header("Location: pvt.php");
+                        header("Location: ../private/cloud.php");
                         exit;
                     }
                     else if (isset($_SESSION['HOTP']) && isset($_SESSION['ID_USER'])){
                         $exp = $_SESSION['HOTP']['exp'];
                         if (time() > $exp){
                             unset($_SESSION['HOTP']);
-                            header("Location: log.php");
+                            unset($_SESSION['AUTH']);
+                            header("Location: ../../back-end/class/out.php");
                             exit;
                         }
                     }
                     else 
                     {
-                        header("Location: log.php");
+                        header("Location: signin.php");
                         exit;
                     }
                 }else 
                 {
-                    header("Location: log.php");
+                    header("Location: signin.php");
                     exit;
                 }
                 break;
@@ -80,9 +81,9 @@
 
 
 <!------ START BOOTSTRAP FORM ---------->
+<script src="//cdnjs.cloudflare.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
 <link href="//maxcdn.bootstrapcdn.com/bootstrap/4.1.1/css/bootstrap.min.css" rel="stylesheet" id="bootstrap-css">
 <script src="//maxcdn.bootstrapcdn.com/bootstrap/4.1.1/js/bootstrap.min.js"></script>
-<script src="//cdnjs.cloudflare.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
 <!------ END BOOTSTRAP FORM ---------->
 
 <!DOCTYPE html>
