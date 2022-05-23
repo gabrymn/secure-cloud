@@ -135,6 +135,8 @@
                     <div class="card">
                         <div class="card-header">Sign up</div>
                         <div class="card-body">
+
+
                             <form id="ID_REG_FORM" action="<?php $_SERVER['PHP_SELF']; ?>" method="POST">
                                 <div class="form-group row">
                                     <label for="email_address" class="col-md-4 col-form-label text-md-right">Name</label>
@@ -172,6 +174,8 @@
                                     </button>
                                 </div>
                             </form>
+
+                            
                         </div>
                     </div>
                 </div>

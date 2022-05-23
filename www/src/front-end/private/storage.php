@@ -263,6 +263,8 @@
         $('#ID_PB').css("width", Math.floor(perc*10000)/10000 + "%")
         if (perc === 0)
             perc = " < 1";
+        if (s == 0)
+            perc = " 0";
         if (perc >= 70 && perc < 80)
             $('#ID_PB').css("background-color", "yellow")
         else if (perc >= 80 && perc <= 100)

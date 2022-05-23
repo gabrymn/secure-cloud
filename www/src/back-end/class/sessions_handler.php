@@ -36,8 +36,10 @@
                 {
                     $session_id = $_POST['SESSION_ID'];
                     sqlc::connect("USER_STD_UPD");
-                    sqlc::expire_session($session_id);
-                    response::successful(200);
+                    if (sqlc::erase_session($session_id))
+                        response::successful(200);
+                    else
+                        response::server_error(500, "Session already expired");
                     exit;
                 }
                 break;

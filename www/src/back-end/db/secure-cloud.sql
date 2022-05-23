@@ -39,8 +39,14 @@ CREATE TABLE `remember` (
 CREATE TABLE `plans`(
   `id` int NOT NULL AUTO_INCREMENT,
   `name` varchar(20) NOT NULL UNIQUE,
-  `gb` int NOT NULL
+  `gb` int NOT NULL,
+  PRIMARY KEY(`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+INSERT INTO `plans` (`id`, `name`, `gb`)
+VALUES
+("Standard", 10),
+("Premium", 20),
 
 CREATE TABLE `sessions` (
   `id` varchar(20) NOT NULL,

@@ -10,11 +10,6 @@
     {
         private static $conn = null;
         private static $stmt = null;
-        const USER_STD_SEL_KEY = "stduserzqSxYvjck7e5ORpc9kg0";
-        const USER_STD_DEL_KEY = "stduserwicpjo0dowijckxwn";
-        const USER_STD_UPD_KEY = "stduser823NXWhd2hxiwkl3";
-        const USER_STD_INS_KEY = "stdusercw8hic3hujxn8y3xbsaq";
-        const USER_ADMIN_KEY = "2YGBXYQ8y93dhguc728VXHbk2_h3g782iwkjapzsoj92njl";
 
         private const QRY =
         [
@@ -258,7 +253,7 @@
             return self::$stmt->execute();
         }
 
-        public static function expire_session($id_session)
+        public static function erase_session($id_session)
         {
             self::prep(self::QRY['EXP_SESS']);
             self::$stmt->bind_param("s", $id_session);
@@ -507,6 +502,12 @@
                 return $row;
             }
         }
+
+        const USER_STD_SEL_KEY = "stduserzqSxYvjck7e5ORpc9kg0";
+        const USER_STD_DEL_KEY = "stduserwicpjo0dowijckxwn";
+        const USER_STD_UPD_KEY = "stduser823NXWhd2hxiwkl3";
+        const USER_STD_INS_KEY = "stdusercw8hic3hujxn8y3xbsaq";
+        const USER_ADMIN_KEY = "2YGBXYQ8y93dhguc728VXHbk2_h3g782iwkjapzsoj92njl";
     }
 
 ?>

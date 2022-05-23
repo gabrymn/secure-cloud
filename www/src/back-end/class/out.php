@@ -10,7 +10,7 @@
 
 		sqlc::connect("USER_STD_UPD");
 		sqlc::upd_session($session_sc_id);
-		sqlc::expire_session($session_sc_id);
+		sqlc::erase_session($session_sc_id);
 		sqlc::close();
 
 		unset($_SESSION['SESSION_SC_ID']);
