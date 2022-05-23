@@ -99,7 +99,7 @@
                         
                         sqlc::connect("USER_STD_SEL");
                         $id_user = $_SESSION['ID_USER'];
-                        $email = sqlc::get_email($id);
+                        $email = sqlc::get_email($id_user);
                         sqlc::close();
 
                         $size = $_POST['SIZ'];
@@ -126,7 +126,7 @@
                             //  => ROLLBACK in sql
                         }
 
-                        sqlc::ins_tsf_data("u", $id, $id_session_sc, $id_file);
+                        sqlc::ins_tsf_data("u", $id_user, $id_session_sc, $id_file);
 
                         sqlc::close();
                         

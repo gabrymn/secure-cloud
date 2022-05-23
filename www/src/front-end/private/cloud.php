@@ -518,9 +518,10 @@
     }
 
     const checkStorage = (uploadBytes) => {
-        if (actStg + uploadBytes <= totStg)
+        
+        if ((Number(actStg) + uploadBytes) <= Number(totStg))
         {
-            actStg += uploadBytes
+            actStg = Number(actStg) + Number(uploadBytes)
             return true;
         }
         return false;
@@ -531,7 +532,7 @@
         var files = Object.values(e.target.files);
 
         files.forEach((file) => {
-            if (!checkStorage(file.size))
+            if (!checkStorage(Number(file.size)))
             {
                 alert("Spazio esaurito, elimina dei contenuti e riprova")
                 return
