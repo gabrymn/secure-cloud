@@ -43,7 +43,7 @@ CREATE TABLE `plans`(
   PRIMARY KEY(`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
-INSERT INTO `plans` (`id`, `name`, `gb`)
+INSERT INTO `plans` (`name`, `gb`)
 VALUES
 ("Standard", 10),
 ("Premium", 20),
