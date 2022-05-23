@@ -5,7 +5,7 @@
     require_once 'email.php';
     require_once 'sqlc.php';
     require_once "dmn.php";
-
+    
     if (!defined('DMN')) define('DMN', get_dmn()); 
 
     class system 
@@ -62,7 +62,7 @@
             session_start();
             $_SESSION['ID_USER'] = $data['id_user'];
             $_SESSION['AUTH'] = 0;
-            header("Location: cloud.php");
+            header("Location: ../private/cloud.php");
         }
         
         public static function mk_dir($email, $dir)

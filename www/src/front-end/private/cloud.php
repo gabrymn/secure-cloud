@@ -106,6 +106,10 @@
         $_SESSION['SESSION_SC_ID'] = $session_id;
     }
 
+    sqlc::connect("USER_STD_SEL");
+    $size = sqlc::get_used_space($_SESSION['ID_USER']);
+    $tot = sqlc::sel_plan($_SESSION['ID_USER'])['gb'];
+    sqlc::close();
 ?>
 
 <!------ START BOOTSTRAP FORM ---------->
@@ -238,14 +242,22 @@
     import Polling from "../class/polling.js";
     
     const AES = cryptolib['AES']
+    var aes;
+
+    var actStg = "<?php echo $size; ?>";
+    const totStg = "<?php echo $tot; ?>" * 1000000000;
+
+    // 100000 => 100 KB
+
     const k = "ciao123"
+
     var ids = [];
     var ids_nms = [];
     var ids_data = [];
     var n_uploads = 0;
-    var aes;
     var fileNames = [];
     var fid = [];
+
     var getSessionStatus
     var SESSION_SC_ID;
 
@@ -282,7 +294,7 @@
             data: {SESSION_ID:SESSION_SC_ID},
             type: "GET",
             success: (response) => {
-                console.info("session status "+response);
+                //console.info("session status "+response);
                 if (response == 0)
                 {
                     alert("Sessione terminata, clicca ok per continuare");
@@ -359,7 +371,6 @@
             $("#CONT_FILES").css("display", "none")
             $('#ID_NFS').css("display","block")
         }
-
     }
 
     const syncData = () => {
@@ -375,8 +386,6 @@
                         getFilePreview(id, aes)
                     });
 
-                    console.log(fileNames)
-                    
                     var ms = response.file_ids.length < 10 ? 200 : 900;
                     return new Promise(resolve => showFiles(ms));
                 }
@@ -395,12 +404,9 @@
     }
 
 
-    const visualF = (fname, x, ttype, filedata = false) => {
+    const createFilePreview = (fname, x, ttype, filedata = false) => {
         var aline = ""
-        if (ttype === 'id')
-            aline = `<a id=${x} class='btn btn-info' role='button' data-toggle="modal" data-target="#exampleModal">&#9679;&#9679;&#9679;</a>`;
-        else if (ttype === 'href')
-            aline = `<a href='${x}' class='btn btn-info' role='button' download='${fname}' style='color:white' data-toggle="modal" data-target="#exampleModal">&#9679;&#9679;&#9679;</a>`
+        aline = `<a id=${x} class='btn btn-info' role='button' data-toggle="modal" data-target="#exampleModal">&#9679;&#9679;&#9679;</a>`;
 
         var ext = ""
 
@@ -482,11 +488,11 @@
 
                 ids_data[id] = JSON.stringify(filedata)
 
-                var a = visualF(name, "id_file_"+id, "id", filedata)
+                var fp = createFilePreview(name, "id_file_"+id, "id", filedata)
                 ids.push(id)
 
                 ids_nms[id] = JSON.stringify({name:name});
-                document.getElementById("C_FILES").innerHTML += a
+                document.getElementById("C_FILES").innerHTML += fp
             },
             error: (xhr) => {
                 console.log(xhr);
@@ -511,10 +517,25 @@
         return filename
     }
 
+    const checkStorage = (uploadBytes) => {
+        if (actStg + uploadBytes <= totStg)
+        {
+            actStg += uploadBytes
+            return true;
+        }
+        return false;
+    }
+
     $("#ID_FILE_UPLOADER").on('change', (e) => {
         checkKey(); 
         var files = Object.values(e.target.files);
+
         files.forEach((file) => {
+            if (!checkStorage(file.size))
+            {
+                alert("Spazio esaurito, elimina dei contenuti e riprova")
+                return
+            }
             CLIENT_FILE.TO_BASE64(file)
                 .then((ctx) => {
 

@@ -96,18 +96,17 @@
                     if ($client_hash === $server_hash)
                     {
                         session_start();
+                        
                         sqlc::connect("USER_STD_SEL");
-    
-                        $id = $_SESSION['ID_USER'];
+                        $id_user = $_SESSION['ID_USER'];
                         $email = sqlc::get_email($id);
                         sqlc::close();
+
                         $size = $_POST['SIZ'];
                         
-                        $dir = md5("dir" . $id . $email);
+                        $dir = md5("dir" . $id_user . $email);
 
                         $ref = "../users/{$dir}/{$filename}";
-
-                        file_put_contents($ref, $filedata);
 
                         $id_session_sc = $_SESSION['SESSION_SC_ID'];
 
@@ -115,8 +114,20 @@
                         $id_file = $id_file->val();
 
                         sqlc::connect("USER_STD_INS");
+
+                        // TRANSAZIONE
+                        {
+                            sqlc::ins_file_data($id_file, $filename, $ref, $size, $id_user, $mime);
+                            file_put_contents($ref, $filedata);
+
+                            // Se inserimento informazioni del file nel db non va a buon fine
+                            //  => ROLLBACK in php
+                            // Se inserimento file fisico non va a buon fine
+                            //  => ROLLBACK in sql
+                        }
+
                         sqlc::ins_tsf_data("u", $id, $id_session_sc, $id_file);
-                        sqlc::ins_file_data($id_file, $filename, $ref, $size, $id, $mime);
+
                         sqlc::close();
                         
                         response::successful(201, false, array("id" => $id_file));

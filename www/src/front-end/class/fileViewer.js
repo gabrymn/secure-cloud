@@ -35,10 +35,11 @@ export default class FileViewer {
             {
                 FileViewer.VID(b64, fname, fileUrlClass)
                 break;
-            }  
+            } 
             case 'jpeg':
             case 'jpg':
             case 'png':
+            case 'gif':
             case 'svg':
             case 'webp':
             {
