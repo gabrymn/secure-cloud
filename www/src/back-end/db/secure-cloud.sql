@@ -29,7 +29,6 @@ CREATE TABLE `files` (
    PRIMARY KEY(`idf`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
-
 CREATE TABLE `remember` (
   `htkn` varchar(64) NOT NULL,
   `expires` datetime NOT NULL,
@@ -104,10 +103,12 @@ SET PASSWORD FOR 'USER_STD_SEL'@'localhost' = PASSWORD('stduserzqSxYvjck7e5ORpc9
 CREATE USER 'USER_STD_DEL'@'localhost';
 GRANT USAGE ON *.* TO `USER_STD_DEL`@`localhost`;
 GRANT SELECT, UPDATE, DELETE ON `secure-cloud`.`remember` TO `USER_STD_DEL`@`localhost`;
+GRANT SELECT, UPDATE, DELETE ON `secure-cloud`.`sessions` TO `USER_STD_DEL`@`localhost`;
+GRANT SELECT, UPDATE, DELETE ON `secure-cloud`.`files` TO `USER_STD_DEL`@`localhost`;
+GRANT SELECT, UPDATE, DELETE ON `secure-cloud`.`account_recovery` TO `USER_STD_DEL`@`localhost`;
+GRANT SELECT, UPDATE, DELETE ON `secure-cloud`.`transfers` TO `USER_STD_DEL`@`localhost`;
 GRANT SELECT, UPDATE, DELETE ON `secure-cloud`.`users` TO `USER_STD_DEL`@`localhost`;
 GRANT SELECT, UPDATE, DELETE ON `secure-cloud`.`account_verify` TO `USER_STD_DEL`@`localhost`;
-GRANT SELECT, UPDATE, DELETE ON `secure-cloud`.`account_recovery` TO `USER_STD_DEL`@`localhost`;
-GRANT SELECT, UPDATE, DELETE ON `secure-cloud`.`files` TO `USER_STD_DEL`@`localhost`;
 SET PASSWORD FOR 'USER_STD_DEL'@'localhost' = PASSWORD('stduserwicpjo0dowijckxwn');
 
 CREATE USER 'USER_STD_INS'@'localhost';

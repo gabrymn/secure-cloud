@@ -234,22 +234,19 @@
     "use strict"
 
     import CLIENT_FILE from '../class/clientfile.js'
-    import cryptolib from '../class/cryptolib.js'
     import FILE_URL from '../class/blob.js'
-    import getIcon from '../class/icon.js'
+    import cryptolib from '../class/cryptolib.js'
     import FileViewer from '../class/fileViewer.js'
+    import getIcon from '../class/icon.js'
     import Cookie from '../class/cookie.js';
     import Polling from "../class/polling.js";
-    
-    const AES = cryptolib['AES']
-    var aes;
+    import {getpk,checkpk} from "../class/pvtk.js"
+
+    var aes = new cryptolib['AES'](getpk())
 
     var actStg = "<?php echo $size; ?>";
     const totStg = "<?php echo $tot; ?>" * 1000000000;
-
     // 100000 => 100 KB
-
-    const k = "ciao123"
 
     var ids = [];
     var ids_nms = [];
@@ -263,24 +260,14 @@
 
     const sleep = ms => new Promise(resolve => setTimeout(resolve, ms))
     const setLoading = state => $("#C_LOADING").css("display", state)  
-    
-    const checkKey = () => {
-        if (k === null){
-            alert("Chiave mancante, e' necessario riaccedere");
-            window.location.href = "../../back-end/class/out.php";
-            return;
-        };
-    }
-    
     $("#ID_UPLOAD").on('click', () => {
         $('#ID_FILE_UPLOADER').trigger('click');
     });
 
     $('document').ready(() => {
+        checkpk()
         SESSION_SC_ID = ("<?php echo $_SESSION['SESSION_SC_ID']; ?>");
-        aes = new AES(k)
         setLoading("block");
-        checkKey();
         sync2FAstate();
         syncData();
         syncSession();
@@ -307,7 +294,6 @@
         })
     }
     const syncSession = () => {
-
         $.ajax({
             url: "../../back-end/class/sessions_handler.php",
             data: {SESSIONS_DATA:true},
@@ -381,7 +367,6 @@
             success: (response) => {
                 if (response.file_ids.length > 0) 
                 {
-                    var aes = new AES(k);
                     response.file_ids.forEach((id) => {
                         getFilePreview(id, aes)
                     });
@@ -453,7 +438,6 @@
                 var a = document.createElement("a");
                 document.body.appendChild(a);
                 a.style = "display:none";
-                var aes = new AES(k);
                 var [url, blob] = GET_FILE_EXE(response.ctx, aes);
                 a.href = url;
                 a.download = JSON.parse(ids_nms[id]).name;
@@ -528,7 +512,6 @@
     }
 
     $("#ID_FILE_UPLOADER").on('change', (e) => {
-        checkKey(); 
         var files = Object.values(e.target.files);
 
         files.forEach((file) => {
@@ -543,7 +526,6 @@
                     var name = handleExists(file.name)
                     const fobj = new CLIENT_FILE(file,ctx,name)
 
-                    var aes = new AES(k);
                     const hash = cryptolib['HASH'].SHA256;
                     const [NAM, CTX, IMP, SIZ, MME] = fobj.ENCRYPT(aes, hash);
                     $.ajax({

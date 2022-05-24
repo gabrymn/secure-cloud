@@ -250,7 +250,7 @@
     </div>
     </div>
     <ul class="nav nav-tabs">
-    <li class="nav-item"><a href="" class="active nav-link">Settings</a></li>
+        <li class="nav-item"><a href="" class="active nav-link">Settings</a></li>
     </ul>
     <div class="tab-content pt-3">
     <div class="tab-pane active">
@@ -301,6 +301,13 @@
         </select>
     </li>
     <br><br>
+    <div class="row" style="float:left">
+        <div class="col d-flex justify-content-end">
+            <button id="ID_DEL_ACC" class="btn btn-danger" type="submit">Delete your account</button>
+        </div>
+    </div>
+    <br><br>
+    <br><br>
     <div class="row">
     <div class="col-12 col-sm-6 mb-3">
     <div class="mb-2"><b>Change Password</b></div>
@@ -348,9 +355,7 @@
     </div>
     </div>
 
-
     <br><br>
-
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-ka7Sk0Gln4gmtz2MlQnikT1wXgYsOg+OMhuP+IlRH9sENBO0LRn5q+8nbTov4+1p" crossorigin="anonymous"></script>
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
@@ -367,12 +372,13 @@
 
     import cryptolib from '../class/cryptolib.js'
     import Polling from '../class/polling.js'
+    import {getpk, checkpk} from "../class/pvtk.js"
     
-    const AES = cryptolib['AES']
-    var aes = new AES("ciao123");
+    var aes = new cryptolib['AES'](getpk());
     var SESSION_SC_ID;
 
     $('document').ready(() => {
+        checkpk()
         SESSION_SC_ID = ("<?php echo $_SESSION['SESSION_SC_ID']; ?>");
         sync2FAstate()
         getPlans()
@@ -391,6 +397,7 @@
                 console.info("session status "+response);
                 if (response == 0)
                 {
+                    getSessionStatus.Stop();
                     alert("Sessione terminata, clicca ok per continuare");
                     window.location.href = "../../back-end/class/out.php"
                 }
@@ -454,12 +461,19 @@
                 alert(xhr.responseText);
             }
         })
-/*
-        const plain = $('#ID_NOTES_').html();
-        $('#ID_NOTES_').html((aes.encrypt(plain, true)));
-        
-        console.log($('#ID_NOTES_').html())
-        return*/
+    })
+
+    $('#ID_DEL_ACC').on('click', () => {
+        if (confirm('Stai per cancellare il tuo account, continuare?')) {
+            $.ajax({
+                type: 'DELETE',
+                url: "../../back-end/class/delete_acc.php",
+                success: (r) => {
+                    window.location.href = "../../back-end/class/out.php"
+                    return
+                }
+            })
+        }
     })
 
     $('#OTP_YN').on('change', () => {

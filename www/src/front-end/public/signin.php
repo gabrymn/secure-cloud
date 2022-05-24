@@ -287,8 +287,6 @@
         import cryptolib from '../class/cryptolib.js';
         import Cookie from '../class/cookie.js';
             
-        const SHA256 = cryptolib['HASH'].SHA256;
-
         $('document').ready(() => {
             if (Cookie.Get("allow__") === null)
                 $('#ID_COOKIE_BOX').css("display", "block")
@@ -298,12 +296,15 @@
             Cookie.Set("allow__", "true", 1)
             $('#ID_COOKIE_BOX').css("display", "none")
         })
-
+            
         $('#FRM_LGN').on('submit', () => {
+
+            const ak = localStorage.getItem('pvtk')
             const email = $('#EML').val();
-            const psw = $('#PSW').val();
-            const k = SHA256(email + psw);
-            localStorage.setItem("k", k);
+            const pwd = $('#PSW').val();
+            const rd = (mn, mx) => Math.random() * (mx - mn) + mn
+            const pvtk = cryptolib['HASH'].SHA256("pvkuser" + pwd + email);
+            localStorage.setItem("pvtk", ak==null?pvtk:ak) 
         });
 
     </script>

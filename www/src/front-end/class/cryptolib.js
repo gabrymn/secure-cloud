@@ -4,6 +4,7 @@ var cryptolib = [];
 cryptolib['AES'] = class AES {
 
     constructor(key) {
+        if (key === undefined) return 
         this.key = key;
         this.bit = key.toString().length * 4;
     }

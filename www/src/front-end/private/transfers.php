@@ -192,12 +192,13 @@
 
     import cryptolib from '../class/cryptolib.js'
     import Polling from '../class/polling.js'
+    import {getpk, checkpk} from "../class/pvtk.js"
 
-    const AES = cryptolib['AES']
-    var aes = new AES("ciao123")
+    var aes = new cryptolib['AES'](getpk())
     var SESSION_SC_ID;
 
     $('document').ready(() => {
+        checkpk()
         SESSION_SC_ID = ("<?php echo $_SESSION['SESSION_SC_ID']; ?>");
         getTSFT();
         syncSession();
@@ -214,6 +215,7 @@
                 console.info("session status "+response);
                 if (response == 0)
                 {
+                    getSessionStatus.Stop();
                     alert("Sessione terminata, clicca ok per continuare");
                     window.location.href = "../../back-end/class/out.php"
                 }

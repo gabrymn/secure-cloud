@@ -36,13 +36,13 @@
         if (!$enable) return 1;
 
         if (strlen($pwd) < 8) 
-            return "Password too short!";
+            return "Password too short.";
     
         if (!preg_match("#[0-9]+#", $pwd))
-            return "Password must include at least one number!";
+            return "Password must include at least one number.";
     
         if (!preg_match("#[a-zA-Z]+#", $pwd))
-            return "Password must include at least one letter!";
+            return "Password must include at least one letter.";
 
         return 1;
     }

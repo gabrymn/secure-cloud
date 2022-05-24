@@ -37,7 +37,7 @@
                     sqlc::connect("USER_STD_INS");
                     if (sqlc::rec_account($htkn, $id) === 0)
                     {
-                        response::print(400, $error, "Internal server error. Try again.");
+                        response::server_error(500);
                         goto front_end;
                     }
                     sqlc::close();

@@ -175,11 +175,13 @@
     "use strict";
 
     import Polling from "../class/polling.js";
+    import {checkpk} from "../class/pvtk.js"
 
     var SESSION_SC_ID;
     var getSessionStatus;
 
     $('document').ready(() => {
+        checkpk()
         getSessionStatus = new Polling(sessionStatus, 5000);
         getSessionStatus.Start();
         syncSessions();
@@ -194,6 +196,7 @@
                 console.info("session status "+response);
                 if (response == 0)
                 {
+                    getSessionStatus.Stop();
                     alert("Sessione terminata, clicca ok per continuare");
                     window.location.href = "../../back-end/class/out.php"
                 }

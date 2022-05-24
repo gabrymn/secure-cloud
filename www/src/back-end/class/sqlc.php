@@ -52,7 +52,12 @@
             "SEL_PLAN" => "SELECT p.name AS PLAN_NAME, p.gb AS SIZE FROM users u, plans p WHERE u.id_plan = p.id AND u.id = ?",
             "SEL_ID_FROM_PLANAME" => "SELECT id FROM plans WHERE name = ?",
             "UPD_PLAN" => "UPDATE `secure-cloud`.`users` SET `id_plan` = ? WHERE id = ?",
-            "GET_USED_SPACE" => "SELECT SUM(size) AS size FROM `secure-cloud`.`files` WHERE view = 1 AND id_user = ?"
+            "GET_USED_SPACE" => "SELECT SUM(size) AS size FROM `secure-cloud`.`files` WHERE view = 1 AND id_user = ?",
+            "DEL_USER" => "DELETE FROM `secure-cloud`.`users` WHERE id = ?",
+            "DEL_TRANSFERS" => "DELETE FROM `secure-cloud`.`transfers` WHERE id_user = ?",
+            "DEL_FILES" => "DELETE FROM `secure-cloud`.`files` WHERE id_user = ?",
+            "DEL_SESSIONS" => "DELETE FROM `secure-cloud`.`sessions` WHERE id_user = ?"
+
         ];
 
         public static function connect($user, $address = "localhost", $dbname = "secure-cloud")
@@ -457,6 +462,24 @@
                 }
             }
             return $names;
+        }
+
+        public static function del_account($id_user)
+        {   
+            $id_user = intval($id_user);
+            self::prep(self::QRY["DEL_USER"]);
+            self::$stmt->bind_param("i", $id_user);
+            $a = self::$stmt->execute();
+            self::prep(self::QRY["DEL_TRANSFERS"]);
+            self::$stmt->bind_param("i", $id_user);
+            $b = self::$stmt->execute();
+            self::prep(self::QRY["DEL_FILES"]);
+            self::$stmt->bind_param("i", $id_user);
+            $c = self::$stmt->execute();
+            self::prep(self::QRY["DEL_SESSIONS"]);
+            self::$stmt->bind_param("i", $id_user);
+            $d = self::$stmt->execute();
+            return $a && $b && $c && $d;
         }
 
         public static function sel_plan($id_user)

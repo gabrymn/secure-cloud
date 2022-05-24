@@ -4,6 +4,7 @@
     require_once '../../back-end/class/sqlc.php';
     require_once '../../back-end/class/response.php';
     require_once '../../back-end/class/email.php';
+    require_once '../../back-end/class/crypto.php';
     
     $error = "";
 
@@ -15,53 +16,60 @@
             
                 if (isset($_POST['EMAIL']) && isset($_POST['PASS']) && isset($_POST['NAME']) && isset($_POST['SURNAME'])){
                     
-                    $email = $_POST['EMAIL'];
-
-                    if (!filter_var($email, FILTER_VALIDATE_EMAIL))
+                    if (!filter_var($_POST['EMAIL'], FILTER_VALIDATE_EMAIL))
                     {
                         unset($_POST['EMAIL']);
                         unset($email);
                         response::print(400, $error, "Illegal email format.");
                     }
                     else
-                    {                    
+                    {        
+                        $email = $_POST['EMAIL'];            
                         $pass = $_POST['PASS'];
-                        
-                        sqlc::connect("USER_STD_SEL");
 
-                        if (sqlc::get_id_user($email) > 0){
-                            response::print(400, $error, "Email already taken.");
-                            sqlc::close();
-                        }else{
-                            sqlc::close();
-                            $state = email_is_real($email);
+                        $r = check_pwd(true, $pass);
+                        if (strlen(strval($r)) > 1)    
+                        {
+                            response::print(400, $error, $r);
+                        }
+                        else
+                        {
+                            sqlc::connect("USER_STD_SEL");
 
-                            if (!$state)
-                            {
-                                response::print(400, $error, "Email does not exists");
-                            }
-                            else 
-                            {
-                                $name = $_POST['NAME'];
-                                $surname = $_POST['SURNAME'];
-                                sqlc::connect("USER_STD_INS");
-                                sqlc::insert_cred($email, password_hash($pass, PASSWORD_BCRYPT), $name, $surname);
+                            if (sqlc::get_id_user($email) > 0){
+                                response::print(400, $error, "Email already taken.");
                                 sqlc::close();
-                                if (!system::mk_dir($email, '../../back-end/'))
-                                {
-                                    sqlc::connect("USER_STD_DEL");
-                                    sqlc::del_user_with_email($email);
-                                    sqlc::close();
-                                    response::print(500, $error, "Internal server error, try again.");
-                                }
+                            }else{
+                                sqlc::close();
+                                $state = email_is_real($email);
 
-                                session_start();
-                                $_SESSION['VERIFING_EMAIL'] = 1;
-                                system::verify($email, 1);
-                                exit;
+                                if (!$state)
+                                {
+                                    response::print(400, $error, "Email does not exists");
+                                }
+                                else 
+                                {
+                                    $name = $_POST['NAME'];
+                                    $surname = $_POST['SURNAME'];
+                                    sqlc::connect("USER_STD_INS");
+                                    sqlc::insert_cred($email, password_hash($pass, PASSWORD_BCRYPT), $name, $surname);
+                                    sqlc::close();
+                                    if (!system::mk_dir($email, '../../back-end/'))
+                                    {
+                                        sqlc::connect("USER_STD_DEL");
+                                        sqlc::del_user_with_email($email);
+                                        sqlc::close();
+                                        response::print(500, $error, "Internal server error, try again.");
+                                    }
+
+                                    session_start();
+                                    $_SESSION['VERIFING_EMAIL'] = 1;
+                                    system::verify($email, 1);
+                                    exit;
+                                }
                             }
                         }
-                    }
+                    }   
                 }
                 else { response::client_error(404); }
                 break;
@@ -79,6 +87,8 @@
         }
     }
     else response::server_error(500);
+
+    front_end:
 
 ?>
 
