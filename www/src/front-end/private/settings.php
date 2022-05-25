@@ -570,9 +570,9 @@
     }
 
     input {
-    color: white;
-    border: 2px solid white;
-    outline: none;
+        color: white;
+        border: 2px solid white;
+        outline: none;
     }
 
     .tbls {

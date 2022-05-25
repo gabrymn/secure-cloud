@@ -8,7 +8,8 @@
     
     $error = "";
 
-    if (isset($_SERVER['REQUEST_METHOD'])){
+    if (isset($_SERVER['REQUEST_METHOD']))
+    {
 
         switch ($_SERVER['REQUEST_METHOD']){
 
@@ -24,8 +25,8 @@
                     }
                     else
                     {        
-                        $email = $_POST['EMAIL'];            
-                        $pass = $_POST['PASS'];
+                        $email = htmlspecialchars($_POST['EMAIL']);            
+                        $pass = htmlspecialchars($_POST['PASS']);
 
                         $r = check_pwd(true, $pass);
                         if (strlen(strval($r)) > 1)    
