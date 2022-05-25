@@ -32,7 +32,8 @@ CREATE TABLE `files` (
 CREATE TABLE `remember` (
   `htkn` varchar(64) NOT NULL,
   `expires` datetime NOT NULL,
-  `id_user` int(11) NOT NULL
+  `id_user` int(11) NOT NULL,
+  PRIMARY KEY (`htkn`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 CREATE TABLE `plans`(

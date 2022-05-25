@@ -56,13 +56,7 @@
 	{
         if (pwd.length < 8) 
             return "Password too short.";
-    
-        if (!pwd.match("#[0-9]+#"))
-            return "Password must include at least one number.";
-    
-        if (!pwd.match("#[a-zA-Z]+#"))
-            return "Password must include at least one letter.";
-
+		
         return true;
     }
 

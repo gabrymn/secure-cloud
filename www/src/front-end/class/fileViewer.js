@@ -90,10 +90,10 @@ export default class FileViewer {
 
     static TXT = async (b64, filename, fileUrlClass) => {
         var BLOB = await fileUrlClass.B64_2_BLOB(b64, filename).text();
-        var txt = '<br><div style="padding:14px;border:2px solid black;margin-left:auto;margin-right:auto;width:80%;color:rgb(190,190,190);background-color:rgb(40,40,40);border-radius:25px"><p style="word-break:break-all;">'+BLOB+'</p></div>';
+        var txt = '<br><div style="padding:14px;border:2px solid black;margin-left:auto;margin-right:auto;width:80%;border-radius:10px"><textarea style="word-break:break-word;">'+BLOB+'</textarea></div><br>';
         var win = window.open("#","_blank");
         var title = filename;
-        win.document.write('<html><title>'+ title +'</title><body>');
+        win.document.write('<html><title>'+ title +'</title><body style="background-color:rgb(230,230,230)">');
         win.document.write(txt);
         win.document.write('</body></html>');
         jQuery(win.document);

@@ -117,7 +117,7 @@
                         sqlc::connect("USER_STD_SEL");
                         $old_ok = sqlc::pwd_ok($old, $_SESSION['ID_USER']);
                         sqlc::close();
-
+                        
                         if ($old_ok)
                         {
                             $r = check_pwd(true, $psw);

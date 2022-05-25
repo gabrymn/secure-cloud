@@ -12,6 +12,7 @@
         switch ($_SERVER['REQUEST_METHOD']){
 
             case 'POST': {
+
                 if (isset($_REQUEST['EMAIL']) && isset($_REQUEST['PASS'])){
 
                     if (filter_var($_REQUEST['EMAIL'], FILTER_VALIDATE_EMAIL)){
@@ -19,8 +20,9 @@
                         sqlc::connect("USER_STD_SEL");
 
                         if (sqlc::login($_REQUEST['EMAIL'], $_REQUEST['PASS'])){
-
-                            $id_user = sqlc::get_id_user($_REQUEST['EMAIL']);
+                            
+                            $email = htmlspecialchars($_REQUEST['EMAIL']);
+                            $id_user = sqlc::get_id_user($email);
 
                             if (sqlc::user_verified($id_user) === 0){
                                 session_start();
