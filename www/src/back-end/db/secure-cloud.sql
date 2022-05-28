@@ -47,6 +47,7 @@ INSERT INTO `plans` (`name`, `gb`)
 VALUES
 ("Standard", 10),
 ("Premium", 20),
+("Platinum", 50)
 
 CREATE TABLE `sessions` (
   `id` varchar(20) NOT NULL,
