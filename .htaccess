@@ -10,12 +10,12 @@
 
 #RewriteRule ^password_reset/([a-zA-Z0-9]+)$ resources/password_reset/pass_reset.php?TKN=$1  [QSA]
 
-<Files .htaccess>
-Order Allow,Deny
-Deny from all
-</Files>
+#<Files .htaccess>
+#Order Allow,Deny
+#Deny from all
+#</Files>
 
-<Files README.md>
-Order Allow,Deny
-Deny from all
-</Files>
+#<Files README.md>
+#Order Allow,Deny
+#Deny from all
+#</Files>
