@@ -1,5 +1,5 @@
 <?php
-
+/*
     class AES {
 
         private const CIPHER = "aes-256-cbc";
@@ -31,7 +31,7 @@
             return $decrypted;
         }
     }
-
+*/
     function check_pwd($enable, $pwd) {
         if (!$enable) return 1;
 
