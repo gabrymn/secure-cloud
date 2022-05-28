@@ -19,11 +19,11 @@
 
                         sqlc::connect("USER_STD_SEL");
 
-                        if (sqlc::login($_REQUEST['EMAIL'], $_REQUEST['PASS'])){
+                        if (sqlc::login($_REQUEST['EMAIL'], htmlspecialchars($_REQUEST['PASS']))){
                             
                             $email = htmlspecialchars($_REQUEST['EMAIL']);
-                            $id_user = sqlc::get_id_user($email);
-
+                            $id_user = sqlc::get_id_user($email);           
+                            
                             if (sqlc::user_verified($id_user) === 0){
                                 session_start();
                                 $_SESSION['EMAIL'] = $_REQUEST['EMAIL'];
@@ -56,7 +56,7 @@
                                 system::redirect_otp_form($id_user);
                             else
                                 header("Location: ../private/cloud.php");
-    
+                            
                             sqlc::close();
                             exit;
 

@@ -2,7 +2,7 @@
 
     require_once "response.php";
     require_once "sqlc.php";
-
+    
     if (isset($_SERVER['REQUEST_METHOD']))
     {
         switch ($_SERVER['REQUEST_METHOD'])

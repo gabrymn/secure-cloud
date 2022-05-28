@@ -275,7 +275,7 @@
     <div class="col">
     <div class="form-group">
     <label>E-Mail Address</label>
-    <input class="form-control" type="text" placeholder="user@example.com" value="<?php echo $user['email']; ?>" readonly>
+    <input class="form-control" type="text" placeholder="user@example.com" value="<?php echo $user['email']; ?>">
     </div>
     </div>
     </div>
@@ -576,7 +576,6 @@
     }
 
     .tbls {
-
     margin-left: auto;
     margin-right: auto;
     width: 80%;

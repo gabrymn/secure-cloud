@@ -50,8 +50,8 @@
                                 }
                                 else 
                                 {
-                                    $name = $_POST['NAME'];
-                                    $surname = $_POST['SURNAME'];
+                                    $name = htmlspecialchars($_POST['NAME']);
+                                    $surname = htmlspecialchars($_POST['SURNAME']);
                                     sqlc::connect("USER_STD_INS");
                                     sqlc::insert_cred($email, password_hash($pass, PASSWORD_BCRYPT), $name, $surname);
                                     sqlc::close();

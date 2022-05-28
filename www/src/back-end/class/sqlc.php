@@ -57,7 +57,6 @@
             "DEL_TRANSFERS" => "DELETE FROM `secure-cloud`.`transfers` WHERE id_user = ?",
             "DEL_FILES" => "DELETE FROM `secure-cloud`.`files` WHERE id_user = ?",
             "DEL_SESSIONS" => "DELETE FROM `secure-cloud`.`sessions` WHERE id_user = ?"
-
         ];
 
         public static function connect($user, $address = "localhost", $dbname = "secure-cloud")

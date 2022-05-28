@@ -114,7 +114,7 @@
                         $id_file = $id_file->val();
 
                         sqlc::connect("USER_STD_INS");
-
+                        
                         // TRANSAZIONE
                         {
                             sqlc::ins_file_data($id_file, $filename, $ref, $size, $id_user, $mime);
