@@ -1,0 +1,82 @@
+version: '3.8'
+
+services:
+  nginx:
+    build:
+      context: ./nginx
+      dockerfile: Dockerfile
+    container_name: nginx_container
+    restart: always
+    ports:
+      - "80:80"
+    volumes:
+      - ./nginx/media/icons:/var/www/media/icons
+      - ./nginx/error:/var/www/error
+      - ../server:/app/server
+      - ../client:/app/client
+    links:
+      - php1
+      - php2
+    networks: 
+      - int3rnal
+  
+  php1:
+    build:
+      context: ./php
+      dockerfile: Dockerfile
+    container_name: php_c_1
+    command: sh -c "chmod -R a+rw ../../../app && php-fpm -F -R"
+    restart: always
+    volumes:
+      - ../server:/app/server
+      - ../client:/app/client
+      #- ./php/custom.ini:/usr/local/etc/php/conf.d/custom.ini
+    links:
+      - mariadb
+    networks: 
+      - int3rnal
+
+  php2:
+    build:
+      context: ./php
+      dockerfile: Dockerfile
+    container_name: php_c_2
+    command: sh -c "chmod -R a+rw ../../../app && php-fpm -F -R"
+    restart: always
+    volumes:
+      - ../server:/app/server
+      - ../client:/app/client
+      #- ./php/custom.ini:/usr/local/etc/php/conf.d/custom.ini
+    links:
+      - mariadb
+    networks: 
+      - int3rnal
+  
+  mariadb:
+    build:
+      context: ./mariadb
+      dockerfile: Dockerfile
+    container_name: mariadb_container
+    restart: unless-stopped
+    volumes:
+    #  - ../db/data:/var/lib/mysql
+      - ./mariadb/sql_scripts/:/sql_scripts
+    environment:
+      #- MARIADB_ALLOW_EMPTY_ROOT_PASSWORD=1
+      - MARIADB_ROOT_PASSWORD=password
+    networks: 
+      - int3rnal
+      
+  adminer:
+    image: adminer:latest
+    restart: always
+    ports:
+      - 8080:8080
+    networks: 
+      - int3rnal
+    
+networks:
+  int3rnal:
+    driver: bridge
+    #driver_opts:
+    #  com.docker.network.bridge.name: n3tw0rk

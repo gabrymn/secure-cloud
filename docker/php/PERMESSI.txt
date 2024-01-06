@@ -1,0 +1,6 @@
+
+# Accesso in lettura e scrittura ad ogni utente per la directory specificata (ricorsivamente)
+    >> chmod -R a+rw directory_name            
+
+# Accesso in lettura e scrittura ad ogni utente per il file specificato
+    >> chmod a+rw file_name
