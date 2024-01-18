@@ -1,6 +1,117 @@
 <?php
 
+    include_once '../model/http_response.php';
+    include_once '../model/file_system_handler.php';
+    include_once '../model/email.php';
 
+    if (isset($_SERVER['REQUEST_METHOD']))
+    {
+        switch ($_SERVER['REQUEST_METHOD'])
+        {
+
+            case 'POST': {
+            
+                if (isset($_POST['email']) && isset($_POST['pwd_hash']) && isset($_POST['name']) && isset($_POST['surname']))
+                {
+                    if (!filter_var($_POST['email'], FILTER_VALIDATE_EMAIL))
+                    {
+                        unset($_POST['email']);
+                        unset($email);
+                        http_response_code(400);
+                        $error = "Invalid email format";
+                    }
+                    else
+                    {        
+                        $email = htmlspecialchars($_POST['email']);            
+                        $pass_hash = htmlspecialchars($_POST['pwd_hash']);
+
+                        sqlc::connect("USER_STD_SEL");
+
+                        if (sqlc::get_id_user($email) > 0)
+                        {
+                            
+                            http_response_code(400);
+                            $error =  "Email already taken";
+                            sqlc::close();
+                            
+                        }
+                        else
+                        {
+                            $state = email::is_real($email);
+
+                            if (!$state)
+                            {
+                                http_response_code(400);
+                                $error =  "Email does not exists";
+                            }
+                            else 
+                            {
+                                $name = htmlspecialchars($_POST['NAME']);
+                                $surname = htmlspecialchars($_POST['SURNAME']);
+
+                                sqlc::connect("USER_STD_INS");
+                                sqlc::insert_cred($email, password_hash($pass, PASSWORD_BCRYPT), $name, $surname);
+                                sqlc::close();
+                                
+                                $creation_user_folder_status = file_system_handler::mk_dir($email, '../../back-end/');
+
+                                if ($creation_user_folder_status === false)
+                                {
+                                    sqlc::connect("USER_STD_DEL");
+                                    sqlc::del_user_with_email($email);
+                                    sqlc::close();
+
+                                    http_response::server_error(500, "Internal server error, try again");
+                                }
+                                else
+                                {
+                                    session_start();
+                                    $_SESSION['VERIFING_EMAIL'] = 1;
+    
+                                    $token = new token(50, array("a-z", "A-Z", "0-9"));
+                
+                                    sqlc::connect("USER_STD_SEL");
+                                    $id_user = sqlc::get_id_user($email);
+                                    sqlc::close();
+                                    sqlc::connect("USER_STD_INS");
+                                    sqlc::ins_tkn_verify(intval($id_user), $token->hashed());
+                                    sqlc::close();
+                        
+                                    $sub = "Secure-cloud: verify your email";
+
+                                    $link = "[DOMAIN]/signin.php?";
+                                    $link .= "tkn={$token->get()}";
+                                    
+                                    $msg = "Click this link: $link";
+                        
+                                    email::send($email, $sub, $msg, $red);
+                                }
+
+                                exit;
+                            }
+                        }
+                    }   
+                }
+                else 
+                { 
+                    http_response::client_error(404); 
+                }
+                break;
+            }
+
+            case 'GET': {
+                break;
+            }
+
+            default: {
+                http_response::client_error(405);
+            }
+        }
+    }
+    else
+    {
+        http_response::server_error(500);
+    }
 ?>
 
 <!------ START BOOTSTRAP FORM ---------->
