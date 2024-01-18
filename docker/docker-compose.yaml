@@ -12,8 +12,8 @@ services:
     volumes:
       - ./nginx/media/icons:/var/www/media/icons
       - ./nginx/error:/var/www/error
-      - ../server:/app/server
-      - ../client:/app/client
+      - ../core:/app/core
+      - ../assets:/app/assets
     links:
       - php1
       - php2
@@ -28,8 +28,8 @@ services:
     command: sh -c "chmod -R a+rw ../../../app && php-fpm -F -R"
     restart: always
     volumes:
-      - ../server:/app/server
-      - ../client:/app/client
+      - ../core:/app/core
+      - ../assets:/app/assets
       #- ./php/custom.ini:/usr/local/etc/php/conf.d/custom.ini
     links:
       - mariadb
@@ -44,8 +44,8 @@ services:
     command: sh -c "chmod -R a+rw ../../../app && php-fpm -F -R"
     restart: always
     volumes:
-      - ../server:/app/server
-      - ../client:/app/client
+      - ../core:/app/core
+      - ../assets:/app/assets
       #- ./php/custom.ini:/usr/local/etc/php/conf.d/custom.ini
     links:
       - mariadb

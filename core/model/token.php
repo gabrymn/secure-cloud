@@ -8,48 +8,88 @@
             "0-9" => "0123456789"
         ];
 
+        private $alpha_names;
         private $value;
 
-        private function set_token_value($value)
+        // token attr
+        private function set($value)
         {
-            self::$value = $value;
+            $this->value = $value;
         }
 
+        // token attr
         public function get()
         { 
             return $this->value; 
         }
 
-        public function __construct($length, $alpha_names = array("a-z","0-9"))
+        private function set_alpha_names($alpha_names)
         {
-            $alphabet = self::get_alphabet($alpha_names);
+            $this->alpha_names = array();
 
-            $temp = "";
-            
-            for ($i=0; $i<$length; $i++)
-                $temp .= $alphabet[$this->crypto_rand_secure(0, strlen($alphabet)-1)];
+            if (is_array($alpha_names) === false)
+                $alpha_names = array("a-z", "0-9");
 
-            self::set_token_value($temp);
+            foreach ($alpha_names as $alpha_name)
+                if (array_key_exists($alpha_name, self::ab))
+                    array_push($this->alpha_names, $alpha_name);
 
+            if (empty($this->alpha_names))
+                $this->alpha_names = array("a-z", "0-9");
+        }
+
+        public function get_alpha_names()
+        {
+            return $this->alpha_names;
+        }
+
+        public function __construct($len, $alpha_names = false)
+        {
+            self::set_alpha_names($alpha_names);
+            return self::init($len, $alpha_names);
+        }
+
+        private function init($len)
+        {
+            $tkn_value = self::generate_token($len);
+            self::set($tkn_value);
             return true;
+        }
+
+        public function refresh($len, $alpha_names = false)
+        {
+            if ($alpha_names !== false)
+                self::set_alpha_names($alpha_names);
+
+            return self::init($len, $alpha_names);
+        }
+
+        private function generate_token($len)
+        {
+            if ($len < 1)
+                $len = 10;
+
+            $alphabet = self::get_alphabet();
+
+            $tkn = "";
+            
+            for ($i=0; $i<$len; $i++)
+                $tkn .= $alphabet[$this->crypto_rand_secure(0, strlen($alphabet)-1)];
+
+            return $tkn;
         }
 
         public function hashed($algo = "sha256")
         { 
-            return hash($algo, $this->value); 
+            return hash($algo, self::get()); 
         }
 
-        private function get_alphabet($alpha_names)
+        private function get_alphabet()
         {
             $alphabet = "";
             
-            foreach ($alpha_names as $alpha_name)
-            {
-                $alphabet .= isset(self::ab[$alpha_name]) ? self::ab[$alpha_name] : "";
-            }
-
-            if ($alphabet === "") 
-                $alphabet = self::ab['a-z'] . self::ab['0-9'];
+            foreach ($this->alpha_names as $alpha_name)
+                $alphabet .= self::ab[$alpha_name];
 
             return $alphabet;
         }

@@ -1,7 +1,10 @@
 <?php
 
-    require_once("../server/class/token.php");
-    $x = token::gen();
+    require_once("../model/token.php");
+    $tkn = new token(-44, ["0-9"]);
+    echo $tkn->get() . "<br>";
+    $tkn->refresh(64);
+    echo $tkn->get();
 ?>
 
 <!DOCTYPE html>
@@ -12,6 +15,5 @@
     <title>HOME PAGE</title>
 </head>
 <body>
-    <h3><?php echo $x; ?></h3>
 </body>
 </html>
