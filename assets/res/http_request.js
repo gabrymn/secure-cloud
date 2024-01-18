@@ -1,4 +1,4 @@
-export default async function request(url, method, formData, callback_success, callback_failure) {
+export default async function http_request(url, method, formData, callback_success, callback_failure) {
 
     try {
         const response = await fetch(url, 

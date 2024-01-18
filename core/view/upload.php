@@ -66,7 +66,7 @@
 
                     const URL = "https://80-gabrielemig-clientserve-r7onoeqrkmw.ws-eu107.gitpod.io/api/database.php";
                     
-                    await request(URL, 'POST', formData, success, failure);
+                    await http_request(URL, 'POST', formData, success, failure);
 
                 }).catch((error) => alert("Errore nel caricamento del file, riprova"));
 
