@@ -46,6 +46,7 @@
 
             self::ctype('JSON');
             echo $json;
+            exit;
         }
 
         public static function server_error(int $status_code = 500, $status_msg = false, array $array = array()){
@@ -72,6 +73,7 @@
 
             self::ctype('JSON');
             echo $json;
+            exit;
         }
 
         public static function successful(int $status_code = 200, $status_msg = false, array $array = array()){
@@ -98,6 +100,7 @@
             
             self::ctype('JSON');
             echo $json;
+            exit;
         }
 
         public static function ctype($option){
