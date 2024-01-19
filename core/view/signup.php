@@ -3,7 +3,7 @@
     include_once '../model/http_response.php';
     include_once '../model/file_system_handler.php';
     include_once '../model/email.php';
-    include_once '../model/sqlc.php';
+    include_once '../model/mypdo.php';
 
     if (isset($_SERVER['REQUEST_METHOD']))
     {

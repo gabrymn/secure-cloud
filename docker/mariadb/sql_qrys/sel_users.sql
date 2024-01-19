@@ -1,0 +1,1 @@
+SELECT * FROM `secure_cloud`.`users`
