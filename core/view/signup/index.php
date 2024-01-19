@@ -3,7 +3,7 @@
     define('__ROOT__', '../../'); 
     define('__QP__', __ROOT__ . 'sql_qrys/');
 
-    require_once 'php_scripts/main.php';
+    require_once 'php/main.php';
 
     // this var $error is used to display possible errors
     $error = "";
@@ -126,30 +126,6 @@
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-ka7Sk0Gln4gmtz2MlQnikT1wXgYsOg+OMhuP+IlRH9sENBO0LRn5q+8nbTov4+1p" crossorigin="anonymous"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/crypto-js/3.1.2/rollups/aes.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/crypto-js/3.1.2/rollups/sha256.js"></script>
+    <script src="js/main.js"></script>
 </body>
 </html>
-
-
-<script>
-
-    function capitalizeFirstLetter(id) {
-        let inputElement = document.getElementById(id);
-        let inputValue = inputElement.value;
-
-        let formattedValue = inputValue.replace(/\b\w/g, function (match) {
-            return match.toUpperCase();
-        });
-
-        inputElement.value = formattedValue;
-    }
-
-    $('#ID_REG_FORM').on('submit', () => {
-
-        if ($('#pwd1').val() !== $('#pwd2').val())
-        {
-            $('#ERROR_PDM').css("display", "block")
-            return false
-        }
-    })
-
-</script>

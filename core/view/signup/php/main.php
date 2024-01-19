@@ -1,7 +1,7 @@
 <?php
 
-    require_once 'php_scripts/get.php';
-    require_once 'php_scripts/post.php';
+    require_once 'php/get.php';
+    require_once 'php/post.php';
 
     function main(&$error)
     {
