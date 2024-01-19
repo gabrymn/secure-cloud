@@ -1,9 +1,10 @@
 <?php
 
-    include_once '../model/http_response.php';
-    include_once '../model/file_system_handler.php';
-    include_once '../model/email.php';
-    include_once '../model/mypdo.php';
+    require_once '../model/http/http_response.php';
+    require_once '../model/file_system_handler.php';
+    require_once '../model/email.php';
+    require_once '../model/sql/mypdo.php';
+    require_once '../model/sql/qry.php';
 
     if (isset($_SERVER['REQUEST_METHOD']))
     {
@@ -11,29 +12,36 @@
         {
             case 'POST': {
             
-                if (isset($_POST['email']) && isset($_POST['pwd']) && isset($_POST['name']) && isset($_POST['surname']))
+                if (isset($_POST['email']) && isset($_POST['pwd']) && isset($_POST['pwd2']) && isset($_POST['name']) && isset($_POST['surname']))
                 {
                     if (!filter_var($_POST['email'], FILTER_VALIDATE_EMAIL))
                     {
                         unset($_POST['email']);
                         unset($email);
                         http_response_code(400);
-                        $error = "Invalid email format";
+                        $error = "Invalid email formatx";
                     }
                     else
                     {        
                         $email = htmlspecialchars($_POST['email']);            
-                        $pass_hash = htmlspecialchars($_POST['pwd_hash']);
+                        $pwd = htmlspecialchars($_POST['pwd']);
+                        
+                        $conn = MYPDO::get_new_connection('USER_TYPE_SELECT', $_ENV['USER_TYPE_SELECT']);
+                        
+                        if (!$conn)
+                            http_response::server_error(500, "Internal server error, try again");
 
-                        if (sqlc::connect("USER_TYPE_SELECT") === false)
-                            http_response::server_error(500, "Internal server error");
+                        $res = QRY::sel_id_from_email($conn, "gabry@ci.com");
 
-                        if (sqlc::get_id_user($email) > 0)
+                        if (!$res)
+                            http_response::server_error(500, "Internal server error, try again");
+
+                        MYPDO::close_connection($conn);
+
+                        if ($res[0] === 1)
                         {
                             http_response_code(400);
                             $error =  "Email already taken";
-                            sqlc::close();
-                            
                         }
                         else
                         {
@@ -49,22 +57,37 @@
                                 $name = htmlspecialchars($_POST['name']);
                                 $surname = htmlspecialchars($_POST['surname']);
 
-                                sqlc::connect("USER_STD_INS");
-                                sqlc::insert_cred($email, password_hash($pass, PASSWORD_BCRYPT), $name, $surname);
-                                sqlc::close();
+                                $conn = MYPDO::get_new_connection('USER_TYPE_INSERT', $_ENV['USER_TYPE_INSERT']);
+
+                                $user_data = [
+                                    "name" => $name, 
+                                    "surname" => $surname,
+                                    "email" => $email,
+                                    "pwd" => password_hash($pwd, PASSWORD_BCRYPT),
+                                    "2fa" => 0,
+                                    "verified" => 0
+                                ];
+
+                                $status = QRY::ins_user($conn, $user_data);
                                 
-                                $creation_user_folder_status = file_system_handler::mk_dir($email, '../model/users_files/');
+                                MYPDO::close_connection($conn);
+                                
+                                $creation_user_folder_status = file_system_handler::mk_dir($email, '../model/users/');
 
                                 if ($creation_user_folder_status === false)
                                 {
-                                    sqlc::connect("USER_STD_DEL");
-                                    sqlc::del_user_with_email($email);
-                                    sqlc::close();
-
+                                    // IF DIR HASN'T BEEN CREATED DELETE ALL USER DATA FROM DB
+                                    //sqlc::connect("USER_STD_DEL");
+                                    //sqlc::del_user_with_email($email);
+                                    //sqlc::close();
                                     http_response::server_error(500, "Internal server error, try again");
                                 }
                                 else
                                 {
+
+                                    echo "HERE WE ARE";
+                                    exit;
+
                                     session_start();
                                     $_SESSION['VERIFING_EMAIL'] = 1;
     
@@ -168,31 +191,31 @@
                                 <div class="form-group row">
                                     <label for="email_address" class="col-md-4 col-form-label text-md-right">Name</label>
                                     <div class="col-md-6">
-                                        <input name="NAME" type="text" id="id_name" class="form-control" maxlength="30" placeholder="John" oninput="capitalizeFirstLetter('id_name')" required autofocus>
+                                        <input name="name" type="text" id="id_name" class="form-control" maxlength="30" placeholder="John" oninput="capitalizeFirstLetter('id_name')" required autofocus>
                                     </div>
                                 </div>
                                 <div class="form-group row">
                                     <label for="email_address" class="col-md-4 col-form-label text-md-right">Surname</label>
                                     <div class="col-md-6">
-                                        <input name="SURNAME" type="text" id="id_surname" class="form-control" maxlength="30" placeholder="Smith" oninput="capitalizeFirstLetter('id_surname')" required autofocus>
+                                        <input name="surname" type="text" id="id_surname" class="form-control" maxlength="30" placeholder="Smith" oninput="capitalizeFirstLetter('id_surname')" required autofocus>
                                     </div>
                                 </div>
                                 <div class="form-group row">
                                     <label for="email_address" class="col-md-4 col-form-label text-md-right">E-Mail Address</label>
                                     <div class="col-md-6">
-                                        <input name="EMAIL" type="email" id="id_email" class="form-control" placeholder="user@example.com" required autofocus>
+                                        <input name="email" type="email" id="id_email" class="form-control" placeholder="user@example.com" required autofocus>
                                     </div>
                                 </div>
                                 <div class="form-group row">
                                     <label for="password" class="col-md-4 col-form-label text-md-right">New password</label>
                                     <div class="col-md-6">
-                                        <input name="PASS" type="password" id="pwd1" class="form-control"  placeholder="••••••" required>
+                                        <input name="pwd" type="password" id="pwd1" class="form-control"  placeholder="••••••" required>
                                     </div>
                                 </div>
                                 <div class="form-group row">
                                     <label for="password" class="col-md-4 col-form-label text-md-right">Confirm password</label>
                                     <div class="col-md-6">
-                                        <input name="PASS2" type="password" id="pwd2" class="form-control"  placeholder="••••••" required>
+                                        <input name="pwd2" type="password" id="pwd2" class="form-control"  placeholder="••••••" required>
                                     </div>
                                 </div>
                                 <div class="col-md-6 offset-md-4">
@@ -245,5 +268,14 @@
 
         inputElement.value = formattedValue;
     }
+
+    $('#ID_REG_FORM').on('submit', () => {
+
+        if ($('#pwd1').val() !== $('#pwd2').val())
+        {
+            $('#ERROR_PDM').css("display", "block")
+            return false
+        }
+    })
 
 </script>

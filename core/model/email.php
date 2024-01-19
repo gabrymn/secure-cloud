@@ -1,20 +1,12 @@
 <?php
 
-    include_once 'http_request.php';
+    require_once 'http/http_request.php';
 
     class email 
     {
-
         public static function is_real($email)
         {
-            $api_url = "https://emailverification.whoisxmlapi.com/api/v2?apiKey=at_edHQLKARdq9wMLzBCmeneWc10Y33S&emailAddress={$email}";
-            $r = new ARequest($api_url);
-            $array = json_decode($r->send(), true);
-            return 
-            (
-                isset($array['smtpCheck']) && isset($array['dnsCheck']) ? 
-                    $array['smtpCheck'] || $array['dnsCheck'] : 0
-            );
+            return true;
         }
 
         public static function send($t, $sbjct, $msg, $red = "signin.php")

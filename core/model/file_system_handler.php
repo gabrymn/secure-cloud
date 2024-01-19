@@ -4,11 +4,15 @@
     {
         public static function mk_dir($user_email, $dir)
         {
-            sqlc::connect("USER_STD_SEL");
-            $id_user = sqlc::get_id_user($user_email);
-            sqlc::close();
-            $dir_user = md5("dir" . $id_user . $user_email);
-            return mkdir($dir . "users/" . $dir_user);
+            if (!is_dir($dir))
+                mkdir($dir);
+
+            $dir_user = md5("xdir" . $user_email);
+
+            if (is_dir($dir . $dir_user))
+                return false;
+            else
+                return mkdir($dir . $dir_user);
         }
     }
 
