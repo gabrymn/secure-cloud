@@ -29,6 +29,7 @@ services:
     volumes:
       - ../core:/app/core
       - ../assets/:/app/assets
+      - ./mariadb/sql_queries/:/app/core/sql_queries
       #- ./php/custom.ini:/usr/local/etc/php/conf.d/custom.ini
     env_file:
       - ../.env
