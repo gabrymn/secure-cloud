@@ -3,15 +3,15 @@
     include_once '../model/http_response.php';
     include_once '../model/file_system_handler.php';
     include_once '../model/email.php';
+    include_once '../model/sqlc.php';
 
     if (isset($_SERVER['REQUEST_METHOD']))
     {
         switch ($_SERVER['REQUEST_METHOD'])
         {
-
             case 'POST': {
             
-                if (isset($_POST['email']) && isset($_POST['pwd_hash']) && isset($_POST['name']) && isset($_POST['surname']))
+                if (isset($_POST['email']) && isset($_POST['pwd']) && isset($_POST['name']) && isset($_POST['surname']))
                 {
                     if (!filter_var($_POST['email'], FILTER_VALIDATE_EMAIL))
                     {
@@ -25,11 +25,11 @@
                         $email = htmlspecialchars($_POST['email']);            
                         $pass_hash = htmlspecialchars($_POST['pwd_hash']);
 
-                        sqlc::connect("USER_STD_SEL");
+                        if (sqlc::connect("USER_TYPE_SELECT") === false)
+                            http_response::server_error(500, "Internal server error");
 
                         if (sqlc::get_id_user($email) > 0)
                         {
-                            
                             http_response_code(400);
                             $error =  "Email already taken";
                             sqlc::close();
@@ -46,14 +46,14 @@
                             }
                             else 
                             {
-                                $name = htmlspecialchars($_POST['NAME']);
-                                $surname = htmlspecialchars($_POST['SURNAME']);
+                                $name = htmlspecialchars($_POST['name']);
+                                $surname = htmlspecialchars($_POST['surname']);
 
                                 sqlc::connect("USER_STD_INS");
                                 sqlc::insert_cred($email, password_hash($pass, PASSWORD_BCRYPT), $name, $surname);
                                 sqlc::close();
                                 
-                                $creation_user_folder_status = file_system_handler::mk_dir($email, '../../back-end/');
+                                $creation_user_folder_status = file_system_handler::mk_dir($email, '../model/users_files/');
 
                                 if ($creation_user_folder_status === false)
                                 {

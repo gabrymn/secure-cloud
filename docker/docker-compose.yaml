@@ -29,8 +29,10 @@ services:
     restart: always
     volumes:
       - ../core:/app/core
-      - ../assets:/app/assets
+      - ../assets/:/app/assets
       #- ./php/custom.ini:/usr/local/etc/php/conf.d/custom.ini
+    env_file:
+      - ../.env
     links:
       - mariadb
     networks: 
@@ -45,8 +47,10 @@ services:
     restart: always
     volumes:
       - ../core:/app/core
-      - ../assets:/app/assets
+      - ../assets/:/app/assets
       #- ./php/custom.ini:/usr/local/etc/php/conf.d/custom.ini
+    env_file:
+      - ../.env
     links:
       - mariadb
     networks: 

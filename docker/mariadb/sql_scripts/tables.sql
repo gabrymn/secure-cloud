@@ -1,16 +1,21 @@
-CREATE TABLE IF NOT EXISTS users (
-    id INT AUTO_INCREMENT PRIMARY KEY,
-    nome VARCHAR(64),
-    cognome VARCHAR(64),
-    nickname VARCHAR(64) NOT NULL
-);
+DROP TABLE IF EXISTS `account_verify`;
+CREATE TABLE `account_verify` (
+  `token_h` varchar(64) NOT NULL,
+  `expires` date NOT NULL,
+  `id_user` int(11) NOT NULL,
+  KEY `id_user` (`id_user`),
+  CONSTRAINT `account_verify_ibfk_1` FOREIGN KEY (`id_user`) REFERENCES `users` (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
-CREATE TABLE IF NOT EXISTS files (
-    `name` VARCHAR(64) NOT NULL,
-    `dir` VARCHAR(64) NOT NULL,
-    `extension` VARCHAR(64),
-    `size_value` INT NOT NULL,
-    `size_unit` VARCHAR(64) NOT NULL,
-    `mime` VARCHAR(64) NOT NULL,
-    `user_id` INT NOT NULL
-);
+
+DROP TABLE IF EXISTS `users`;
+CREATE TABLE `users` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `name` varchar(64) DEFAULT NULL,
+  `surname` varchar(64) DEFAULT NULL,
+  `email` varchar(64) NOT NULL,
+  `pwd` varchar(64) NOT NULL,
+  `2fa` tinyint(1) NOT NULL,
+  `verified` tinyint(1) NOT NULL,
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;

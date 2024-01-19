@@ -1,10 +1,6 @@
 <?php
 
-    require_once "http_response.php";
-    require_once "browser.php";
-    require_once "dmn.php";
-
-    #if (!defined('DMN')) define('DMN', get_dmn()); 
+    require_once 'device_info.php';
 
     class sqlc
     {
@@ -67,7 +63,7 @@
             if (self::$conn->connect_error)
             {
                 self::$conn = null;
-                http_response::server_error(500, "Internal server error: connection with the database failed");
+                return 0;
             }
             else
             {
@@ -89,24 +85,24 @@
         {
             switch ($user)
             {
-                case 'USER_STD_INS': 
+                case 'USER_TYPE_INSERT': 
                 {
-                    return self::USER_STD_INS_KEY;
+                    return self::USER_TYPE_INSERT_KEY;
                     break;
                 }
-                case 'USER_STD_SEL': 
+                case 'USER_TYPE_SELECT': 
                 {
-                    return self::USER_STD_SEL_KEY;
+                    return self::USER_TYPE_SELECT_KEY;
                     break;
                 }
-                case 'USER_STD_DEL': 
+                case 'USER_TYPE_DELETE': 
                 {
-                    return self::USER_STD_DEL_KEY;
+                    return self::USER_TYPE_DELETE_KEY;
                     break;
                 }
-                case 'USER_STD_UPD': 
+                case 'USER_TYPE_UPDATE': 
                 {
-                    return self::USER_STD_UPD_KEY;
+                    return self::USER_TYPE_UPDATE_KEY;
                     break;
                 }
                 case 'USER_ADMIN':
@@ -177,12 +173,18 @@
             return isset($rows) ? $rows : 0;
         }
 
-        // (ip, client, os, device, session_status, rem_htkn)
-        public static function add_session($id_session, $http_user_agent, $ip, $id_user, $htkn = null)
+        public static function add_session($id_session, $http_user_agent, $ip_address, $id_user, $htkn = null)
         {
-            $d = get_browser_info($http_user_agent);
+            $d = get_device_info($http_user_agent, $ip_address);
             self::prep(self::QRY['INS_SESS']);
-            self::$stmt->bind_param("sssssss", $id_session, $ip, $d['browser'], $d['os_platform'], $d['device'], $id_user, $htkn);
+            self::$stmt->bind_param("sssssss", 
+                $id_session, 
+                $ip_address, 
+                $d['OS'], 
+                $d['BROWSER'], 
+                $id_user, 
+                $htkn
+            );
             return self::$stmt->execute();
         }
 
@@ -525,10 +527,10 @@
             }
         }
 
-        const USER_STD_SEL_KEY = "stduserzqSxYvjck7e5ORpc9kg0";
-        const USER_STD_DEL_KEY = "stduserwicpjo0dowijckxwn";
-        const USER_STD_UPD_KEY = "stduser823NXWhd2hxiwkl3";
-        const USER_STD_INS_KEY = "stdusercw8hic3hujxn8y3xbsaq";
+        const USER_TYPE_SELECT_KEY = "zqSxYvjck7e5ORpc9kg0";
+        const USER_TYPE_DELETE_KEY = "wicpffijo0dowijckxwn";
+        const USER_TYPE_UPDATE_KEY = "Xi3f823NXWhd2hxiwkl3";
+        const USER_TYPE_INSERT_KEY = "cw8hic3hujxn8y3xbsaq";
         const USER_ADMIN_KEY = "2YGBXYQ8y93dhguc728VXHbk2_h3g782iwkjapzsoj92njl";
     }
 
