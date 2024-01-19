@@ -36,7 +36,7 @@
             $qry_file = $qrys_dir . "sel_id_from_email.sql";
             
             if (!file_exists($qry_file))
-                return $qry_file;
+                return false;
             $qry = file_get_contents($qry_file);
 
             try 
@@ -66,7 +66,7 @@
         {
             $qry_file = $qrys_dir . "del_user_from_email.sql";
             if (!file_exists($qry_file))
-                return $qry_file;
+                return false;
             $qry = file_get_contents($qry_file);
 
             try 
