@@ -1,10 +1,10 @@
 version: '3.8'
-
+# docker compose dev
 services:
   nginx:
     build:
       context: ./nginx
-      dockerfile: Dockerfile
+      dockerfile: Dockerfile.dev
     container_name: nginx_container
     restart: always
     ports:
@@ -15,16 +15,15 @@ services:
       - ../core:/app/core
       - ../assets:/app/assets
     links:
-      - php1
-      - php2
+      - php
     networks: 
       - int3rnal
   
-  php1:
+  php:
     build:
       context: ./php
       dockerfile: Dockerfile
-    container_name: php_c_1
+    container_name: php_container
     command: sh -c "chmod -R a+rw ../../../app && php-fpm -F -R"
     restart: always
     volumes:
@@ -37,25 +36,7 @@ services:
       - mariadb
     networks: 
       - int3rnal
-
-  php2:
-    build:
-      context: ./php
-      dockerfile: Dockerfile
-    container_name: php_c_2
-    command: sh -c "chmod -R a+rw ../../../app && php-fpm -F -R"
-    restart: always
-    volumes:
-      - ../core:/app/core
-      - ../assets/:/app/assets
-      #- ./php/custom.ini:/usr/local/etc/php/conf.d/custom.ini
-    env_file:
-      - ../.env
-    links:
-      - mariadb
-    networks: 
-      - int3rnal
-  
+      
   mariadb:
     build:
       context: ./mariadb
