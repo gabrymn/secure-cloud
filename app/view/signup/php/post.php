@@ -5,7 +5,7 @@
     require_once __ROOT__ . 'model/email.php';
     require_once __ROOT__ . 'model/db/mypdo.php';
     require_once __ROOT__ . 'model/db/qry.php';
-    require_once '../functions.php';
+    require_once __ROOT__ . 'model/functions.php';
     
     function handle_post(&$error)
     {

@@ -1,6 +1,8 @@
 <?php
 
-    require_once("../model/token.php");
+    define('__ROOT__', '../../');
+
+    require_once(__ROOT__ . "model/token.php");
     $tkn = new token(-44, ["0-9"]);
     echo $tkn->get() . "<br>";
     $tkn->refresh(64);

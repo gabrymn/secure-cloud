@@ -3,8 +3,9 @@
     define('__ROOT__', '../../'); 
     define('__QP__', __ROOT__ . 'sql_qrys/');
 
+    // backend of this page is located in controller/pages_backend/signup
     require_once 'php/main.php';
-
+    
     // this var $error is used to display possible errors
     $error = "";
 
@@ -29,14 +30,14 @@
 <body>
     <nav class="navbar navbar-expand-lg navbar-dark bg-dark" style="border-bottom:1px solid white">
         <div class="container-fluid">
-            <a class="navbar-brand" href="../public/">HOME</a>
+            <a class="navbar-brand" href="../">HOME</a>
             <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
             <span class="navbar-toggler-icon"></span>
             </button>
             <div class="collapse navbar-collapse" id="navbarNav">
                 <ul class="navbar-nav">
                     <li class="nav-item">
-                        <a class="nav-link" style="color:white" href="signin.php">Sign in</a>
+                        <a class="nav-link" style="color:white" href="../signin">Sign in</a>
                     </li>
                     <li class="nav-item">
                         <a class="nav-link" style="font-weight:900;color:white" href="signup.php">Sign up</a>

@@ -12,8 +12,7 @@ services:
     volumes:
       - ./nginx/media/icons:/var/www/media/icons
       - ./nginx/error:/var/www/error
-      - ../core:/app/core
-      - ../assets:/app/assets
+      - ../app:/app
     links:
       - php
     networks: 
@@ -27,9 +26,9 @@ services:
     command: sh -c "chmod -R a+rw ../../../app && php-fpm -F -R"
     restart: always
     volumes:
-      - ../core:/app/core
-      - ../assets/:/app/assets
-      - ./mariadb/sql_qrys/:/app/core/sql_qrys
+      - ../app:/app
+      - ../assets/:/assets
+      - ./mariadb/sql_qrys/:/app/sql_qrys
       #- ./php/custom.ini:/usr/local/etc/php/conf.d/custom.ini
     env_file:
       - ../.env
