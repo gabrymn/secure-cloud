@@ -3,7 +3,6 @@
     define('__ROOT__', '../../'); 
     define('__QP__', __ROOT__ . 'sql_qrys/');
 
-    // backend of this page is located in controller/pages_backend/signup
     require_once 'php/main.php';
     
     // this var $error is used to display possible errors
