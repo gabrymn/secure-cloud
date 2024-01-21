@@ -4,15 +4,11 @@
     define('__QP__', __ROOT__ . 'sql_qrys/');
 
     require_once 'php/main.php';
-
     require_once __ROOT__ . 'model/http/http_request.php';
-    require_once __ROOT__ . 'model/email.php';
+    require_once __ROOT__ . 'model/mail.php';
 
     // this var $error is used to display possible errors
     $error = "";
-
-    print_r($_GET);
-    exit;
 
     main($error);
 ?>

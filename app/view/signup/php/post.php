@@ -7,6 +7,7 @@
     require_once __ROOT__ . 'model/db/mypdo.php';
     require_once __ROOT__ . 'model/db/qry.php';
     require_once __ROOT__ . 'model/functions.php';
+    require_once __ROOT__ . 'model/email.php';
     
     function handle_post(&$error)
     {
@@ -37,25 +38,23 @@
             $conn = MYPDO::get_new_connection('USER_TYPE_SELECT', $_ENV['USER_TYPE_SELECT']);
             
             if (!$conn)
-                http_response::server_error(500, "Internal server error, try again");
+                http_response::server_error(500, "99Internal server error, try again");
             
             $res = QRY::sel_id_from_email($conn, $email, __QP__);
 
             if (!$res)
-                http_response::server_error(500, "Internal server error, try again");
+                http_response::server_error(500, "88Internal server error, try again");
             
             MYPDO::close_connection($conn);
-
-            if (count($res[0]) > 0)
+            
+            if ($res !== -1)
             {
                 http_response_code(400);
                 $error =  "Email already taken";
             }   
             else
             {
-                $state = email::is_real($email);
-
-                if (!$state)
+                if (!MyMail::is_real($email))
                 {
                     http_response_code(400);
                     $error =  "Email does not exists";
@@ -67,7 +66,7 @@
 
                     $conn = MYPDO::get_new_connection('USER_TYPE_INSERT', $_ENV['USER_TYPE_INSERT']);
                     if (!$conn)
-                        http_response::server_error(500, "Internal server error, try again");
+                        http_response::server_error(500, "77Internal server error, try again");
                     
                     $p2fa = 0;
                     $verified = 0;
@@ -84,11 +83,11 @@
                     $status = QRY::ins_user($conn, $user_data, __QP__);
                     
                     if (!$status)
-                        http_response::server_error(500, "Internal server error, try again");
+                        http_response::server_error(500, "66Internal server error, try again");
 
                     MYPDO::close_connection($conn);
                     
-                    $user_folder_created = file_system_handler::mk_dir($email, __ROOT__ . 'users/');
+                    $user_folder_created = true; //file_system_handler::mk_dir($email, __ROOT__ . 'users/');
                     
                     if ($user_folder_created === false)
                     {
@@ -96,36 +95,50 @@
                         
                         $conn = MYPDO::get_new_connection('USER_TYPE_DELETE', $_ENV['USER_TYPE_DELETE']);
                         if (!$conn)
-                            http_response::server_error(500, "Internal server error, try again");
+                            http_response::server_error(500, "1Internal server error, try again");
                         
                         $status = QRY::del_user_from_email($conn, ["email" => $email], __QP__);
                         if (!$status)
-                            http_response::server_error(500, "Internal server error, try again");
+                            http_response::server_error(500, "2Internal server error, try again");
                         
                         MYPDO::close_connection($conn);
-                        http_response::server_error(500, "Internal server error, try again");
+                        http_response::server_error(500, "3Internal server error, try again");
                     }
                     else
                     {
-                        $tkn = new token(256);
-
+                        
                         $conn = MYPDO::get_new_connection('USER_TYPE_SELECT', $_ENV['USER_TYPE_SELECT']);
                         if (!$conn)
-                            http_response::server_error(500, "Internal server error, try again");
+                            http_response::server_error(500, "4Internal server error, try again");
 
-                        $id_user = QRY::sel_id_from_email($conn, $tkn, $email, __QP__);
-                        if (!$id_user)
-                            http_response::server_error(500, "Internal server error, try again");
-
-                        QRY::ins_verify($conn, $id_user, $tkn->hashed(), __QP__);
-            
-                        $sub = "Secure-cloud: verify your email";
-                        $link = "[DOMAIN]/signin?";
-                        $link .= "tkn={$tkn->get()}";
+                        $id_user = QRY::sel_id_from_email($conn, $email, __QP__);
                         
-                        $msg = "Click this link: $link";
-            
-                        email::send($email, $sub, $msg);
+                        if (!$id_user)
+                            http_response::server_error(500, "5Internal server error, try again");
+
+                        MYPDO::close_connection($conn);
+
+                        $tkn = new token(256);
+
+                        $conn = MYPDO::get_new_connection('USER_TYPE_INSERT', $_ENV['USER_TYPE_INSERT']);
+                        if (!$conn)
+                            http_response::server_error(500, "6Internal server error, try again");
+
+                        $status = QRY::ins_verify($conn, $tkn->hashed(), $id_user, __QP__);
+                        if (!$status)
+                            http_response::server_error(500, "612Internal server error, try again");
+
+                        $mailobj = new MyMail(
+                            $_ENV['EMAIL_USERNAME'],
+                            $_ENV['EMAIL_PASSWORD'],
+                            $_ENV['EMAIL_HOST']
+                        );
+
+                        $body = $mailobj->get_confirm_email_body($_ENV['CONFIRM_EMAIL_URL'], $_ENV['CONFIRM_EMAIL_BODY'], $tkn->hashed());
+
+                        $mailobj->send($email, $_ENV['CONFIRM_EMAIL_OBJ'], $body);
+
+                        header("location:signin");
                     }
                 }
             }

@@ -1,2 +1,2 @@
-INSERT INTO secure_cloud.verify (htkn, expires, user_id)
-VALUES (?, NOW()+900, ?)
+INSERT INTO secure_cloud.email_verify (token, expires, id_user)
+VALUES (?, NOW() + INTERVAL 30 MINUTE, ?)

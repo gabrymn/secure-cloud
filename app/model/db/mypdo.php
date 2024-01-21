@@ -42,6 +42,7 @@
         public static function bindAllParams(array $params, &$stmt) 
         {
             $i = 1;
+
             foreach ($params as &$param) 
             {
                 MYPDO::bindParam($param, $stmt, $i);

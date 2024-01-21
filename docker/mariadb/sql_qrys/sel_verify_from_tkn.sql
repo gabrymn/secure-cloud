@@ -1,1 +1,1 @@
-SELECT expires FROM secure_cloud.verify WHERE htken = ?
+SELECT expires FROM secure_cloud.email_verify WHERE token = ?

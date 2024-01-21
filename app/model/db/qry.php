@@ -30,6 +30,14 @@
             }
         }
 
+        public static function email_available(&$mypdo, $email, $qrys_dir)
+        {
+            if (QRY::sel_id_from_email($mypdo, $email, $qrys_dir) === -1)
+                return 1;
+            else
+                return -1;
+        }
+
         public static function sel_id_from_email(&$mypdo, $email, $qrys_dir)
         {
             $qry_file = $qrys_dir . "sel_id_from_email.sql";
@@ -52,8 +60,14 @@
                 if (!$qry_status)
                     return false;
              
-                $users = $stmt->fetchAll(PDO::FETCH_ASSOC);
-                return [$users];
+                $id_user = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
+                // no users with that email
+                if ($id_user === array())
+                    return -1;
+                else
+                    return $id_user[0]['id'];
+                    // array(USER_ID) === [0] => USER_ID
             } 
             catch (PDOException $e)
             {   
@@ -86,9 +100,9 @@
             
         }
 
-        public static function ins_verify(&$conn, $id_user, $tkn, $qrys_dir)
+        public static function ins_verify(&$conn, $htkn, $id_user, $qrys_dir)
         {
-            $qry_file = $qrys_dir . "insert_verify.sql";
+            $qry_file = $qrys_dir . "ins_verify.sql";
             if (!file_exists($qry_file))
                 return false;
             $qry = file_get_contents($qry_file);
@@ -99,7 +113,7 @@
                 if (!$stmt)
                     return false;
 
-                MYPDO::bindAllParams([$id_user, $tkn->hashed()], $stmt);
+                MYPDO::bindAllParams(array($htkn, $id_user), $stmt);
                 return $stmt->execute();
             } 
             catch (PDOException $e)

@@ -31,7 +31,8 @@ services:
       - ./mariadb/sql_qrys/:/app/sql_qrys
       #- ./php/custom.ini:/usr/local/etc/php/conf.d/custom.ini
     env_file:
-      - ../.env
+      - ../.env.db
+      - ../.env.mail
     links:
       - mariadb
     networks: 
@@ -43,12 +44,15 @@ services:
       dockerfile: Dockerfile
     container_name: mariadb_container
     restart: unless-stopped
+
     volumes:
     #  - ../db/data:/var/lib/mysql
       - ./mariadb/sql_scripts/:/sql_scripts
+      - ./mariadb/config/my.cnf:/etc/mysql/my.cnf
     environment:
       #- MARIADB_ALLOW_EMPTY_ROOT_PASSWORD=1
-      - MARIADB_ROOT_PASSWORD=password
+      - MARIADB_ROOT_PASSWORD=root
+      - TZ=Europe/Rome
     networks: 
       - int3rnal
       
@@ -59,7 +63,7 @@ services:
       - 8080:8080
     networks: 
       - int3rnal
-    
+  
 networks:
   int3rnal:
     driver: bridge
