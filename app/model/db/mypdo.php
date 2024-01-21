@@ -41,11 +41,18 @@
 
         public static function bindAllParams(array $params, &$stmt) 
         {
-            foreach ($params as $key => &$value) 
+            $i = 1;
+            foreach ($params as &$param) 
             {
-                $paramType = is_int($value) ? PDO::PARAM_INT : PDO::PARAM_STR;
-                $stmt->bindParam(':' . $key, $value, $paramType);
+                MYPDO::bindParam($param, $stmt, $i);
+                $i++;
             }
+        }
+
+        public static function bindParam(&$param, &$stmt, $i = 1)
+        {
+            $paramType = is_int($param) ? PDO::PARAM_INT : PDO::PARAM_STR;
+            $stmt->bindParam($i, $param, $paramType);
         }
     }
 

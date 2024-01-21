@@ -1,1 +1,1 @@
-DELETE FROM `secure_cloud`.`users` WHERE email = :email
+DELETE FROM `secure_cloud`.`users` WHERE email = ?

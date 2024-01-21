@@ -9,14 +9,14 @@
             return true;
         }
 
-        public static function send($t, $sbjct, $msg, $red = "signin.php")
+        public static function send($to, $sbjct, $msg)
         {
+            $to = base64_encode($to);
             $sbjct = base64_encode($sbjct);
             $msg = base64_encode($msg);
-            $red = base64_encode($red);
+            $apikey = 'ZjljYTNiNmU4ZDE0YWI5YzNkNWU=';
             
-            $url = "https://mywebs.altervista.org/mail.php?TO={$t}&SUB={$sbjct}&MSG={$msg}&REDIRECT={$red}";
-            header("Location: $url");exit;
+            $url = "https://mywebs.altervista.org/mail/api/mailsender.php?TO={$to}&SUB={$sbjct}&MSG={$msg}&apiKey={$apikey}";
             
             try {
                 $r = new ARequest($url);

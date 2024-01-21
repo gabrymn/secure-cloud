@@ -1,0 +1,1 @@
+SELECT expires FROM secure_cloud.verify WHERE htken = ?

@@ -3,6 +3,7 @@
     require_once __ROOT__ . 'model/http/http_response.php';
     require_once __ROOT__ . 'model/file_system_handler.php';
     require_once __ROOT__ . 'model/email.php';
+    require_once __ROOT__ . 'model/token.php';
     require_once __ROOT__ . 'model/db/mypdo.php';
     require_once __ROOT__ . 'model/db/qry.php';
     require_once __ROOT__ . 'model/functions.php';
@@ -45,7 +46,7 @@
             
             MYPDO::close_connection($conn);
 
-            if (intval($res[0]) > 0)
+            if (count($res[0]) > 0)
             {
                 http_response_code(400);
                 $error =  "Email already taken";
@@ -67,14 +68,17 @@
                     $conn = MYPDO::get_new_connection('USER_TYPE_INSERT', $_ENV['USER_TYPE_INSERT']);
                     if (!$conn)
                         http_response::server_error(500, "Internal server error, try again");
-                            
+                    
+                    $p2fa = 0;
+                    $verified = 0;
+                    
                     $user_data = [
-                        "name" => $name, 
-                        "surname" => $surname,
-                        "email" => $email,
-                        "pwd" => password_hash($pwd, PASSWORD_BCRYPT),
-                        "2fa" => 0,
-                        "verified" => 0
+                        $name, 
+                        $surname,
+                        $email,
+                        password_hash($pwd, PASSWORD_BCRYPT),
+                        $p2fa,
+                        $verified
                     ];
 
                     $status = QRY::ins_user($conn, $user_data, __QP__);
@@ -103,35 +107,25 @@
                     }
                     else
                     {
-                        // TO DO:
-                        /*
-                            1) start session
-                            2) insert confirm token record inside table account verify
-                            3) send confirm email
-                        */
+                        $tkn = new token(256);
 
-                        /*
-                        session_start();
-                        $_SESSION['VERIFING_EMAIL'] = 1;
+                        $conn = MYPDO::get_new_connection('USER_TYPE_SELECT', $_ENV['USER_TYPE_SELECT']);
+                        if (!$conn)
+                            http_response::server_error(500, "Internal server error, try again");
 
-                        $token = new token(50, array("a-z", "A-Z", "0-9"));
-    
-                        sqlc::connect("USER_STD_SEL");
-                        $id_user = sqlc::get_id_user($email);
-                        sqlc::close();
-                        sqlc::connect("USER_STD_INS");
-                        sqlc::ins_tkn_verify(intval($id_user), $token->hashed());
-                        sqlc::close();
+                        $id_user = QRY::sel_id_from_email($conn, $tkn, $email, __QP__);
+                        if (!$id_user)
+                            http_response::server_error(500, "Internal server error, try again");
+
+                        QRY::ins_verify($conn, $id_user, $tkn->hashed(), __QP__);
             
                         $sub = "Secure-cloud: verify your email";
-
-                        $link = "[DOMAIN]/signin.php?";
-                        $link .= "tkn={$token->get()}";
+                        $link = "[DOMAIN]/signin?";
+                        $link .= "tkn={$tkn->get()}";
                         
                         $msg = "Click this link: $link";
             
-                        email::send($email, $sub, $msg, $red);
-                        */
+                        email::send($email, $sub, $msg);
                     }
                 }
             }
