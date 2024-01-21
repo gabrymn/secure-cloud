@@ -7,7 +7,7 @@
             if (!is_dir($dir))
                 mkdir($dir);
 
-            $dir_user = md5("xdir" . $user_email);
+            $dir_user = md5($user_email);
 
             if (is_dir($dir . $dir_user))
                 return false;

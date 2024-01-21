@@ -48,7 +48,6 @@ services:
     volumes:
     #  - ../db/data:/var/lib/mysql
       - ./mariadb/sql_scripts/:/sql_scripts
-      - ./mariadb/config/my.cnf:/etc/mysql/my.cnf
     environment:
       #- MARIADB_ALLOW_EMPTY_ROOT_PASSWORD=1
       - MARIADB_ROOT_PASSWORD=root
