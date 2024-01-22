@@ -1,5 +1,14 @@
-<?php   
+<?php
 
+    define('__ROOT__', '../../'); 
+    define('__QP__', __ROOT__ . 'sql_qrys/');
+
+    require_once 'php/main.php';
+
+    $success = "";
+    $error = "";
+
+    main($success, $error);
 ?>
 
 <!------ START BOOTSTRAP FORM ---------->
@@ -24,7 +33,7 @@
     <body>
         <nav class="navbar navbar-expand-lg navbar-dark bg-dark" style="border-bottom:1px solid white">
             <div class="container-fluid">
-                <a class="navbar-brand" href="/">HOME</a>
+                <a class="navbar-brand" href="../public/">HOME</a>
                 <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
                 <span class="navbar-toggler-icon"></span>
                 </button>
@@ -45,6 +54,15 @@
             <div class="cotainer">
                 <div class="row justify-content-center">
                     <div class="col-md-8">
+                        <?php
+                            if (isset($error) && $error != ""){
+                                echo '<div class="alert alert-danger" onclick="this.remove()" role="alert">'.$error.'</div>';
+                            }  
+                        ?>  
+                        <?php
+                            if (isset($success) && $success != "")
+                                echo '<div class="alert alert-success" onclick="this.remove()" role="alert">'.$success.'</div>';
+                        ?>
                         <div class="card">
                             <div class="card-header">Sign in</div>
                             <div class="card-body">
@@ -63,23 +81,23 @@
                                     </div>
                                     <div class="form-group row">
                                         <div class="col-md-6 offset-md-4">
-                                            <!--<div class="checkbox">
+                                            <div class="checkbox">
                                                 <label>
                                                     <input name="REM_ME" type="checkbox" id="REM_ME"> <label for="REM_ME">Remember me</label>
                                                 </label>
                                             </div>
-                                        </div>-->
+                                        </div>
                                     </div>
                                     <div class="col-md-6 offset-md-4">
                                         <button type="submit" class="btn btn-primary">
                                             Submit
                                         </button>
-                                        <!--<a href="password-reset/" class="btn btn-link">
+                                        <a href="password-reset/" class="btn btn-link">
                                             Forgot Your Password?
-                                        </a>-->
+                                        </a>
                                     </div>
+                                </form>
                             </div>
-                            </form>
                         </div>
                     </div>
                 </div>
@@ -87,31 +105,51 @@
             </div>
         </main>
                                 
-
-        <div id="ID_COOKIE_BOX" class="row" style="display:none;">
-            <div class="col-md-4 col-sm-12 button-fixed">
-            <div class="p-3 pb-4 bg-custom text-white">
-            <div class="row">
-            <div class="col-10">
-            <h1>Allow Cookies</h1>
-            </div>
-            <div class="col-2 text-center">
-            <i class="fas fa-times"></i>
-            </div>
-            </div>
-            <p>Utilizziamo i cookie per migliorare la tua esperienza</p>
-            <button id="ID_COOKIE_A" type="button" class="btn btn-light w-100">Accept</button>
-            </div>
-            </div>
-        </div>
+        <?php 
+            // change the url
+            // FROM localhost/signin?tkn=[EXPIRED_OR_INVALID_TOKEN]    
+            // TO   localhost/signin
+            if ($error !== "" || $success !== "")
+            {
+                echo "<script>window.history.pushState('', '', 'signin');</script>";
+            }
+        ?>
 
         <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-ka7Sk0Gln4gmtz2MlQnikT1wXgYsOg+OMhuP+IlRH9sENBO0LRn5q+8nbTov4+1p" crossorigin="anonymous"></script>
         <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
         <script src="https://cdnjs.cloudflare.com/ajax/libs/crypto-js/3.1.2/rollups/aes.js"></script>
         <script src="https://cdnjs.cloudflare.com/ajax/libs/crypto-js/3.1.2/rollups/sha256.js"></script>
+        <script src="../js/login.js"></script>
+        <script src="../js/shared.js"></script>
     </body>
-
-    <script type="module">
-    </script>
-
 </html>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

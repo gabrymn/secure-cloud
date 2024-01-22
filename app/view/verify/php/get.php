@@ -2,7 +2,7 @@
 
     require_once __ROOT__ . 'model/http/http_response.php';
 
-    function handle_get(&$title, &$sub_title, &$redirect)
+    function handle_get(&$title, &$subtitle, &$redirect)
     {
         session_start();
 
@@ -12,7 +12,7 @@
         }
 
         $title = "Ti abbiamo inviato un email di verifica, controlla la tua casella di posta";
-        $sub_title = "Clicca per continuare";
+        $subtitle = "Clicca per continuare";
         $redirect = 'signin';
         
         /*

@@ -1,0 +1,1 @@
+SELECT id_user FROM email_verify WHERE token = ? AND expires > NOW()

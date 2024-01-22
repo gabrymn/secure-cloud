@@ -4,18 +4,19 @@
     require_once 'post.php';
     require_once __ROOT__ . 'model/http/http_response.php';
 
-    function main(&$error)
+    function main(&$success, &$error)
     {
         if (isset($_SERVER['REQUEST_METHOD']))
         {
             switch ($_SERVER['REQUEST_METHOD'])
             {
-                case 'POST': {
-                    handle_post($error);
+                case 'GET': {
+                    handle_get($success, $error);
                     break;
                 }
-                case 'GET': {
-                    handle_get();
+
+                case 'POST': {
+                    handle_post();
                     break;
                 }
     

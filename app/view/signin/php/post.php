@@ -10,7 +10,7 @@
     require_once __ROOT__ . 'model/models/user.php';
     require_once __ROOT__ . 'model/models/verify.php';
     
-    function handle_post(&$error)
+    function handle_post()
     {
         if (key_contains($_POST, 'email', 'pwd', 'pwd2', 'name', 'surname'))
         {
