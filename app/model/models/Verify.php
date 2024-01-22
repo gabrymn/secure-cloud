@@ -7,6 +7,13 @@
         private $expires;
 
         private const EXP_MINUTES = 30;
+        private const TZ = 'Europe/Rome';
+        private const DATE_FORMAT = 'Y-m-d H:i:s';
+
+        public function __construct()
+        {
+            date_default_timezone_set(self::TZ);
+        }
 
         public function init($token, $id_user)
         {
@@ -43,19 +50,15 @@
         public function set_datetime($expires = false)
         {
             if (!$expires)
-            {
-                date_default_timezone_set('Europe/Rome');
-                $expires = date('Y-m-d H:i:s', strtotime("+" . strval(self::EXP_MINUTES) . " minutes", time()));
-            }
+                $expires = date(self::DATE_FORMAT, strtotime("+" . strval(self::EXP_MINUTES) . " minutes", time()));
             
             $this->expires = $expires;
         }
 
         public function check_expires()
         {
-            date_default_timezone_set('Europe/Rome');
             $expires = new DateTime(self::get_expires());
-            $now = new DateTime(date("Y-m-d H:i:s"));
+            $now = new DateTime(date(self::DATE_FORMAT));
 
             return $expires < $now;
         }
