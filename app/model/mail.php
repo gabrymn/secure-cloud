@@ -12,19 +12,19 @@
     {
         private PHPMailer $mailer;
 
-        public function __construct($email_username, $email_password, $email_host, $port = 465)
+        public function __construct($port = 465)
         {
             try {
 
                 $this->mailer = new PHPMailer(true);
                 $this->mailer->isSMTP();
-                $this->mailer->Host = $email_host;
+                $this->mailer->Host = $_ENV['EMAIL_HOST'];
                 $this->mailer->SMTPAuth = true;
-                $this->mailer->Username = $email_username;
-                $this->mailer->Password = $email_password;
+                $this->mailer->Username = $_ENV['EMAIL_USERNAME'];
+                $this->mailer->Password = $_ENV['EMAIL_PASSWORD'];
                 $this->mailer->SMTPSecure = 'ssl';
                 $this->mailer->Port = $port;
-                $this->mailer->setFrom($email_host);
+                $this->mailer->setFrom($_ENV['EMAIL_USERNAME']);
                 
                 return true;
 
@@ -50,16 +50,14 @@
             }
         }
 
+        public function send_verify_email()
+        {
+            
+        }
+
         public static function is_real($email)
         {
             return true;
-        }
-
-        public static function get_confirm_email_body($domain, $msg, $tkn)
-        {
-            $url = $domain . $tkn;
-            $body =  $msg . ": " . $url;
-            return $body;
         }
     }
 

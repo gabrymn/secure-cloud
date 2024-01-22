@@ -7,7 +7,7 @@
     
     class QRY 
     {
-        public static function ins_user(&$mypdo, array $user_data, $qrys_dir)
+        public static function ins_user(&$mypdo, User $user, $qrys_dir)
         {
             $qry_file = $qrys_dir . "ins_user.sql";
 
@@ -21,7 +21,7 @@
                 if (!$stmt)
                     return false;
 
-                MYPDO::bindAllParams($user_data, $stmt);
+                MYPDO::bindAllParams($user->get_all(), $stmt);
                 return $stmt->execute();
             } 
             catch (PDOException $e)
@@ -100,7 +100,7 @@
             
         }
 
-        public static function ins_verify(&$conn, $htkn, $id_user, $qrys_dir)
+        public static function ins_verify(&$conn, $ver, $qrys_dir)
         {
             $qry_file = $qrys_dir . "ins_verify.sql";
             if (!file_exists($qry_file))
@@ -113,7 +113,7 @@
                 if (!$stmt)
                     return false;
 
-                MYPDO::bindAllParams(array($htkn, $id_user), $stmt);
+                MYPDO::bindAllParams($ver->get_all(), $stmt);
                 return $stmt->execute();
             } 
             catch (PDOException $e)

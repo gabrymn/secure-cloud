@@ -7,12 +7,16 @@
     require_once __ROOT__ . 'model/db/qry.php';
     require_once __ROOT__ . 'model/functions.php';
     require_once __ROOT__ . 'model/mail.php';
+    require_once __ROOT__ . 'model/models/user.php';
+    require_once __ROOT__ . 'model/models/verify.php';
     
     function handle_post(&$error)
     {
         if (key_contains($_POST, 'email', 'pwd', 'pwd2', 'name', 'surname'))
         {
-            handle_user_insertion($error);
+            $user = new User();
+            $user->init($_POST['email'], $_POST['pwd'], $_POST['name'], $_POST['surname']);
+            handle_user_insertion($user, $error);
         }
         else 
         { 
@@ -20,30 +24,17 @@
         }
     }
 
-    function handle_user_insertion(&$error)
+    function handle_user_insertion($user, &$error)
     {
-        if (!filter_var($_POST['email'], FILTER_VALIDATE_EMAIL))
+        if (!filter_var($user->get_email(), FILTER_VALIDATE_EMAIL))
         {
-            unset($_POST['email']);
-            unset($email);
             http_response_code(400);
             $error = "Invalid email format";
         }
         else
         {        
-            $email = htmlspecialchars($_POST['email']);            
-            $pwd = htmlspecialchars($_POST['pwd']);
-            
             $conn = MYPDO::get_new_connection('USER_TYPE_SELECT', $_ENV['USER_TYPE_SELECT']);
-            
-            if (!$conn)
-                http_response::server_error(500, "99Internal server error, try again");
-            
-            $res = QRY::sel_id_from_email($conn, $email, __QP__);
-
-            if (!$res)
-                http_response::server_error(500, "88Internal server error, try again");
-            
+            $res = QRY::sel_id_from_email($conn, $user->get_email(), __QP__);
             MYPDO::close_connection($conn);
             
             if ($res !== -1)
@@ -53,90 +44,55 @@
             }   
             else
             {
-                if (!MyMail::is_real($email))
+                if (!MyMail::is_real($user->get_email()))
                 {
                     http_response_code(400);
                     $error =  "Email does not exists";
                 }
                 else 
                 {
-                    $name = htmlspecialchars($_POST['name']);
-                    $surname = htmlspecialchars($_POST['surname']);
-
                     $conn = MYPDO::get_new_connection('USER_TYPE_INSERT', $_ENV['USER_TYPE_INSERT']);
-                    if (!$conn)
-                        http_response::server_error(500, "77Internal server error, try again");
-                    
-                    $p2fa = 0;
-                    $verified = 0;
-                    
-                    $user_data = [
-                        $name, 
-                        $surname,
-                        $email,
-                        password_hash($pwd, PASSWORD_BCRYPT),
-                        $p2fa,
-                        $verified
-                    ];
-
-                    $status = QRY::ins_user($conn, $user_data, __QP__);
-                    
-                    if (!$status)
-                        http_response::server_error(500, "66Internal server error, try again");
-
+                    QRY::ins_user($conn, $user, __QP__);
                     MYPDO::close_connection($conn);
                     
-                    $user_folder_created = file_system_handler::mk_dir($email, __ROOT__ . 'users/');
+                    $user_folder_created = file_system_handler::mk_dir($user->get_email(), __ROOT__ . 'users/');
                     
                     if ($user_folder_created === false)
                     {
                         // IF DIR HAS NOT BEEN CREATED DELETE ALL USER DATA FROM DB
-
                         $conn = MYPDO::get_new_connection('USER_TYPE_DELETE', $_ENV['USER_TYPE_DELETE']);
-                        if (!$conn)
-                            http_response::server_error(500, "1Internal server error, try again");
-                        
-                        $status = QRY::del_user_from_email($conn, $email, __QP__);
-                        if (!$status)
-                            http_response::server_error(500, "2Internal server error, try again");
-                        
+                        QRY::del_user_from_email($conn, $user->get_email(), __QP__);
                         MYPDO::close_connection($conn);
                         http_response::server_error(500, "3Internal server error, try again");
                     }
                     else
                     {
                         $conn = MYPDO::get_new_connection('USER_TYPE_SELECT', $_ENV['USER_TYPE_SELECT']);
-                        if (!$conn)
-                            http_response::server_error(500, "4Internal server error, try again");
-                        
-                        $id_user = QRY::sel_id_from_email($conn, $email, __QP__);
-                        
-                        if (!$id_user)
-                            http_response::server_error(500, "5Internal server error, try again");
-
+                        $id_user = QRY::sel_id_from_email($conn, $user->get_email(), __QP__);
+                        $user->set_id($id_user);
                         MYPDO::close_connection($conn);
 
                         $tkn = new token(256);
 
                         $conn = MYPDO::get_new_connection('USER_TYPE_INSERT', $_ENV['USER_TYPE_INSERT']);
-                        if (!$conn)
-                            http_response::server_error(500, "6Internal server error, try again");
+                        $ver = new Verify();
+                        $ver->init($tkn->hashed(), $user->get_id());
+                        QRY::ins_verify($conn, $ver, __QP__);
+                        MYPDO::close_connection($conn);
 
-                        $status = QRY::ins_verify($conn, $tkn->hashed(), $id_user, __QP__);
-                        if (!$status)
-                            http_response::server_error(500, "612Internal server error, try again");
+                        $mailobj = new MyMail();
 
-                        $mailobj = new MyMail(
-                            $_ENV['EMAIL_USERNAME'],
-                            $_ENV['EMAIL_PASSWORD'],
-                            $_ENV['EMAIL_HOST']
-                        );
+                        $url = 'http://localhost/signin?tkn=' . $tkn->hashed();
+                        $body = 'Click the link to confirm your email: ' . $url;
+                        $obj = 'Secure-cloud: verify your email';
 
-                        $body = $mailobj->get_confirm_email_body($_ENV['CONFIRM_EMAIL_URL'], $_ENV['CONFIRM_EMAIL_BODY'], $tkn->hashed());
+                        $mailobj->send($user->get_email(), $obj, $body);
 
-                        $mailobj->send($email, $_ENV['CONFIRM_EMAIL_OBJ'], $body);
+                        session_start();
+                        $_SESSION['EMAIL_VERIFING'] = true;
 
-                        header("location:signin");
+                        header("location:verify");
+                        exit;
                     }
                 }
             }
