@@ -2,9 +2,15 @@
 
     class Verify 
     {
-        private string $token;
+        private string $token_hash;
         private int $id_user;
         private $expires;
+        private string $email;
+
+        private const EMAIL_DEFAULT_VALUE = "EMAIL_DEFAULT_VALUE";
+        private const ID_USER_DEFAULT_VALUE = -1;
+        private const EXPIRES_DEFAULT_VALUE = "EXPIRES_DEFAULT_VALUE";
+        private const TOKEN_HASH_DEFAULT_VALUE = "TOKEN_HASH_DEFAULT_VALUE";
 
         private const EXP_MINUTES = 30;
         private const TZ = 'Europe/Rome';
@@ -13,18 +19,33 @@
         public function __construct()
         {
             date_default_timezone_set(self::TZ);
+            self::set_datetime(self::EXPIRES_DEFAULT_VALUE);
+            self::set_id_user(self::ID_USER_DEFAULT_VALUE);
+            self::set_email(self::EMAIL_DEFAULT_VALUE);
+            self::set_token(self::TOKEN_HASH_DEFAULT_VALUE);
         }
 
-        public function init($token, $id_user)
+        public function init($token_hash, $id_user, $email = self::EMAIL_DEFAULT_VALUE)
         {
             self::set_datetime();
-            self::set_token($token);
+            self::set_token($token_hash);
             self::set_id_user($id_user);
+            self::set_email($email);
+        }
+
+        public function set_email($email)
+        {
+            $this->email = $email;
+        }
+
+        public function get_email()
+        {
+            return $this->email;
         }
 
         public function get_token()
         {
-            return $this->token;
+            return $this->token_hash;
         }
 
         public function get_id_user()
@@ -37,9 +58,9 @@
             return $this->expires;
         }
 
-        public function set_token($token)
+        public function set_token($token_hash)
         {
-            $this->token = $token;
+            $this->token_hash = $token_hash;
         }
 
         public function set_id_user($id_user)
@@ -65,12 +86,12 @@
 
         public function get_all()
         {
-            return
-            [
-                self::get_token(),
-                self::get_expires(),
-                self::get_id_user()
-            ];
+            $all = array(self::get_token(), self::get_expires(), self::get_id_user());
+
+            if (self::get_email() !== self::EMAIL_DEFAULT_VALUE)
+                array_push($all, self::get_email());
+
+            return $all;
         }
     }
 

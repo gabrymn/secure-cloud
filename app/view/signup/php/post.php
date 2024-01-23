@@ -9,7 +9,7 @@
     require_once __ROOT__ . 'model/mail.php';
     require_once __ROOT__ . 'model/models/user.php';
     require_once __ROOT__ . 'model/models/verify.php';
-    
+
     function handle_post(&$error)
     {
         if (key_contains($_POST, 'email', 'pwd', 'pwd2', 'name', 'surname'))
@@ -72,17 +72,18 @@
                         $user->set_id($id_user);
                         MYPDO::close_connection($conn);
 
-                        $tkn = new token(256);
+                        $tkn = new token(100);
 
                         $conn = MYPDO::get_new_connection('USER_TYPE_INSERT', $_ENV['USER_TYPE_INSERT']);
                         $ver = new Verify();
                         $ver->init($tkn->hashed(), $user->get_id());
+
                         QRY::ins_verify($conn, $ver, __QP__);
                         MYPDO::close_connection($conn);
 
                         $mailobj = new MyMail();
 
-                        $url = 'http://localhost/signin?tkn=' . $tkn->hashed();
+                        $url = 'http://localhost/signin?tkn=' . (string)$tkn;
                         $body = 'Click the link to confirm your email: ' . $url;
                         $obj = 'Secure-cloud: verify your email';
 

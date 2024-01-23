@@ -8,8 +8,11 @@
     {
         if (key_contains($_GET, 'tkn'))
         {
+            $tkn = new Token;
+            $tkn->set($_GET['tkn']);
+
             $ver = new Verify();
-            $ver->set_token($_GET['tkn']);
+            $ver->set_token($tkn->hashed());
             
             $conn = MYPDO::get_new_connection('USER_TYPE_SELECT', $_ENV['USER_TYPE_SELECT']);
 

@@ -2,17 +2,30 @@
 
     class token 
     {
-        private CONST ab = [
+        private const ab = [
             "A-Z" => "ABCDEFGHIJKLMNOPQRSTUVWXYZ",
             "a-z" => "abcdefghijklmnopqrstuvwxyz",
             "0-9" => "0123456789"
         ];
 
-        private $alpha_names;
         private $value;
+        private const DEFAULT_VALUE = "TOKEN_DEFAULT_VALUE";
+
+        public function __construct(int $len = null, array $alpha_names = array("a-z", "A-Z", "0-9"))
+        {
+            if ($len !== null && is_int($len))
+                self::init($len, $alpha_names);
+            else
+                $this->value = self::DEFAULT_VALUE;
+        }
+
+        public function __toString()
+        {
+            return self::get();
+        }
 
         // token attr
-        private function set($value)
+        public function set($value)
         {
             $this->value = $value;
         }
@@ -23,53 +36,18 @@
             return $this->value; 
         }
 
-        private function set_alpha_names($alpha_names)
+        public function init(int $len, array $alpha_names = array("a-z", "A-Z", "0-9"))
         {
-            $this->alpha_names = array();
-
-            if (is_array($alpha_names) === false)
-                $alpha_names = array("a-z", "0-9");
-
-            foreach ($alpha_names as $alpha_name)
-                if (array_key_exists($alpha_name, self::ab))
-                    array_push($this->alpha_names, $alpha_name);
-
-            if (empty($this->alpha_names))
-                $this->alpha_names = array("a-z", "0-9");
+            $tkn = self::generate_token($len, $alpha_names);
+            self::set($tkn);
         }
 
-        public function get_alpha_names()
-        {
-            return $this->alpha_names;
-        }
-
-        public function __construct($len, $alpha_names = false)
-        {
-            self::set_alpha_names($alpha_names);
-            return self::init($len, $alpha_names);
-        }
-
-        private function init($len)
-        {
-            $tkn_value = self::generate_token($len);
-            self::set($tkn_value);
-            return true;
-        }
-
-        public function refresh($len, $alpha_names = false)
-        {
-            if ($alpha_names !== false)
-                self::set_alpha_names($alpha_names);
-
-            return self::init($len, $alpha_names);
-        }
-
-        private function generate_token($len)
+        private function generate_token(int $len, array $alpha_names)
         {
             if ($len < 1)
                 $len = 10;
 
-            $alphabet = self::get_alphabet();
+            $alphabet = self::get_alphabet($alpha_names);
 
             $tkn = "";
             
@@ -79,22 +57,22 @@
             return $tkn;
         }
 
-        public function hashed($algo = "sha256")
+        public function hashed(string $algo = "sha256")
         { 
             return hash($algo, self::get()); 
         }
 
-        private function get_alphabet()
+        private function get_alphabet(array $alpha_names)
         {
             $alphabet = "";
             
-            foreach ($this->alpha_names as $alpha_name)
+            foreach ($alpha_names as $alpha_name)
                 $alphabet .= self::ab[$alpha_name];
 
             return $alphabet;
         }
 
-        private function crypto_rand_secure($min, $max)
+        private function crypto_rand_secure(int $min, int $max)
         {
             $range = $max - $min;
             
