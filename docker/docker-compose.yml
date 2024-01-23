@@ -10,7 +10,7 @@ services:
     ports:
       - "80:80"
     volumes:
-      - ./nginx/media/icons:/var/www/media/icons
+      - ../assets/icons:/var/www/media/icons
       - ./nginx/error:/var/www/error
       - ../app:/app
     links:
@@ -28,7 +28,7 @@ services:
     volumes:
       - ../app:/app
       - ../assets/:/assets
-      - ./mariadb/sql_qrys/:/app/sql_qrys
+      - ../db/sql_qrys/:/app/sql_qrys
       #- ./php/custom.ini:/usr/local/etc/php/conf.d/custom.ini
     env_file:
       - ../.env.db
@@ -47,7 +47,7 @@ services:
 
     volumes:
     #  - ../db/data:/var/lib/mysql
-      - ./mariadb/sql_scripts/:/sql_scripts
+      - ../db/sql_scripts/:/sql_scripts
     environment:
       #- MARIADB_ALLOW_EMPTY_ROOT_PASSWORD=1
       - MARIADB_ROOT_PASSWORD=root
