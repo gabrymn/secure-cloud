@@ -3,10 +3,12 @@
     require_once __ROOT__ . 'model/functions.php';
     require_once __ROOT__ . 'model/models/verify.php';
     require_once __ROOT__ . 'model/mypdo.php';
-
-    function handle_get(&$success, &$error)
+    require_once __ROOT__ . 'model/token.php';
+    require_once __ROOT__ . 'model/qry.php';
+    
+    function handle_get(&$success, &$error, &$redirect)
     {
-        if (key_contains($_GET, 'tkn'))
+        if (count($_GET) === 1 && key_contains($_GET, 'tkn'))
         {
             $tkn = new Token;
             $tkn->set($_GET['tkn']);
@@ -37,13 +39,15 @@
                 QRY::del_ver_from_tkn($conn, $ver->get_token(), $ver->get_id_user(), __QP__);
                 MYPDO::close_connection($conn);
 
-                $success = "Hai verificato la tua email, accedi";
+                $success = "Email verified, login";
             }
             else
             {
                 http_response_code(400);
                 $error = "Invalid or expired email verify link.";
             }
+            
+            $redirect = $_ENV['DOMAIN'] . '/view/signin/signin.php';
         }
     }
 

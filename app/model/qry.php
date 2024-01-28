@@ -202,6 +202,28 @@
                 return $e->getMessage();
             }
         }
+
+        public static function ins_user_sec(&$conn, UserSecurity $user_sec, $qrys_dir)
+        {
+            $qry_file = $qrys_dir . "ins_user_sec.sql";
+            if (!file_exists($qry_file))
+                return false;
+            $qry = file_get_contents($qry_file);
+
+            try 
+            {
+                $stmt = MYPDO::prep($conn, $qry);
+                if (!$stmt)
+                    return false;
+
+                MYPDO::bindAllParams($user_sec->get_all(), $stmt);
+                return $stmt->execute();
+            } 
+            catch (PDOException $e)
+            {   
+                return $e->getMessage();
+            }
+        }
     }
 
 

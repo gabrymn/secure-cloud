@@ -46,7 +46,8 @@
 
             } catch (Exception $e) {
 
-                return $this->mailer->ErrorInfo;
+                //return $this->mailer->ErrorInfo;
+                return false;
             }
         }
 

@@ -12,9 +12,11 @@ CREATE TABLE `users` (
 DROP TABLE IF EXISTS `user_security`;
 CREATE TABLE `user_security` (
   `pwd_hash` varchar(100) NOT NULL,
-  `rec_key_hash` varchar(100) NOT NULL,
-  `rec_key_enc` varchar(64) NOT NULL,
-  `salt_enc` varchar(64) NOT NULL,
+  `rkey_hash` varchar(100) NOT NULL,
+  `rkey_c` varchar(200) NOT NULL,
+  `ckey_c` varchar(200) NOT NULL,
+  `rkey_iv` varchar(50) NOT NULL,
+  `ckey_iv` varchar(50) NOT NULL,
   `id_user` int(11) NOT NULL,
   KEY `id_user` (`id_user`),
   CONSTRAINT `user_security_ibfk_1` FOREIGN KEY (`id_user`) REFERENCES `users` (`id`)

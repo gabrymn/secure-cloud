@@ -1,21 +1,21 @@
 <?php
 
     require_once 'get.php';
-    require_once 'post.php';
     require_once __ROOT__ . 'model/http/http_response.php';
-
-    function main(&$error)
+    
+    function main(&$success, &$error, &$redirect)
     {
         if (isset($_SERVER['REQUEST_METHOD']))
         {
             switch ($_SERVER['REQUEST_METHOD'])
             {
-                case 'POST': {
-                    handle_post($error);
+                case 'GET': {
+                    handle_get($success, $error, $redirect);
                     break;
                 }
-                case 'GET': {
-                    handle_get();
+
+                case 'POST': {
+                    handle_post();
                     break;
                 }
     

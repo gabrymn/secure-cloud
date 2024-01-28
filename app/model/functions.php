@@ -10,4 +10,10 @@
         return true;
     }
 
+    function htmlspecialchars_array(array &$array)
+    {
+        foreach ($array as $key => $val)
+            $array[$key] = htmlspecialchars($val);
+    }
+
 ?>

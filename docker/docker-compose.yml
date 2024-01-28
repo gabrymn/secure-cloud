@@ -33,6 +33,7 @@ services:
     env_file:
       - ../.env.db
       - ../.env.mail
+      - ../.env.conf
     links:
       - mariadb
     networks: 

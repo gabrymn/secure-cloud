@@ -11,7 +11,7 @@ Encryption System Analysis
 
     client: enc_recoveryKey = encrypt (recoveryKey) with (key1)
     client: enc_salt = encrypt (salt) with (key1)
-    client: hash_recoveryKey = PASSWORD_HASH_ARGON2ID(recoveryKey)
+    server: hash_recoveryKey = PASSWORD_HASH_ARGON2ID(recoveryKey)
 
     server: store enc_recoveryKey on db.users
     server: store enc_salt on db.users

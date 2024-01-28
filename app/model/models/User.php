@@ -10,10 +10,9 @@
         private int $p2fa;
         private int $verified;
         
-        public function init($email, $pwd, $name, $surname, $p2fa=0, $verified=0){
+        public function init($email, $name, $surname, $p2fa=0, $verified=0){
             
-            self::set_email(htmlspecialchars($email));
-            self::set_pwd($pwd);
+            self::set_email($email);
             self::set_name($name);
             self::set_surname($surname);
             self::set_p2fa($p2fa);
@@ -85,16 +84,6 @@
             return $this->verified;
         }
 
-        public function get_pwd()
-        {
-            return $this->pwd;
-        }
-
-        public function get_pwd_hashed($algo = PASSWORD_BCRYPT)
-        {
-            return password_hash($this->pwd, $algo);
-        }
-
         public function get_all()
         {
             return
@@ -102,7 +91,6 @@
                 self::get_name(), 
                 self::get_surname(),
                 self::get_email(),
-                self::get_pwd_hashed(),
                 self::get_p2fa(),
                 self::get_verified()
             ];

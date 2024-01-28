@@ -16,4 +16,8 @@ $('#ID_REG_FORM').on('submit', () => {
         $('#ERROR_PDM').css("display", "block")
         return false
     }
+    else
+    {
+        
+    }
 })

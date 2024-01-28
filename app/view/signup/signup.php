@@ -1,16 +1,3 @@
-<?php
-
-    define('__ROOT__', '../../'); 
-    define('__QP__', __ROOT__ . 'sql_qrys/');
-
-    require_once 'php/main.php';
-
-    // this var $error is used to display possible errors
-    $error = "";
-
-    main($error);
-?>
-
 <!------ START BOOTSTRAP FORM ---------->
 <script src="//cdnjs.cloudflare.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
 <link href="//maxcdn.bootstrapcdn.com/bootstrap/4.1.1/css/bootstrap.min.css" rel="stylesheet" id="bootstrap-css">
@@ -50,28 +37,23 @@
         <div class="cotainer">
             <div class="row justify-content-center">
                 <div class="col-md-8">
-                    <?php
-                        if (isset($error) && $error != "")
-                            echo '<div class="alert alert-danger" onclick="this.remove()" role="alert">'.$error.'</div>';
-                        unset($error);    
-                    ?>
-                    <div id="ERROR_PDM" style="display:none" class="alert alert-danger" onclick="this.style.display='none'" role="alert">Password does not match</div>
+
+                    <div id="input_error" style="display:none" class="alert alert-danger" onclick="this.style.display='none'" role="alert"></div>
+                    
                     <div class="card">
                         <div class="card-header">Sign up</div>
                         <div class="card-body">
-
-
-                            <form id="ID_REG_FORM" action="<?php $_SERVER['PHP_SELF']; ?>" method="POST">
+                            <form id="signup_form">
                                 <div class="form-group row">
-                                    <label for="email_address" class="col-md-4 col-form-label text-md-right">Name</label>
+                                    <label for="name" class="col-md-4 col-form-label text-md-right">Name</label>
                                     <div class="col-md-6">
-                                        <input name="name" type="text" id="id_name" class="form-control" maxlength="30" placeholder="John" oninput="capitalizeFirstLetter('id_name')" required autofocus>
+                                        <input name="name" type="text" id="id_name" class="form-control" minlength="2" maxlength="30" placeholder="John" oninput="capitalizeFirstLetter('id_name')" required autofocus>
                                     </div>
                                 </div>
                                 <div class="form-group row">
-                                    <label for="email_address" class="col-md-4 col-form-label text-md-right">Surname</label>
+                                    <label for="surname" class="col-md-4 col-form-label text-md-right">Surname</label>
                                     <div class="col-md-6">
-                                        <input name="surname" type="text" id="id_surname" class="form-control" maxlength="30" placeholder="Smith" oninput="capitalizeFirstLetter('id_surname')" required autofocus>
+                                        <input name="surname" type="text" id="id_surname" class="form-control" minlength="2" maxlength="30" placeholder="Smith" oninput="capitalizeFirstLetter('id_surname')" required autofocus>
                                     </div>
                                 </div>
                                 <div class="form-group row">
@@ -83,13 +65,13 @@
                                 <div class="form-group row">
                                     <label for="password" class="col-md-4 col-form-label text-md-right">New password</label>
                                     <div class="col-md-6">
-                                        <input name="pwd" type="password" id="pwd1" class="form-control"  placeholder="••••••" required>
+                                        <input name="pwd" type="password" id="pwd" class="form-control"  placeholder="••••••" required>
                                     </div>
                                 </div>
                                 <div class="form-group row">
                                     <label for="password" class="col-md-4 col-form-label text-md-right">Confirm password</label>
                                     <div class="col-md-6">
-                                        <input name="pwd2" type="password" id="pwd2" class="form-control"  placeholder="••••••" required>
+                                        <input name="pwd_confirm" type="password" id="pwd_confirm" class="form-control"  placeholder="••••••" required>
                                     </div>
                                 </div>
                                 <div class="col-md-6 offset-md-4">
@@ -126,6 +108,122 @@
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-ka7Sk0Gln4gmtz2MlQnikT1wXgYsOg+OMhuP+IlRH9sENBO0LRn5q+8nbTov4+1p" crossorigin="anonymous"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/crypto-js/3.1.2/rollups/aes.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/crypto-js/3.1.2/rollups/sha256.js"></script>
-    <script src="js/main.js"></script>
 </body>
 </html>
+
+<script type="module">
+
+    import CryptoHandler from '../DS/cryptoHandler.js'
+
+    $('#signup_form').on('submit', async (e) => {
+        // blocca la richiesta HTTP della form
+        e.preventDefault();
+
+        if (validateInputs())
+        {
+            var formData = new FormData(document.getElementById('signup_form'));
+            
+            formData.delete('pwd_confirm');
+
+            const keys = await genKeys();
+
+            formData.append('rkey', keys['rkey']);
+            formData.append('rkey_c', keys['rkey_c']);
+            formData.append('ckey_c', keys['ckey_c']);
+            formData.append('rkey_iv', keys['rkey_iv']);
+            formData.append('ckey_iv', keys['ckey_iv']);
+
+            const url = 'http://localhost/api/signup/main.php';
+            const method = 'POST';
+
+            try {
+                const response = await fetch(url, 
+                {
+                    method: method,
+                    body: formData,
+                });
+
+                if (response.ok)
+                {
+                    // test
+                    //console.log(await response.text());
+                    //return false;
+                    
+                    const json = await response.json();
+                    window.location.href = json.redirect;
+                }
+                else
+                {
+                    const errorTxt = await response.text();
+                    const errorJson = JSON.parse(errorTxt);
+                    $('#input_error').css("display", "block");
+                    $('#input_error').html(errorJson.status_message);
+                }
+
+            } catch (error) {
+                console.log(error)
+                $('#input_error').css("display", "block");
+                $('#input_error').html("There was a problem, try again");
+            }
+        }
+
+        e.preventDefault();
+    });
+
+    const genKeys = async () => {
+
+        const rkey = await CryptoHandler.genAESKey(256)
+        const ckey = await CryptoHandler.genAESKey(256)
+        const dkey = await CryptoHandler.deriveKeyFrom($("#pwd").val(), 256)
+
+        const rkey_obj = await CryptoHandler.encrypt(rkey, dkey)
+        const ckey_obj = await CryptoHandler.encrypt(ckey, rkey)
+
+        return {
+            "rkey": rkey, 
+            "rkey_c": rkey_obj.ciphertext, 
+            "ckey_c": ckey_obj.ciphertext, 
+            "rkey_iv": rkey_obj.iv,
+            "ckey_iv": ckey_obj.iv
+        };
+    }
+
+    const validateInputs = () => {
+        if ($('#id_name').val().length < 2 || $('#id_surname').val().length < 2)
+        {
+            $('#input_error').css("display", "block");
+            $('#input_error').html("Name and surname must have at least 2 characters");
+            return false;
+        }
+        if ($('#pwd').val() !== $('#pwd_confirm').val())
+        {
+            $('#input_error').css("display", "block");
+            $('#input_error').html("Passwords don't match");
+            return false;
+        }
+        if ($('#pwd').val().length < 2)
+        {
+            $('#input_error').css("display", "block");
+            $('#input_error').html("Password must have at least 8 characters");
+            return false;
+        }
+        
+        return true;
+    }
+
+</script>
+
+<script>
+
+    const capitalizeFirstLetter = (id) => {
+        let inputElement = document.getElementById(id);
+        let inputValue = inputElement.value;
+
+        let formattedValue = inputValue.replace(/\b\w/g, function (match) {
+            return match.toUpperCase();
+        });
+
+        inputElement.value = formattedValue;
+    }
+
+</script>
