@@ -39,6 +39,11 @@
             $this->pwd = htmlspecialchars($pwd);
         }
 
+        public function get_pwd()
+        {
+            return $this->pwd;
+        }
+
         public function set_name($name)
         {
             $this->name = htmlspecialchars($name);

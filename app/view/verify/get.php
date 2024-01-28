@@ -2,47 +2,47 @@
 
     require_once __ROOT__ . 'model/http/http_response.php';
 
-    function handle_get(&$title, &$subtitle, &$redirect)
+    function handle_get(&$title, &$subtitle1, &$subtitle2, &$redirect)
     {
         session_start();
 
-        if (!isset($_SESSION['EMAIL_VERIFING'])){
+        if (!isset($_SESSION['VERIFY_PAGE_STATUS'])){
             header("location:" . $_ENV['DOMAIN'] . '/view/signin/signin.php');
             exit;
         }
 
-        $title = "Ti abbiamo inviato un email di verifica, controlla la tua casella di posta";
-        $subtitle = "Clicca per continuare";
-        $redirect = $_ENV['DOMAIN'] . '/view/signin/signin.php';
-        
-        /*
-        if (isset($_GET['first']) && count($_GET) === 1)
+        if ($_SESSION['VERIFY_PAGE_STATUS'] === 'SIGNUP_OK')
         {
-            $t = "Verifica email";
-
-            if ($_GET['first'] == 1)
-            {
-                $p = "Ti abbiamo inviato un email di verifica, controlla la tua casella di posta";
-                $b = "Clicca per continuare";
-                $r = 'signin.php';
-            }
-            else
-            {   
-                $p = "Verifica il tuo account prima di poter accedere. <br><br>Non hai ricevuto la nostra mail?";
-                $b = "Clicca qui";
-                $r = 'verify.php?';
-            }
+            $title = "Procedura di verifica email";
+            $subtitle1 = "Registrazione avvenuta con successo";
+            $subtitle2 = "Clicca qui";
+            $redirect = $_ENV['DOMAIN'] . '/view/signin/signin.php';
+        }
+        else if ($_SESSION['VERIFY_PAGE_STATUS'] === 'SIGNIN_WITH_EMAIL_NOT_VERIFIED')
+        {
+            $title = "Procedura di verifica email";
+            $subtitle1 = "Prima di poter accedere devi verificare l'email, non l'hai ricevuta?";
+            $subtitle2 = "Clicca qui";
+            $redirect = $_ENV['DOMAIN'] . '/api/confirm_email/main.php';
+        }
+        else if ($_SESSION['VERIFY_PAGE_STATUS'] === 'VERIFY_EMAIL_SENT_NF')
+        {
+            $title = "Procedura di verifica email";
+            $subtitle1 = "Ti abbiamo inviato nuovamente un'email di verifica, clicca il link che ti abbiamo inviato e potrai accedere";
+            $subtitle2 = "Ok";
+            $redirect = $_ENV['DOMAIN'] . '/view/signin/signin.php';
+            unset($_SESSION['VERIFY_PAGE_STATUS']);
+            session_destroy();
         }
         else
         {
-            if (isset($_COOKIE['PHPSESSID']))
-            {
-                session_start();
-                $email = $_SESSION['EMAIL'];
-                send_email_verification($email, "verify.php?first=1");
-            }
-            else header("Location: signin.php");
-        }*/
+            $title = "Errore!";
+            $subtitle1 = "Non sei autizzato a visualizzare questa pagina";
+            $subtitle2 = "Home page";
+            $redirect = $_ENV['DOMAIN'] . '/api/confirm_email/main.php';
+            unset($_SESSION['VERIFY_PAGE_STATUS']);
+            session_destroy();
+        }
     }
 
 ?>

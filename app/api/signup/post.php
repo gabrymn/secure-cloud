@@ -73,17 +73,13 @@
                     }
                     else
                     {
+                        
+
                         $conn = MYPDO::get_new_connection('USER_TYPE_SELECT', $_ENV['USER_TYPE_SELECT']);
                         $id_user = QRY::sel_id_from_email($conn, $user->get_email(), __QP__);
                         MYPDO::close_connection($conn);
 
                         $user->set_id($id_user);
-
-                        $user_sec = UserSecurity::get_user_sec($user->get_id(), $_POST['pwd'], $_POST['rkey'], $_POST['rkey_c'], $_POST['ckey_c'], $_POST['rkey_iv'], $_POST['ckey_iv']);
-
-                        $conn = MYPDO::get_new_connection('USER_TYPE_INSERT', $_ENV['USER_TYPE_INSERT']);
-                        QRY::ins_user_sec($conn, $user_sec, __QP__);
-                        MYPDO::close_connection($conn);
 
                         $tkn = new token(100);
 
@@ -102,8 +98,13 @@
 
                         $mailer->send($user->get_email(), $obj, $body);
 
+                        $user_sec = UserSecurity::get_user_sec($user->get_id(), $_POST['pwd'], $_POST['rkey'], $_POST['rkey_c'], $_POST['ckey_c'], $_POST['rkey_iv'], $_POST['ckey_iv']);
+                        $conn = MYPDO::get_new_connection('USER_TYPE_INSERT', $_ENV['USER_TYPE_INSERT']);
+                        QRY::ins_user_sec($conn, $user_sec, __QP__);
+                        MYPDO::close_connection($conn);
+
                         session_start();
-                        $_SESSION['EMAIL_VERIFING'] = true;
+                        $_SESSION['VERIFY_PAGE_STATUS'] = 'SIGNUP_OK';
 
                         $redirect_url = $_ENV['DOMAIN'] . '/view/verify/verify.php';
                         http_response::successful(200, false, array("redirect" => $redirect_url));

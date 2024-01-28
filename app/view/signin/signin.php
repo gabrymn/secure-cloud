@@ -60,29 +60,23 @@
                             if (isset($success) && $success != "")
                                 echo '<div class="alert alert-success" onclick="this.remove()" role="alert">'.$success.'</div>';
                         ?>
+
+                        <div id="login_error" style="display:none" class="alert alert-danger" onclick="this.style.display='none'" role="alert"></div>
+
                         <div class="card">
                             <div class="card-header">Sign in</div>
                             <div class="card-body">
-                                <form id="FRM_LGN" action="<?php $_SERVER['PHP_SELF']; ?>" method="POST">
+                                <form id="signin_form">
                                     <div class="form-group row">
-                                        <label for="email_address" class="col-md-4 col-form-label text-md-right">E-Mail Address</label>
+                                        <label for="email" class="col-md-4 col-form-label text-md-right">E-Mail Address</label>
                                         <div class="col-md-6">
-                                            <input name="EMAIL" type="email" id="EML" class="form-control" placeholder="user@example.com" required autofocus>
+                                            <input name="email" type="email" id="email" class="form-control" placeholder="user@example.com" required autofocus>
                                         </div>
                                     </div>
                                     <div class="form-group row">
                                         <label for="password" class="col-md-4 col-form-label text-md-right">Password</label>
                                         <div class="col-md-6">
-                                            <input name="PASS" type="password" id="PSW" class="form-control" placeholder="••••••" required>
-                                        </div>
-                                    </div>
-                                    <div class="form-group row">
-                                        <div class="col-md-6 offset-md-4">
-                                            <div class="checkbox">
-                                                <label>
-                                                    <input name="REM_ME" type="checkbox" id="REM_ME"> <label for="REM_ME">Remember me</label>
-                                                </label>
-                                            </div>
+                                            <input name="pwd" type="password" id="pwd" class="form-control" placeholder="••••••" required>
                                         </div>
                                     </div>
                                     <div class="col-md-6 offset-md-4">
@@ -119,32 +113,57 @@
     </body>
 </html>
 
+<script>
+
+    $('#signin_form').on('submit', async (e) => {
+    
+        e.preventDefault();
+
+        var formData = new FormData(document.getElementById('signin_form'));
+
+        const url = 'http://localhost/api/signin/main.php';
+        const method = 'POST';
+
+        try {
+                const response = await fetch(url, 
+                {
+                    method: method,
+                    body: formData,
+                });
+
+                if (response.ok)
+                {
+                    // test
+                    //console.log(await response.text());
+                    //return false;
+                    
+                    const json = await response.json();
+                    window.location.href = json.redirect;
+                }
+                else
+                {
+                    const errorTxt = await response.text();
+                    const errorJson = JSON.parse(errorTxt);
+                    
+                    if (errorJson.redirect !== undefined)
+                        window.location.href = errorJson.redirect;
+                    else
+                    {
+                        $('#login_error').css("display", "block");
+                        $('#login_error').html(errorJson.status_message);
+                    }
+                }
+
+        } catch (error) {
+            console.log(error)
+            $('#login_error').css("display", "block");
+            $('#login_error').html("There was a problem, try again");
+        }
+
+        e.preventDefault();
+    })
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+</script>
 
 

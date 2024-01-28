@@ -156,6 +156,46 @@
             }
         }
 
+        public static function sel_2fa_from_id(&$mypdo, $id_user, $qrys_dir)
+        {
+            $qry_file = $qrys_dir . "sel_2fa_from_id.sql";
+            
+            if (!file_exists($qry_file))
+                return false;
+            $qry = file_get_contents($qry_file);
+
+            try 
+            {
+                $stmt = MYPDO::prep($mypdo, $qry);
+                
+                if (!$stmt)
+                    return false;
+
+                MYPDO::bindParam($id_user, $stmt);
+
+                $qry_status = $stmt->execute();
+
+                if (!$qry_status)
+                    return false;
+             
+                $p2fa = $stmt->fetchAll(PDO::FETCH_ASSOC);
+                
+                if ($p2fa === array())
+                    return false;
+                else
+                {
+                    if (intval($p2fa[0]['2fa']))
+                        return 1; // verified
+                    else
+                        return -1; // not verified
+                }
+            } 
+            catch (PDOException $e)
+            {   
+                return $e->getMessage();
+            }
+        }
+
 
         public static function upd_user_verified(&$conn, $id_user, $qrys_dir)
         {
@@ -218,6 +258,81 @@
 
                 MYPDO::bindAllParams($user_sec->get_all(), $stmt);
                 return $stmt->execute();
+            } 
+            catch (PDOException $e)
+            {   
+                return $e->getMessage();
+            }
+        }
+
+        public static function sel_verified_from_id(&$conn, $id_user, $qrys_dir)
+        {
+            $qry_file = $qrys_dir . "sel_verified_from_id.sql";
+            
+            if (!file_exists($qry_file))
+                return false;
+            $qry = file_get_contents($qry_file);
+
+            try 
+            {
+                $stmt = MYPDO::prep($conn, $qry);
+                
+                if (!$stmt)
+                    return false;
+
+                MYPDO::bindParam($id_user, $stmt);
+
+                $qry_status = $stmt->execute();
+
+                if (!$qry_status)
+                    return false;
+             
+                $verified = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
+                if ($verified === array())
+                    return $verified;
+                else
+                {
+                    if (intval($verified[0]['verified']))
+                        return 1;
+                    else
+                        return -1;
+                }
+            } 
+            catch (PDOException $e)
+            {   
+                return $e->getMessage();
+            }
+        }
+
+        public static function sel_pwd_from_id(&$conn, $id_user, $qrys_dir)
+        {
+            $qry_file = $qrys_dir . "sel_pwd_from_id.sql";
+            
+            if (!file_exists($qry_file))
+                return false;
+            $qry = file_get_contents($qry_file);
+
+            try 
+            {
+                $stmt = MYPDO::prep($conn, $qry);
+                
+                if (!$stmt)
+                    return false;
+
+                MYPDO::bindParam($id_user, $stmt);
+
+                $qry_status = $stmt->execute();
+
+                if (!$qry_status)
+                    return false;
+             
+                $pwd = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
+                if ($pwd === array())
+                    return -1;
+                else
+                    return $pwd[0]['pwd_hash'];
             } 
             catch (PDOException $e)
             {   

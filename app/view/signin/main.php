@@ -13,11 +13,6 @@
                     handle_get($success, $error, $redirect);
                     break;
                 }
-
-                case 'POST': {
-                    handle_post();
-                    break;
-                }
     
                 default: {
                     http_response::client_error(405);

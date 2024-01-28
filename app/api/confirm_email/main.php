@@ -1,19 +1,21 @@
 <?php
 
-    require_once 'get.php';
-    require_once __ROOT__ . 'model/http/http_response.php';
+    define('__ROOT__', '../../');
+    define('__QP__', __ROOT__ . 'sql_qrys/');
 
-    function main(&$title, &$subtitle1, &$subtitle2, &$redirect)
+    require_once 'get.php';
+
+    function main()
     {
         if (isset($_SERVER['REQUEST_METHOD']))
         {
             switch ($_SERVER['REQUEST_METHOD'])
             {
                 case 'GET': {
-                    handle_get($title, $subtitle1, $subtitle2, $redirect);
+                    handle_get();
                     break;
                 }
-    
+
                 default: {
                     http_response::client_error(405);
                 }
@@ -24,5 +26,7 @@
             http_response::server_error(500);
         }
     }
+
+    main();
 
 ?>

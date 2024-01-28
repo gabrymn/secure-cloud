@@ -6,10 +6,11 @@
     require_once 'main.php';
 
     $title = "";
-    $subtitle = "";
+    $subtitle1 = "";
+    $subtitle2 = "";
     $redirect = "";
 
-    main($title, $subtitle, $redirect);
+    main($title, $subtitle1, $subtitle2, $redirect);
 
 ?>
 
@@ -36,19 +37,19 @@
             <div class="row justify-content-center">
                 <div class="col-md-8">
                     <div class="card">
-                        <div class="card-header">REGISTRAZIONE AVVENUTA CON SUCCESSO</div>
+                        <div class="card-header"><?php echo $title; ?></div>
                         <div class="card-body">
                             <form action='<?php echo $redirect; ?>'>
                                 <div class="form-group row">
                                     <div class="col-md-6 offset-md-4">
                                     <p>
-                                        <?php echo $title; ?>
+                                        <?php echo $subtitle1; ?>
                                     </p>
                                     </div>
                                 </div>
                                 <div class="col-md-6 offset-md-4">
                                     <button type="submit" class="btn btn-primary">
-                                        <?php echo $subtitle; ?>
+                                        <?php echo $subtitle2; ?>
                                     </button>
                                 </div>
                             </form>
