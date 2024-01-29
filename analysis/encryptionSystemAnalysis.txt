@@ -1,41 +1,18 @@
 Encryption System Analysis  
 
-    client: password = input()
-    server: hashpwd = PASSWORD_HASH_ARGON2ID(password)
-    server: store hashedpwd on db.users
+pwd = input()
+dkey = PKBF2(pwd, 256bit)
 
-    client: key1 => PKBF2(password)
+recovery_key, iv_recovery_key = random_AESKey(256bit)
+cipher_key, iv_cipher_key = random_AESKey(256bit)
 
-    client: recoveryKey = random()
-    client: salt = random()
+aes_encryption (cipher_key) with (recovery_key)
+aes_encryption (recovery_key) with (dkey)
 
-    client: enc_recoveryKey = encrypt (recoveryKey) with (key1)
-    client: enc_salt = encrypt (salt) with (key1)
-    server: hash_recoveryKey = PASSWORD_HASH_ARGON2ID(recoveryKey)
-
-    server: store enc_recoveryKey on db.users
-    server: store enc_salt on db.users
-    server: store hash_recoveryKey on db.users
-
-    client: cihperKey = PBKDF2(recoveryKey, salt)
-
-    NOTES: 
-        cihperkey isn't stored anywhere
-        losing password and recovery key => losing account
-        lose password => use recovery key to auth, then password resetting is possible
-        lose recKey => no problem, having password = having recKey
-        recoveryKey ain't change bcs is used to derivate the cihper key that ain't change as well
-
-    file encryption/decryption: (client side)
-
-        FILE ENCRYPTION(file, cihperKey): 
-            encrypt (file) with (cihperKey) => [enc_file, IV]
-            HTTP_REQ_POST("endpointA", [enc_file, IV]) 
-
-        FILE DECRYPTION():
-            [enc_file, IV] = HTTP_REQ_GET("endpointB")
-            decrypt (enc_file) with (chiperKey, IV) => file
-
-    DB models
-        user(id, name, surname, email, 2fa (y|n), verified (y|n))
-        user_security(pwd_hash, rec_key_hash, salt_enc, rec_key_enc, id_user*)
+store on db:
+    pwd_argon2ID_hash
+    rkey_argon2ID_hash
+    rkey_encrypted
+    ckey_encrypted
+    iv_rkey
+    iv_ckey
