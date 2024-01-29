@@ -1,11 +1,11 @@
 <?php
 
-    require 'vendor/autoload.php';
-
+    require 'packages/vendor/autoload.php';
+    
     use PHPMailer\PHPMailer\PHPMailer;
     use PHPMailer\PHPMailer\Exception;
     use PHPMailer\PHPMailer\SMTP;
-
+    
     class MyMail
     {
         private PHPMailer $mailer;

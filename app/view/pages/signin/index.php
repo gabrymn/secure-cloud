@@ -1,15 +1,39 @@
 <?php
 
-    define('__ROOT__', '../../'); 
+    define('__ROOT__', '../../../'); 
     define('__QP__', __ROOT__ . 'sql_qrys/');
 
-    require_once 'main.php';
+    require_once __ROOT__ . 'model/ds/http_response.php';
+    require_once 'script.php';
 
     $success = "";
     $error = "";
     $redirect = "";
 
     main($success, $error, $redirect);
+
+    function main(&$success, &$error, &$redirect)
+    {
+        if (isset($_SERVER['REQUEST_METHOD']))
+        {
+            switch ($_SERVER['REQUEST_METHOD'])
+            {
+                case 'GET': {
+                    handle_req($success, $error, $redirect);
+                    break;
+                }
+    
+                default: {
+                    http_response::client_error(405);
+                }
+            }
+        }
+        else
+        {
+            http_response::server_error(500);
+        }
+    }
+
 ?>
 
 <!------ START BOOTSTRAP FORM ---------->
@@ -121,7 +145,7 @@
 
         var formData = new FormData(document.getElementById('signin_form'));
 
-        const url = 'http://localhost/api/signin/main.php';
+        const url = 'http://localhost/api/signin.php';
         const method = 'POST';
 
         try {

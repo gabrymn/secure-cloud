@@ -2,39 +2,44 @@
 
     define('__ROOT__', '../');
     
-    require_once __ROOT__ . '/model/http/http_response.php';
+    require_once __ROOT__ . '/model/ds/http_response.php';
+    
+    main();
 
-    if (isset($_SERVER['REQUEST_METHOD']))
+    function main()
     {
-        switch ($_SERVER['REQUEST_METHOD'])
+        if (isset($_SERVER['REQUEST_METHOD']))
         {
-            case 'GET': {
-                
-                session_start();
+            switch ($_SERVER['REQUEST_METHOD'])
+            {
+                case 'GET': {
+                    
+                    session_start();
 
-                if (!isset($_SESSION['LOGGED']))
-                    http_response::client_error(401, "you cannot logout since you are not logged in");
-                else
-                    logout();
+                    if (!isset($_SESSION['LOGGED']))
+                        http_response::client_error(401, "you cannot logout since you are not logged in");
+                    else
+                        logout();
 
-                break;
-            }
-
-            default: {
-                http_response::client_error(405);
+                    break;
+                }
+    
+                default: {
+                    http_response::client_error(405);
+                }
             }
         }
-    }
-    else
-    {
-        // server error...
-        http_response::server_error(500);
+        else
+        {
+            // server error...
+            http_response::server_error(500);
+        }
     }
 
     function logout()
     {
         session_destroy();
-        header("location: " . $_ENV['DOMAIN'] . '/view/signin/signin.php');
+        header("location: " . $_ENV['DOMAIN'] . '/view/pages/signin/index.php');
         exit;
     }
 

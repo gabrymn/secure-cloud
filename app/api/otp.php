@@ -1,10 +1,38 @@
 <?php
 
-    require_once __ROOT__ . 'model/google2FA.php';
-    require_once __ROOT__ . 'model/mypdo.php';
-    require_once __ROOT__ . 'model/qry.php';
-    require_once __ROOT__ . 'model/functions.php';
 
+    define('__ROOT__', '../'); 
+    define('__QP__', __ROOT__ . 'sql_qrys/');
+
+    require_once __ROOT__ . 'model/ds/http_response.php';
+    require_once __ROOT__ . 'model/ds/google2FA.php';
+    require_once __ROOT__ . 'model/ds/mypdo.php';
+    require_once __ROOT__ . 'model/ds/qry.php';
+    require_once __ROOT__ . 'model/ds/functions.php';
+
+    main();
+
+    function main()
+    {
+        if (isset($_SERVER['REQUEST_METHOD']))
+        {
+            switch ($_SERVER['REQUEST_METHOD'])
+            {
+                case 'POST': {
+                    handle_post();
+                    break;
+                }
+    
+                default: {
+                    http_response::client_error(405);
+                }
+            }
+        }
+        else
+        {
+            http_response::server_error(500);
+        }
+    }
 
     function handle_post()
     {
@@ -20,7 +48,7 @@
             {
                 http_response::client_error(401);
             }
-
+            
             $id_user = $_SESSION['ID_USER'];
 
             $conn = MYPDO::get_new_connection('USER_TYPE_SELECT', $_ENV['USER_TYPE_SELECT']);
@@ -42,7 +70,7 @@
                 http_response::successful(
                     200, 
                     false, 
-                    array("redirect" => $_ENV['DOMAIN'] . '/view/private/private.php')
+                    array("redirect" => $_ENV['DOMAIN'] . '/view/pages/private/index.php')
                 );
             }
             else
@@ -55,5 +83,6 @@
             http_response::client_error(404); 
         }
     }
+
 
 ?>

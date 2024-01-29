@@ -1,16 +1,43 @@
 <?php
 
-    require_once __ROOT__ . 'model/http/http_response.php';
-    require_once __ROOT__ . 'model/file_system_handler.php';
-    require_once __ROOT__ . 'model/token.php';
-    require_once __ROOT__ . 'model/mypdo.php';
-    require_once __ROOT__ . 'model/qry.php';
-    require_once __ROOT__ . 'model/functions.php';
-    require_once __ROOT__ . 'model/mail.php';
+    define('__ROOT__', '../'); 
+    define('__QP__', __ROOT__ . 'sql_qrys/');
+
+    require_once __ROOT__ . 'model/ds/http_response.php';
+    require_once __ROOT__ . 'model/ds/file_system_handler.php';
+    require_once __ROOT__ . 'model/ds/token.php';
+    require_once __ROOT__ . 'model/ds/mypdo.php';
+    require_once __ROOT__ . 'model/ds/qry.php';
+    require_once __ROOT__ . 'model/ds/functions.php';
+    require_once __ROOT__ . 'model/ds/mail.php';
     require_once __ROOT__ . 'model/models/user.php';
     require_once __ROOT__ . 'model/models/verify.php';
     require_once __ROOT__ . 'model/models/usersecurity.php';
-    require_once __ROOT__ . 'model/google2FA.php';
+    require_once __ROOT__ . 'model/ds/google2FA.php';
+
+    main();
+
+    function main()
+    {
+        if (isset($_SERVER['REQUEST_METHOD']))
+        {
+            switch ($_SERVER['REQUEST_METHOD'])
+            {
+                case 'POST': {
+                    handle_post();
+                    break;
+                }
+    
+                default: {
+                    http_response::client_error(405);
+                }
+            }
+        }
+        else
+        {
+            http_response::server_error(500);
+        }
+    }
 
     function handle_post()
     {
@@ -91,7 +118,7 @@
 
                         $mailer = new MyMail();
 
-                        $url = 'http://localhost/view/signin/signin.php?tkn=' . (string)$tkn;
+                        $url = $_ENV['DOMAIN'] . 'view/pages/signin/index.php?tkn=' . (string)$tkn;
                         $body = 'Click the link to confirm your email: ' . $url;
                         $obj = 'Secure-cloud: verify your email';
 
@@ -117,7 +144,7 @@
                         session_start();
                         $_SESSION['VERIFY_PAGE_STATUS'] = 'SIGNUP_OK';
 
-                        $redirect_url = $_ENV['DOMAIN'] . '/view/verify/verify.php';
+                        $redirect_url = $_ENV['DOMAIN'] . '/view/pages/verify/index.php';
                         http_response::successful(200, false, array("redirect" => $redirect_url));
                     }
                 }

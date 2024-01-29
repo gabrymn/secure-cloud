@@ -1,12 +1,12 @@
 <?php
 
-    define('__ROOT__', '../../'); 
+    define('__ROOT__', '../../../'); 
     define('__QP__', __ROOT__ . 'sql_qrys/');
 
-    require_once __ROOT__ . '/model/http/http_response.php';
-    require_once __ROOT__ . '/model/google2FA.php';
-    require_once __ROOT__ . '/model/qry.php';
-    require_once __ROOT__ . '/model/mypdo.php';
+    require_once __ROOT__ . 'model/ds/http_response.php';
+    require_once __ROOT__ . 'model/ds/google2FA.php';
+    require_once __ROOT__ . 'model/ds/qry.php';
+    require_once __ROOT__ . 'model/ds/mypdo.php';
     
     if (isset($_SERVER['REQUEST_METHOD']))
     {

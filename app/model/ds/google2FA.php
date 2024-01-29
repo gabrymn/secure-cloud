@@ -2,11 +2,11 @@
 
     declare(strict_types=1);
 
-    require 'vendor/autoload.php';
+    require 'packages/vendor/autoload.php';
     
     use Sonata\GoogleAuthenticator\GoogleAuthenticator;
     use Sonata\GoogleAuthenticator\GoogleQrUrl;
-
+    
     class Google2FA
     {
         private GoogleAuthenticator $g;

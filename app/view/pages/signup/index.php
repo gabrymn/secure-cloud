@@ -1,3 +1,8 @@
+<?php
+
+    
+?>
+
 <!------ START BOOTSTRAP FORM ---------->
 <script src="//cdnjs.cloudflare.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
 <link href="//maxcdn.bootstrapcdn.com/bootstrap/4.1.1/css/bootstrap.min.css" rel="stylesheet" id="bootstrap-css">
@@ -112,8 +117,8 @@
 </html>
 
 <script type="module">
-
-    import CryptoHandler from '../__ds/cryptoHandler.js'
+    
+    import CryptoHandler from '../js/ds/cryptoHandler.js'
 
     $('#signup_form').on('submit', async (e) => {
         // blocca la richiesta HTTP della form
@@ -133,7 +138,7 @@
             formData.append('rkey_iv', keys['rkey_iv']);
             formData.append('ckey_iv', keys['ckey_iv']);
 
-            const url = 'http://localhost/api/signup/main.php';
+            const url = 'http://localhost/api/signup.php';
             const method = 'POST';
 
             try {

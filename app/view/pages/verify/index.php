@@ -1,9 +1,9 @@
 <?php
 
-    define('__ROOT__', '../../'); 
-    define('__QP__', __ROOT__ . 'sql_qrys/');
+    define('__ROOT__', '../../../'); 
 
-    require_once 'main.php';
+    require_once __ROOT__ . 'model/ds/http_response.php';
+    require_once 'script.php';
 
     $title = "";
     $subtitle1 = "";
@@ -11,6 +11,29 @@
     $redirect = "";
 
     main($title, $subtitle1, $subtitle2, $redirect);
+
+    function main(&$title, &$subtitle1, &$subtitle2, &$redirect)
+    {
+        if (isset($_SERVER['REQUEST_METHOD']))
+        {
+            switch ($_SERVER['REQUEST_METHOD'])
+            {
+                case 'GET': {
+                    handle_req($title, $subtitle1, $subtitle2, $redirect);
+                    break;
+                }
+    
+                default: {
+                    http_response::client_error(405);
+                }
+            }
+        }
+        else
+        {
+            http_response::server_error(500);
+        }
+    }
+
 
 ?>
 

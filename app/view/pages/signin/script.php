@@ -1,12 +1,12 @@
 <?php
 
-    require_once __ROOT__ . 'model/functions.php';
-    require_once __ROOT__ . 'model/models/verify.php';
-    require_once __ROOT__ . 'model/mypdo.php';
-    require_once __ROOT__ . 'model/token.php';
-    require_once __ROOT__ . 'model/qry.php';
+    require_once __ROOT__ . 'model/ds/functions.php';
+    require_once __ROOT__ . 'model/ds/models/verify.php';
+    require_once __ROOT__ . 'model/ds/mypdo.php';
+    require_once __ROOT__ . 'model/ds/token.php';
+    require_once __ROOT__ . 'model/ds/qry.php';
     
-    function handle_get(&$success, &$error, &$redirect)
+    function handle_req(&$success, &$error, &$redirect)
     {
         if (count($_GET) === 1 && key_contains($_GET, 'tkn'))
         {
@@ -47,7 +47,7 @@
                 $error = "Invalid or expired email verify link.";
             }
             
-            $redirect = $_ENV['DOMAIN'] . '/view/signin/signin.php';
+            $redirect = $_ENV['DOMAIN'] . '/view/pages/signin/index.php';
         }
     }
 

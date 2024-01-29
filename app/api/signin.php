@@ -1,15 +1,45 @@
 <?php
 
-    require_once __ROOT__ . 'model/http/http_response.php';
-    require_once __ROOT__ . 'model/file_system_handler.php';
-    require_once __ROOT__ . 'model/token.php';
-    require_once __ROOT__ . 'model/mypdo.php';
-    require_once __ROOT__ . 'model/qry.php';
-    require_once __ROOT__ . 'model/functions.php';
-    require_once __ROOT__ . 'model/mail.php';
+
+    define('__ROOT__', '../'); 
+    define('__QP__', __ROOT__ . 'sql_qrys/');
+
+    require_once __ROOT__ . 'model/ds/http_response.php';
+    require_once __ROOT__ . 'model/ds/http_response.php';
+    require_once __ROOT__ . 'model/ds/file_system_handler.php';
+    require_once __ROOT__ . 'model/ds/token.php';
+    require_once __ROOT__ . 'model/ds/mypdo.php';
+    require_once __ROOT__ . 'model/ds/qry.php';
+    require_once __ROOT__ . 'model/ds/functions.php';
+    require_once __ROOT__ . 'model/ds/mail.php';
     require_once __ROOT__ . 'model/models/user.php';
     require_once __ROOT__ . 'model/models/verify.php';
     require_once __ROOT__ . 'model/models/usersecurity.php';
+
+    main();
+
+    function main()
+    {
+        if (isset($_SERVER['REQUEST_METHOD']))
+        {
+            switch ($_SERVER['REQUEST_METHOD'])
+            {
+                case 'POST': {
+                    handle_post();
+                    break;
+                }
+    
+                default: {
+                    http_response::client_error(405);
+                }
+            }
+        }
+        else
+        {
+            http_response::server_error(500);
+        }
+    }
+
 
     function handle_post()
     {
@@ -28,6 +58,7 @@
             http_response::client_error(404); 
         }
     }
+
 
     function handle_user_signin(User $user)
     {
@@ -83,7 +114,7 @@
                         http_response::client_error(
                             400, 
                             "Confirm your email before signin", 
-                            array("redirect" => $_ENV['DOMAIN'] . '/view/verify/verify.php')
+                            array("redirect" => $_ENV['DOMAIN'] . '/view/pages/verify/index.php')
                         );
                     }
                     // user is verified
@@ -105,7 +136,7 @@
                             http_response::successful(
                                 200, 
                                 false, 
-                                array("redirect" =>  $_ENV['DOMAIN'] . '/view/private/private.php')
+                                array("redirect" =>  $_ENV['DOMAIN'] . '/view/pages/private/index.php')
                             );
                         }
                         
@@ -117,7 +148,7 @@
                             http_response::successful(
                                 200, 
                                 false, 
-                                array("redirect" =>  $_ENV['DOMAIN'] . '/view/auth2/auth2.php')
+                                array("redirect" =>  $_ENV['DOMAIN'] . '/view/pages/auth2/index.php')
                             );
                         }
 
@@ -145,4 +176,6 @@
             }
         }
     }
+
+
 ?>
