@@ -1,34 +1,7 @@
 <?php
 
-    define('__ROOT__', '../../../'); 
-    define('__QP__', __ROOT__ . 'sql_qrys/');
-
-    require_once __ROOT__ . 'model/ds/http_response.php';
-    require_once __ROOT__ . 'model/ds/google2FA.php';
-    require_once __ROOT__ . 'model/ds/qry.php';
-    require_once __ROOT__ . 'model/ds/mypdo.php';
-
-    if (isset($_SERVER['REQUEST_METHOD']))
-    {
-        switch ($_SERVER['REQUEST_METHOD'])
-        {
-            case 'GET': {
-                session_start();
-
-                if (!isset($_SESSION['OTP_CHECKING']))
-                {
-                    http_response::client_error(401);
-                }
-                break;
-            }
-
-            default: {
-                http_response::client_error(405);
-            }
-        }
-    }
-    else http_response::server_error(500);
-    
+    require_once 'script.php';
+    main();
 ?>
 
 
@@ -74,50 +47,51 @@
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11.0.18/dist/sweetalert2.all.min.js"></script>
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
-
-    <script>
-
-        $('#otp_form').on('submit', async (e) => {
-
-            e.preventDefault();
-
-            var formData = new FormData(document.getElementById('otp_form'));
-
-            const url = 'http://localhost/api/otp.php';
-            const method = 'POST';
-
-            try {
-                const response = await fetch(url, 
-                {
-                    method: method,
-                    body: formData,
-                });
-
-                if (response.ok)
-                {
-                    // test
-                    //console.log(await response.text());
-                    //return false;
-                    
-                    const json = await response.json();
-                    window.location.href = json.redirect;
-                }
-                else
-                {
-                    const errorTxt = await response.text();
-                    const errorJson = JSON.parse(errorTxt);
-                    $('#error_box').css("display", "block");
-                    $('#error_box').html(errorJson.status_message);
-                }
-
-            } catch (error) {
-                console.log(error)
-                $('#error_box').css("display", "block");
-                $('#error_box').html("There was a problem, try again");
-            }
-        });
-
-    </script>
-
+    <script src="../../js/url.js"></script>
 </body>
+
+<script>
+
+    $('#otp_form').on('submit', async (e) => {
+
+        e.preventDefault();
+
+        var formData = new FormData(document.getElementById('otp_form'));
+
+        const url = 'http://localhost/api/otp.php';
+        const method = 'POST';
+
+        try {
+            const response = await fetch(url, 
+            {
+                method: method,
+                body: formData,
+            });
+
+            if (response.ok)
+            {
+                // test
+                //console.log(await response.text());
+                //return false;
+                
+                const json = await response.json();
+                window.location.href = json.redirect;
+            }
+            else
+            {
+                const errorTxt = await response.text();
+                const errorJson = JSON.parse(errorTxt);
+                $('#error_box').css("display", "block");
+                $('#error_box').html(errorJson.status_message);
+            }
+
+        } catch (error) {
+            console.log(error)
+            $('#error_box').css("display", "block");
+            $('#error_box').html("There was a problem, try again");
+        }
+    });
+
+</script>
+
 </html>

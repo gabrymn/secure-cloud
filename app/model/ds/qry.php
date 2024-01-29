@@ -7,6 +7,7 @@
     
     class QRY 
     {
+        // model User
         public static function ins_user(&$mypdo, User $user, $qrys_dir)
         {
             $qry_file = $qrys_dir . "ins_user.sql";
@@ -30,6 +31,7 @@
             }
         }
 
+        // Model user
         public static function email_available(&$mypdo, $email, $qrys_dir)
         {
             if (QRY::sel_id_from_email($mypdo, $email, $qrys_dir) === -1)
@@ -38,6 +40,7 @@
                 return -1;
         }
 
+        // Model user
         public static function sel_id_from_email(&$mypdo, $email, $qrys_dir)
         {
             $qry_file = $qrys_dir . "sel_id_from_email.sql";
@@ -75,6 +78,7 @@
             }
         }
 
+        // Model user
         public static function del_user_from_email(&$conn, $email, $qrys_dir)
         {
             $qry_file = $qrys_dir . "del_user_from_email.sql";
@@ -99,6 +103,7 @@
             }
         }
 
+        // Model verify
         public static function ins_verify(&$conn, $ver, $qrys_dir)
         {
             $qry_file = $qrys_dir . "ins_verify.sql";
@@ -121,6 +126,7 @@
             }
         }
 
+        // model verify
         public static function sel_id_from_tkn(&$mypdo, $tkn, $qrys_dir)
         {
             $qry_file = $qrys_dir . "sel_id_from_tkn.sql";
@@ -156,6 +162,7 @@
             }
         }
 
+        // Model user
         public static function sel_2fa_from_id(&$mypdo, $id_user, $qrys_dir)
         {
             $qry_file = $qrys_dir . "sel_2fa_from_id.sql";
@@ -196,7 +203,7 @@
             }
         }
 
-
+        // Model user
         public static function upd_user_verified(&$conn, $id_user, $qrys_dir)
         {
             $qry_file = $qrys_dir . "upd_user_verified.sql";
@@ -219,6 +226,7 @@
             }
         }
 
+        // Model verify
         public static function del_ver_from_tkn(&$conn, $tkn, $id_user, $qrys_dir)
         {
             $qry_file = $qrys_dir . "del_ver_from_tkn.sql";
@@ -243,6 +251,7 @@
             }
         }
 
+        // Model UserSec
         public static function ins_user_sec(&$conn, UserSecurity $user_sec, $qrys_dir)
         {
             $qry_file = $qrys_dir . "ins_user_sec.sql";
@@ -265,6 +274,7 @@
             }
         }
 
+        // Model user
         public static function sel_verified_from_id(&$conn, $id_user, $qrys_dir)
         {
             $qry_file = $qrys_dir . "sel_verified_from_id.sql";
@@ -305,6 +315,7 @@
             }
         }
 
+        // Model userSec
         public static function sel_pwd_from_id(&$conn, $id_user, $qrys_dir)
         {
             $qry_file = $qrys_dir . "sel_pwd_from_id.sql";
@@ -340,6 +351,7 @@
             }
         }
 
+        // Model UserSec
         public static function sel_secret_2fa_from_id(&$conn, $id_user, $qrys_dir)
         {
             $qry_file = $qrys_dir . "sel_secret_2fa_from_id.sql";
@@ -375,6 +387,7 @@
             }
         }
 
+        // Model User
         public static function sel_email_from_id(&$mypdo, $id_user, $qrys_dir)
         {
             $qry_file = $qrys_dir . "sel_email_from_id.sql";

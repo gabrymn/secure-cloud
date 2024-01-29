@@ -48,9 +48,7 @@
         if ($_SESSION['VERIFY_PAGE_STATUS'] !== 'SIGNIN_WITH_EMAIL_NOT_VERIFIED')
         {
             session_destroy();
-            unset($_SESSION['VERIFY_PAGE_STATUS']);
-            unset($_SESSION['EMAIL']);
-            http_response::client_error(500, "wtf?");
+            http_response::client_error(401);
         }
 
         $user = new User();

@@ -1,8 +1,5 @@
 <?php
 
-    define('__ROOT__', '../../../'); 
-
-    require_once __ROOT__ . 'model/ds/http_response.php';
     require_once 'script.php';
 
     $title = "";
@@ -11,30 +8,6 @@
     $redirect = "";
 
     main($title, $subtitle1, $subtitle2, $redirect);
-
-    function main(&$title, &$subtitle1, &$subtitle2, &$redirect)
-    {
-        if (isset($_SERVER['REQUEST_METHOD']))
-        {
-            switch ($_SERVER['REQUEST_METHOD'])
-            {
-                case 'GET': {
-                    handle_req($title, $subtitle1, $subtitle2, $redirect);
-                    break;
-                }
-    
-                default: {
-                    http_response::client_error(405);
-                }
-            }
-        }
-        else
-        {
-            http_response::server_error(500);
-        }
-    }
-
-
 ?>
 
 <!------ START BOOTSTRAP FORM ---------->
@@ -87,5 +60,6 @@
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/crypto-js/3.1.2/rollups/aes.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/crypto-js/3.1.2/rollups/sha256.js"></script>
+    <script src="../../js/url.js"></script>
     </body>
 </html>

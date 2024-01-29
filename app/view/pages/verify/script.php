@@ -1,6 +1,28 @@
 <?php
 
-    function handle_req(&$title, &$subtitle1, &$subtitle2, &$redirect)
+    function main(&$title, &$subtitle1, &$subtitle2, &$redirect)
+    {
+        if (isset($_SERVER['REQUEST_METHOD']))
+        {
+            switch ($_SERVER['REQUEST_METHOD'])
+            {
+                case 'GET': {
+                    handle_get($title, $subtitle1, $subtitle2, $redirect);
+                    break;
+                }
+
+                default: {
+                    http_response::client_error(405);
+                }
+            }
+        }
+        else
+        {
+            http_response::server_error(500);
+        }
+    }
+
+    function handle_get(&$title, &$subtitle1, &$subtitle2, &$redirect)
     {
         session_start();
 
@@ -21,7 +43,7 @@
             $title = "Procedura di verifica email";
             $subtitle1 = "Prima di poter accedere devi verificare l'email, non l'hai ricevuta?";
             $subtitle2 = "Clicca qui";
-            $redirect = $_ENV['DOMAIN'] . '/api/send_confirm_email.php';
+            $redirect = $_ENV['DOMAIN'] . '/api/send_verify_email.php';
         }
         else if ($_SESSION['VERIFY_PAGE_STATUS'] === 'VERIFY_EMAIL_SENT_NF')
         {

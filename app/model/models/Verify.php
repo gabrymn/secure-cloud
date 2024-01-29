@@ -1,5 +1,7 @@
 <?php
 
+    require_once '../ds/mypdo.php';
+    
     class Verify 
     {
         private string $token_hash;
@@ -92,6 +94,87 @@
                 array_push($all, self::get_email());
 
             return $all;
+        }
+
+        public static function ins_verify(&$conn, $ver, $qrys_dir)
+        {
+            $qry_file = $qrys_dir . "ins_verify.sql";
+            if (!file_exists($qry_file))
+                return false;
+            $qry = file_get_contents($qry_file);
+
+            try 
+            {
+                $stmt = MYPDO::prep($conn, $qry);
+                if (!$stmt)
+                    return false;
+
+                MYPDO::bindAllParams($ver->get_all(), $stmt);
+                return $stmt->execute();
+            } 
+            catch (PDOException $e)
+            {   
+                return $e->getMessage();
+            }
+        }
+
+        public static function sel_id_from_tkn(&$mypdo, $tkn, $qrys_dir)
+        {
+            $qry_file = $qrys_dir . "sel_id_from_tkn.sql";
+            
+            if (!file_exists($qry_file))
+                return false;
+            $qry = file_get_contents($qry_file);
+
+            try 
+            {
+                $stmt = MYPDO::prep($mypdo, $qry);
+                
+                if (!$stmt)
+                    return false;
+
+                MYPDO::bindParam($tkn, $stmt);
+
+                $qry_status = $stmt->execute();
+
+                if (!$qry_status)
+                    return false;
+                
+                $id_user = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
+                if ($id_user === array())
+                    return -1;
+                else
+                    return intval($id_user[0]['id_user']);
+            } 
+            catch (PDOException $e)
+            {   
+                return $e->getMessage();
+            }
+        }
+
+        public static function del_ver_from_tkn(&$conn, $tkn, $id_user, $qrys_dir)
+        {
+            $qry_file = $qrys_dir . "del_ver_from_tkn.sql";
+
+            if (!file_exists($qry_file))
+                return false;
+            $qry = file_get_contents($qry_file);
+
+            try 
+            {
+                $stmt = MYPDO::prep($conn, $qry);
+                
+                if (!$stmt)
+                    return false;
+
+                MYPDO::bindAllParams(array($tkn, $id_user), $stmt);
+                return $stmt->execute();
+            } 
+            catch (PDOException $e)
+            {   
+                return $e->getMessage();
+            }
         }
     }
 
