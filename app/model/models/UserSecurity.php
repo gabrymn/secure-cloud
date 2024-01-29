@@ -8,11 +8,12 @@
         private string $ckey_encrypted;
         private string $rkey_iv;
         private string $ckey_iv;
+        private string $secret_2fa;
         private int $id_user;
 
         private const DEFAULT_ID_USER = -1;
 
-        public function init($pwd_hash, $rkey_hash, $rkey_encrypted, $ckey_encrypted, $rkey_iv, $ckey_iv, $id_user = self::DEFAULT_ID_USER){
+        public function init($pwd_hash, $rkey_hash, $rkey_encrypted, $ckey_encrypted, $rkey_iv, $ckey_iv, $secret_2fa, $id_user = self::DEFAULT_ID_USER){
             
             self::set_pwd_hash($pwd_hash);
             self::set_rkey_hash($rkey_hash);
@@ -20,6 +21,7 @@
             self::set_ckey_encrypted($ckey_encrypted);
             self::set_rkey_iv($rkey_iv);
             self::set_ckey_iv($ckey_iv);
+            self::set_secret_2fa($secret_2fa);
             self::set_id_user($id_user);
         }
 
@@ -83,6 +85,16 @@
             return $this->ckey_iv;
         }
 
+        public function set_secret_2fa($secret_2fa)
+        {
+            $this->secret_2fa = $secret_2fa;
+        }
+
+        public function get_secret_2fa()
+        {
+            return $this->secret_2fa;
+        }
+
         public function set_id_user($id_user)
         {
             $this->id_user = $id_user;
@@ -103,18 +115,19 @@
                 self::get_ckey_encrypted(),
                 self::get_rkey_iv(),
                 self::get_ckey_iv(),
+                self::get_secret_2fa(),
                 self::get_id_user()
             ];
         }
 
 
-        public static function get_user_sec($id_user, $pwd, $rkey, $rkey_c, $ckey_c, $rkey_iv, $ckey_iv)
+        public static function get_user_sec($id_user, $pwd, $rkey, $rkey_c, $ckey_c, $rkey_iv, $ckey_iv, $secret_2fa)
         {
             $pwd_hash = password_hash($pwd, PASSWORD_ARGON2ID);
             $rkey_hash = password_hash($rkey, PASSWORD_ARGON2ID);
 
             $s = new UserSecurity();
-            $s->init($pwd_hash, $rkey_hash, $rkey_c, $ckey_c, $rkey_iv, $ckey_iv, $id_user);
+            $s->init($pwd_hash, $rkey_hash, $rkey_c, $ckey_c, $rkey_iv, $ckey_iv, $secret_2fa, $id_user);
             return $s;
         }
     }

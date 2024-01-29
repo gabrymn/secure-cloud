@@ -10,6 +10,7 @@
     require_once __ROOT__ . 'model/models/user.php';
     require_once __ROOT__ . 'model/models/verify.php';
     require_once __ROOT__ . 'model/models/usersecurity.php';
+    require_once __ROOT__ . 'model/google2FA.php';
 
     function handle_post()
     {
@@ -73,8 +74,6 @@
                     }
                     else
                     {
-                        
-
                         $conn = MYPDO::get_new_connection('USER_TYPE_SELECT', $_ENV['USER_TYPE_SELECT']);
                         $id_user = QRY::sel_id_from_email($conn, $user->get_email(), __QP__);
                         MYPDO::close_connection($conn);
@@ -98,7 +97,19 @@
 
                         $mailer->send($user->get_email(), $obj, $body);
 
-                        $user_sec = UserSecurity::get_user_sec($user->get_id(), $_POST['pwd'], $_POST['rkey'], $_POST['rkey_c'], $_POST['ckey_c'], $_POST['rkey_iv'], $_POST['ckey_iv']);
+                        $secret_2fa = Google2FA::gen_rnd_secret();
+                        
+                        $user_sec = UserSecurity::get_user_sec(
+                            $user->get_id(), 
+                            $_POST['pwd'], 
+                            $_POST['rkey'], 
+                            $_POST['rkey_c'], 
+                            $_POST['ckey_c'], 
+                            $_POST['rkey_iv'], 
+                            $_POST['ckey_iv'], 
+                            $secret_2fa
+                        );
+                        
                         $conn = MYPDO::get_new_connection('USER_TYPE_INSERT', $_ENV['USER_TYPE_INSERT']);
                         QRY::ins_user_sec($conn, $user_sec, __QP__);
                         MYPDO::close_connection($conn);

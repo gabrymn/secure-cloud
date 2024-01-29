@@ -17,6 +17,7 @@ CREATE TABLE `user_security` (
   `ckey_c` varchar(200) NOT NULL,
   `rkey_iv` varchar(50) NOT NULL,
   `ckey_iv` varchar(50) NOT NULL,
+  `secret_2fa` varchar(50) NOT  NULL,
   `id_user` int(11) NOT NULL,
   KEY `id_user` (`id_user`),
   CONSTRAINT `user_security_ibfk_1` FOREIGN KEY (`id_user`) REFERENCES `users` (`id`)

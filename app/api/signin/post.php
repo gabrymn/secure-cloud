@@ -17,7 +17,7 @@
         {
             htmlspecialchars_array($_POST);
 
-            $user = new User;
+            $user = new User();
             $user->set_email($_POST['email']);
             $user->set_pwd($_POST['pwd']);
 
@@ -92,6 +92,7 @@
                         if (isset($_SESSION['VERIFY_PAGE_STATUS'])) unset($_SESSION['VERIFY_PAGE_STATUS']);
 
                         $_SESSION['AUTH_1FA'] = true;
+                        $_SESSION['ID_USER'] = $user->get_id();
 
                         // check if 2FA is setted
                         $p2fa = QRY::sel_2fa_from_id($conn, $user->get_id(), __QP__);
@@ -100,7 +101,6 @@
                         if ($p2fa === -1)
                         {
                             $_SESSION['LOGGED'] = true;
-                            $_SESSION['ID_USER'] = $user->get_id();
 
                             http_response::successful(
                                 200, 
@@ -109,21 +109,29 @@
                             );
                         }
                         
-                        // User has 2FA active, invoke 2FA procedure
+                        // User has 2FA active, redirect to 2FA page
                         else if ($p2fa === 1)
                         {
-                            // check code 2FA
+                            $_SESSION['OTP_CHECKING'] = true;
+
+                            http_response::successful(
+                                200, 
+                                false, 
+                                array("redirect" =>  $_ENV['DOMAIN'] . '/view/auth2/auth2.php')
+                            );
                         }
 
                         // query error, server error
                         else
                         {
+                            session_destroy();
                             http_response::server_error(500);
                         }
                     }
                     // query error, server error
                     else
                     {
+                        session_destroy();
                         http_response::server_error(500);
                     }
 

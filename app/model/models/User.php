@@ -9,7 +9,9 @@
         private string $surname;
         private int $p2fa;
         private int $verified;
-        
+
+        public function __construct(){}
+
         public function init($email, $name, $surname, $p2fa=0, $verified=0){
             
             self::set_email($email);
@@ -100,9 +102,6 @@
                 self::get_verified()
             ];
         }
-
-
-        
     }
 
 ?>

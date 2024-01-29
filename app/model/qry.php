@@ -339,6 +339,77 @@
                 return $e->getMessage();
             }
         }
+
+        public static function sel_secret_2fa_from_id(&$conn, $id_user, $qrys_dir)
+        {
+            $qry_file = $qrys_dir . "sel_secret_2fa_from_id.sql";
+            
+            if (!file_exists($qry_file))
+                return false;
+            $qry = file_get_contents($qry_file);
+
+            try 
+            {
+                $stmt = MYPDO::prep($conn, $qry);
+                
+                if (!$stmt)
+                    return false;
+
+                MYPDO::bindParam($id_user, $stmt);
+
+                $qry_status = $stmt->execute();
+
+                if (!$qry_status)
+                    return false;
+             
+                $secret_2fa = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
+                if ($secret_2fa === array())
+                    return false;
+                else
+                    return $secret_2fa[0]['secret_2fa'];
+            } 
+            catch (PDOException $e)
+            {   
+                return $e->getMessage();
+            }
+        }
+
+        public static function sel_email_from_id(&$mypdo, $id_user, $qrys_dir)
+        {
+            $qry_file = $qrys_dir . "sel_email_from_id.sql";
+            
+            if (!file_exists($qry_file))
+                return false;
+            $qry = file_get_contents($qry_file);
+
+            try 
+            {
+                $stmt = MYPDO::prep($mypdo, $qry);
+                
+                if (!$stmt)
+                    return false;
+
+                MYPDO::bindParam($id_user, $stmt);
+
+                $qry_status = $stmt->execute();
+
+                if (!$qry_status)
+                    return false;
+             
+                $email = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
+                // no users with that id
+                if ($email === array())
+                    return false;
+                else
+                    return $email[0]['email'];
+            } 
+            catch (PDOException $e)
+            {   
+                return $e->getMessage();
+            }
+        }
     }
 
 

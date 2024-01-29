@@ -113,7 +113,7 @@
 
 <script type="module">
 
-    import CryptoHandler from '../DS/cryptoHandler.js'
+    import CryptoHandler from '../dsa/cryptoHandler.js'
 
     $('#signup_form').on('submit', async (e) => {
         // blocca la richiesta HTTP della form
