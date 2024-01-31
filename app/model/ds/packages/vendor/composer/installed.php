@@ -5,7 +5,7 @@
         'type' => 'library',
         'install_path' => __DIR__ . '/../../',
         'aliases' => array(),
-        'reference' => '052958e9cea3ebf4827078f7dfe02ad565294e42',
+        'reference' => 'e5a83f29088a5cdf70dd672882f489cb2f8ad69f',
         'name' => '__root__',
         'dev' => true,
     ),
@@ -16,7 +16,7 @@
             'type' => 'library',
             'install_path' => __DIR__ . '/../../',
             'aliases' => array(),
-            'reference' => '052958e9cea3ebf4827078f7dfe02ad565294e42',
+            'reference' => 'e5a83f29088a5cdf70dd672882f489cb2f8ad69f',
             'dev_requirement' => false,
         ),
         'bacon/bacon-qr-code' => array(
@@ -53,6 +53,15 @@
             'install_path' => __DIR__ . '/../phpmailer/phpmailer',
             'aliases' => array(),
             'reference' => '039de174cd9c17a8389754d3b877a2ed22743e18',
+            'dev_requirement' => false,
+        ),
+        'robthree/twofactorauth' => array(
+            'pretty_version' => 'v2.1.0',
+            'version' => '2.1.0.0',
+            'type' => 'library',
+            'install_path' => __DIR__ . '/../robthree/twofactorauth',
+            'aliases' => array(),
+            'reference' => 'ab93dd41ced7818ecda83a37c2741ee38bb72fb7',
             'dev_requirement' => false,
         ),
         'sonata-project/google-authenticator' => array(

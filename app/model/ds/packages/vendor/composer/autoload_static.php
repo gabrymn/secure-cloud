@@ -11,6 +11,10 @@ class ComposerStaticInit4507e61283296125795a8af313c9af2b
         array (
             'Sonata\\GoogleAuthenticator\\' => 27,
         ),
+        'R' => 
+        array (
+            'RobThree\\Auth\\' => 14,
+        ),
         'P' => 
         array (
             'PHPMailer\\PHPMailer\\' => 20,
@@ -37,6 +41,10 @@ class ComposerStaticInit4507e61283296125795a8af313c9af2b
         'Sonata\\GoogleAuthenticator\\' => 
         array (
             0 => __DIR__ . '/..' . '/sonata-project/google-authenticator/src',
+        ),
+        'RobThree\\Auth\\' => 
+        array (
+            0 => __DIR__ . '/..' . '/robthree/twofactorauth/lib',
         ),
         'PHPMailer\\PHPMailer\\' => 
         array (

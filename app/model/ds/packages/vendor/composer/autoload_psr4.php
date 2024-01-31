@@ -7,6 +7,7 @@ $baseDir = dirname($vendorDir);
 
 return array(
     'Sonata\\GoogleAuthenticator\\' => array($vendorDir . '/sonata-project/google-authenticator/src'),
+    'RobThree\\Auth\\' => array($vendorDir . '/robthree/twofactorauth/lib'),
     'PHPMailer\\PHPMailer\\' => array($vendorDir . '/phpmailer/phpmailer/src'),
     'Google\\Authenticator\\' => array($vendorDir . '/sonata-project/google-authenticator/src'),
     'Endroid\\QrCode\\' => array($vendorDir . '/endroid/qr-code/src'),
