@@ -9,10 +9,10 @@
     class MyTFA extends TwoFactorAuth
     {
         private string $secret;
-        private string|null $email;
+        private string ?$email;
         private const SERVICE_NAME = 'secure-cloud';
 
-        public function __construct(string|null $email = null, string|bool $secret = false)
+        public function __construct(string ?$email = null, string|bool $secret = false)
         {
             parent::__construct();
 
