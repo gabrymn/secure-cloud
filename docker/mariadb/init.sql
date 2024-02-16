@@ -10,7 +10,21 @@ SET time_zone = "+00:00";
 SET GLOBAL time_zone = 'Europe/Rome';
 
 /* DOCKER-CONTAINER FILESYSTEM */
-SOURCE ../sql_scripts/tables.sql;
-SOURCE ../sql_scripts/users.sql;
+
+SOURCE ../db/structure/tables/users.sql;
+SOURCE ../db/structure/tables/user_security.sql;
+SOURCE ../db/structure/tables/email_verify.sql;
+SOURCE ../db/structure/tables/sessions.sql;
+SOURCE ../db/structure/tables/session_dates.sql;
+
+SOURCE ../db/structure/users/u_select.sql;
+SOURCE ../db/structure/users/u_update.sql;
+SOURCE ../db/structure/users/u_delete.sql;
+SOURCE ../db/structure/users/u_insert.sql;
+SOURCE ../db/structure/users/u_admin.sql;
+
+SOURCE ../db/structure/triggers/before_update_sessions.sql;
+SOURCE ../db/structure/triggers/before_insert_session_dates.sql;
+SOURCE ../db/structure/triggers/before_update_session_dates.sql;
 
 COMMIT;

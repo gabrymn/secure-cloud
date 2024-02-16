@@ -1,18 +1,32 @@
 Encryption System Analysis  
 
-pwd = input()
-dkey = PKBF2(pwd, 256bit)
+client: 
 
-recovery_key, iv_recovery_key = random_AESKey(256bit)
-cipher_key, iv_cipher_key = random_AESKey(256bit)
+    pwd = input()
+  
+server:
 
-aes_encryption (cipher_key) with (recovery_key)
-aes_encryption (recovery_key) with (dkey)
+    dkey_salt = random_salt : base64
 
-store on db:
-    pwd_argon2ID_hash
-    rkey_argon2ID_hash
-    rkey_encrypted
-    ckey_encrypted
-    iv_rkey
-    iv_ckey
+    dkey = PKBF2(pwd, dkey_salt) : hex
+
+    rkey = random_AES_key() : base64
+    ckey = random_AES_key() : base64
+
+    secret_2fa = random_2FA_secret() : str
+
+    pwd_hash = PASSWORD_HASH(pwd, ARGON2ID) : str
+    rkey_hash = PASSWORD_HASH(rkey, ARGON2ID) : str
+
+    ckey_encrypted = encrypt_AES_GCM(ckey) with (rkey)
+    rkey_encrypted = encrypt_AES_GCM (rkey) with (dkey) 
+    secret_2fa_encrypted = encrypt_AES_GCM(secret_2fa) with (rkey)
+
+    store on db:
+
+        pwd_hash
+        rkey_hash
+        rkey_encrypted
+        ckey_encrypted
+        secret_2fa_encrypted
+        dkey_salt

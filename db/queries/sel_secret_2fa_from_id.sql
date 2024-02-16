@@ -1,0 +1,1 @@
+SELECT secret_2fa_c FROM user_security WHERE id_user = ?

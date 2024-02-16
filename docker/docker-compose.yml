@@ -10,9 +10,13 @@ services:
     ports:
       - "80:80"
     volumes:
-      - ../assets/icons:/var/www/media/icons
-      - ./nginx/error:/var/www/error
-      - ../app:/app
+      - ../src:/app/src
+      - ../resource:/app/resource
+      - ../public:/app/public
+      - ../users_storage:/app/users_storage
+      - ../vendor:/app/vendor
+      - ../composer.json:/app/composer.json
+      - ../composer.lock:/app/composer.lock
     links:
       - php
     networks: 
@@ -26,9 +30,16 @@ services:
     command: sh -c "chmod -R a+rw ../../../app && php-fpm -F -R"
     restart: always
     volumes:
-      - ../app:/app
-      - ../assets/:/assets
-      - ../db/sql_qrys/:/app/sql_qrys
+      - ../src:/app/src
+      - ../resource:/app/resource
+      - ../public:/app/public
+      - ../users_storage:/app/users_storage
+      - ../vendor:/app/vendor
+      - ../composer.json:/app/composer.json
+      - ../composer.lock:/app/composer.lock
+
+      #- ../db/sql_qrys/:/app/sql_qrys
+      #- ../users_storage/:/app/users_storage
       #- ./php/custom.ini:/usr/local/etc/php/conf.d/custom.ini
     env_file:
       - ../.env.db
@@ -48,11 +59,11 @@ services:
 
     volumes:
     #  - ../db/data:/var/lib/mysql
-      - ../db/sql_scripts/:/sql_scripts
+      - ../db/structure/:/db/structure
     environment:
       #- MARIADB_ALLOW_EMPTY_ROOT_PASSWORD=1
       - MARIADB_ROOT_PASSWORD=root
-      - TZ=Europe/Rome
+      #- TZ=Europe/Rome
     networks: 
       - int3rnal
       

@@ -1,0 +1,3 @@
+CREATE USER 'USER_DEL'@'%';
+GRANT SELECT, DELETE ON `secure\_cloud`.* TO 'USER_DEL'@'%';
+SET PASSWORD FOR 'USER_DEL'@'%' = PASSWORD('bz85gvc904lqky17hxh9940jvn48bxcv');
