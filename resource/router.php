@@ -53,7 +53,6 @@
             $this->notFoundCallback = $notFoundCallback;
         }
 
-        //  Request args = array_keys($_[METHOD])
         public function handleRequest(string $method, string $path)
         {
             $parsed_path = parse_url($path, PHP_URL_PATH);
