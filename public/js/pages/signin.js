@@ -4,7 +4,7 @@ $('#signin_form').on('submit', async (e) => {
 
     var formData = new FormData(document.getElementById('signin_form'));
 
-    const url = DOMAIN + '/api/signin.php';
+    const url = DOMAIN + '/signin';
     const method = 'POST';
     
     try {   

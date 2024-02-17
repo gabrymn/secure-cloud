@@ -1,20 +1,19 @@
 <?php
 
 
-    /*require_once __ROOT__ . 'model/ds/http_response.php';
-    require_once __ROOT__ . 'model/ds/http_response.php';
-    require_once __ROOT__ . 'model/ds/file_system_handler.php';
-    require_once __ROOT__ . 'model/ds/token.php';
-    require_once __ROOT__ . 'model/ds/crypto.php';
-    require_once __ROOT__ . 'model/ds/mypdo.php';
-    require_once __ROOT__ . 'model/ds/functions.php';
-    require_once __ROOT__ . 'model/ds/mail.php';
-    require_once __ROOT__ . 'model/ds/mydatetime.php';
-    require_once __ROOT__ . 'model/ds/client.php';
-    require_once __ROOT__ . 'model/models/user.php';
-    require_once __ROOT__ . 'model/models/email_verify.php';
-    require_once __ROOT__ . 'model/models/user_security.php';
-    require_once __ROOT__ . 'model/models/session.php';*/
+    require_once __DIR__ . '/../../resource/http_response.php';
+    require_once __DIR__ . '/../../resource/http_response.php';
+    require_once __DIR__ . '/../../resource/file_system_handler.php';
+    require_once __DIR__ . '/../../resource/token.php';
+    require_once __DIR__ . '/../../resource/crypto.php';
+    require_once __DIR__ . '/../../resource/mypdo.php';
+    require_once __DIR__ . '/../../resource/mail.php';
+    require_once __DIR__ . '/../../resource/mydatetime.php';
+    require_once __DIR__ . '/../../resource/client.php';
+    require_once __DIR__ . '/../model/user.php';
+    require_once __DIR__ . '/../model/email_verify.php';
+    require_once __DIR__ . '/../model/user_security.php';
+    require_once __DIR__ . '/../model/session.php';
     
     class SigninController
     {
@@ -125,7 +124,7 @@
             (
                 200, 
                 false, 
-                array("redirect" =>  $_ENV['DOMAIN'] . 'private')
+                array("redirect" =>  $_ENV['DOMAIN'] . '/private')
             );
         }
 

@@ -8,35 +8,36 @@
     require_once __DIR__ . '/../src/controller/account_recover.php';
     require_once __DIR__ . '/../src/controller/account_verify.php';
 
-    $router = Router::getInstance();
+    $router = new Router($_GET, $_POST);
 
-    $router->addRoute(Router::HTTP_GET, '/', [], function() {
+    $router->GET('/', [], function () {
 
         StaticPagesController::render_home();
     });
 
-    $router->addRoute(Router::HTTP_GET, '/signup', [], function() {
+    $router->GET('/signup', [], function() {
 
         SignupController::render_signup_page();
     });
 
-    $router->addRoute(Router::HTTP_GET, '/signin', [], function() {
+
+    $router->GET('/signin', [], function() {
 
         SigninController::render_signin_page();
     });
 
-    $router->addRoute(Router::HTTP_GET, '/recover', [], function() {
+    $router->GET('/recover', [], function() {
 
         AccountRecoveryController::render_recover_page();
-    });
+    }); 
 
-    $router->addRoute(Router::HTTP_GET, '/verify', [], function() {
+    $router->GET('/verify', [], function() {
 
         AccountVerifyController::render_verify_page();
     });
 
-    $router->addRoute(Router::HTTP_POST, '/signup', ['email', 'pwd', 'name', 'surname'], function() {
-
+    $router->POST('/signup', ['email', 'pwd', 'name', 'surname'], function() {
+        
         SignupController::process_signup
         (
             $_POST['email'], 
@@ -46,14 +47,14 @@
         );
     });
 
-    $router->addRoute(Router::HTTP_POST, '/signin', ['email', 'pwd'], function() {
+    $router->POST('/signin', ['email', 'pwd'], function($args) {
 
-        SigninController::process_signin($_POST['email'], $_POST['pwd']);
-    });
+        SigninController::process_signin($args['email'], $args['pwd']);
+    }); 
 
-    $router->addRoute(Router::HTTP_GET, '/signin', ['token'], function() {
+    $router->GET('/signin', ['token'], function($args) {
 
-        $response = AccountVerifyController::check_email_verify_token($_GET['token']);
+        $response = AccountVerifyController::check_email_verify_token($args['token']);
         
         $success_msg = $response['success_msg'];
         $error_msg = $response['error_msg'];
@@ -62,31 +63,30 @@
         SigninController::render_signin_page($success_msg, $error_msg, $redirect);
     });
 
-    $router->addRoute(Router::HTTP_POST, '/auth2', ['otp'], function() {
+    $router->POST('/auth2', ['otp'], function($args) {
 
-        OTPController::processOtpChecking($_GET['otp']);
-    });
-
-    $router->addRoute(Router::HTTP_POST, '/recovery', ['email', 'rkey'], function() {
-
-        AccountRecoveryController::process_rkey_check($_POST['email'], $_POST['rkey']);
-    });
-
-    $router->addRoute(Router::HTTP_POST, '/recovery', ['pwd'], function() {
-
-        AccountRecoveryController::process_pwd_reset($_POST['pwd']);
+        OTPController::processOtpChecking($args['otp']);
     });
 
 
+    $router->POST('/recovery', ['email', 'rkey'], function($args) {
 
-    $router->addRoute(Router::HTTP_GET, '/sendverifyemail', [], function() {
+        AccountRecoveryController::process_rkey_check($args['email'], $args['rkey']);
+    });
+
+    $router->POST('/recovery', ['pwd'], function($args) {
+
+        AccountRecoveryController::process_pwd_reset($args['pwd']);
+    });
+
+    $router->GET('/sendverifyemail', [], function() {
 
         AccountVerifyController::send_verify_email();
     });
 
-    $router->addRoute(Router::HTTP_POST, '/expire_session', ['id_session'], function() {
+    $router->POST('/expire_session', ['id_session'], function($args) {
 
-        SessionController::expire_session($_POST['id_session']);
+        SessionController::expire_session($args['id_session']);
     });
 
     $router->setNotFoundCallback(function () {
