@@ -10,8 +10,7 @@
     {
         private string $secret;
         private ?string $email;
-        private const SERVICE_NAME = 'secure-cloud';
-        
+
         public function __construct(?string $email = null, string|bool $secret = false)
         {
             parent::__construct();
@@ -57,7 +56,7 @@
         public function get_qrcode_url() : string
         {
             $label = "";
-            $label .= self::SERVICE_NAME;
+            $label .= $_ENV['APP_NAME'];
 
             if (self::get_email() !== null)
                 $label .= (": " . self::get_email());

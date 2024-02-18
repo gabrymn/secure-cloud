@@ -1,8 +1,8 @@
 <?php
 
-    require_once __DIR__ . '/../router.php';
-    require_once __DIR__ . '/../../src/controller/signin.php';
-    require_once __DIR__ . '/../../src/controller/account_verify.php';
+    require_once __DIR__ . '/../resource/router.php';
+    require_once __DIR__ . '/../src/controller/signin.php';
+    require_once __DIR__ . '/../src/controller/account_verify.php';
 
     function get_signin_routes() : array
     {

@@ -15,6 +15,14 @@
             $this->routes = array();
         }
 
+        public function addRoutes($routes)
+        {
+            foreach ($routes as $route)
+            {
+                $this->routes[] = $route;
+            }
+        }
+
         public function getRoutesNumber()
         {
             return count($this->routes);

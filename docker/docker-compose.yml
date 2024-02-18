@@ -14,6 +14,7 @@ services:
       - ../resource:/app/resource
       - ../public:/app/public
       - ../users_storage:/app/users_storage
+      - ../routes:/app/routes
       - ../vendor:/app/vendor
       - ../composer.json:/app/composer.json
       - ../composer.lock:/app/composer.lock
@@ -34,6 +35,7 @@ services:
       - ../resource:/app/resource
       - ../public:/app/public
       - ../users_storage:/app/users_storage
+      - ../routes:/app/routes
       - ../vendor:/app/vendor
       - ../composer.json:/app/composer.json
       - ../composer.lock:/app/composer.lock
@@ -42,9 +44,8 @@ services:
       #- ../users_storage/:/app/users_storage
       #- ./php/custom.ini:/usr/local/etc/php/conf.d/custom.ini
     env_file:
-      - ../.env.db
+      - ../.env
       - ../.env.mail
-      - ../.env.conf
     links:
       - mariadb
     networks: 
