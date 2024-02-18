@@ -1,7 +1,7 @@
 $('#signup_form').on('submit', async (e) => {
     // blocca la richiesta HTTP della form
     e.preventDefault();
-    
+
     if (validateInputs())
     {
         var formData = new FormData(document.getElementById('signup_form'));

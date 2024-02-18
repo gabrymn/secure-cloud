@@ -21,7 +21,7 @@
             (
                 $user->to_assoc_array(email:true)
             );
-    
+
             if (!password_verify($rkey, $us->get_rkey_hash()))
                 http_response::client_error(400, "The provided recovery key is incorrect. Please double-check the key and try again.");
             

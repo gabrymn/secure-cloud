@@ -10,17 +10,20 @@
     {
         private string $secret;
         private ?string $email;
+        private static string $app_name;
 
         public function __construct(?string $email = null, string|bool $secret = false)
         {
             parent::__construct();
 
-            if ($secret === false)
-                self::set_secret(self::createSecret());
-            else
-                self::set_secret($secret);
+            self::$app_name = $_ENV['APP_NAME'];
 
-            self::set_email($email);
+            if ($secret === false)
+                $this->set_secret(self::createSecret());
+            else
+                $this->set_secret($secret);
+
+            $this->set_email($email);
         }
 
         public static function get_random_secret() : string
@@ -50,23 +53,23 @@
                 
         public function get_code() : string
         {
-            return self::getCode(self::get_secret());
+            return $this->getCode($this->get_secret());
         }
         
         public function get_qrcode_url() : string
         {
             $label = "";
-            $label .= $_ENV['APP_NAME'];
+            $label .= self::$app_name;
 
-            if (self::get_email() !== null)
-                $label .= (": " . self::get_email());
+            if ($this->get_email() !== null)
+                $label .= (": " . $this->get_email());
 
-            return self::getQRCodeImageAsDataUri($label, self::get_secret());
+            return $this->getQRCodeImageAsDataUri($label, $this->get_secret());
         }
 
         public function codeIsValid($input_code) : bool
         {
-            return self::verifyCode(self::get_secret(), $input_code);
+            return $this->verifyCode($this->get_secret(), $input_code);
         }
     }
 ?>

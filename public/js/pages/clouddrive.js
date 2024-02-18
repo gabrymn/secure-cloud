@@ -1,15 +1,10 @@
-
-const logoutCall = () => 
-{
-    const URL = '/signout';
-    window.location.href = URL;
-};
-
-/*const download_recoverykey = () => {
+const download_recoverykey = () => {
     
-    const URL = DOMAIN + "/api/rsc.php";
-    
-    $.ajax({    
+    download_file(RECOVERY_KEY_FILENAME, RECOVERY_KEY);
+
+    return;
+
+    $.ajax({        
         method: 'GET',
         url: URL,
         dataType: 'json',
@@ -37,7 +32,7 @@ const logoutCall = () =>
             alert(errorMsg)
         }
     })
-}*/
+}
 
 const download_file = (filename, fileCtx) => {
 

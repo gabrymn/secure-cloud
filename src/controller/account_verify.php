@@ -18,7 +18,7 @@
                     $title = "Procedura di verifica email";
                     $subtitle1 = "Prima di poter accedere devi verificare l'email, non l'hai ricevuta?";
                     $subtitle2 = "Clicca qui";
-                    $redirect = '/sendverifyemail';
+                    $redirect = '/verify/sendemail';
 
                     break;
                 }

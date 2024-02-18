@@ -3,7 +3,7 @@ $('#signin_form').on('submit', async (e) => {
     e.preventDefault();
 
     var formData = new FormData(document.getElementById('signin_form'));
-
+    
     try {   
             const response = await fetch('/signin', 
             {

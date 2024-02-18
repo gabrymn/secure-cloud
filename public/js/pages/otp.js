@@ -34,8 +34,12 @@ const sendOTP = async () => {
             window.location.href = json.redirect;
         }
         else
-        {
+        {   
             const errorTxt = await response.text();
+
+            //console.log(errorTxt);
+            //return;
+
             const errorJson = JSON.parse(errorTxt);
             $('#error_box').css("display", "block");
             $('#error_box').html(errorJson.status_message);

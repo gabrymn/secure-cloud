@@ -1,5 +1,7 @@
 <?php
 
+    require_once __DIR__ . '/../src/controller/otp.php';
+
     function get_auth2_routes()
     {
         $router = new Router();

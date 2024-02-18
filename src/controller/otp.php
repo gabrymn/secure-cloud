@@ -48,7 +48,7 @@
 
             unset($_SESSION['OTP_CHECKING']);
 
-            Session::create_or_load($user->get_id(), client::get_ip());
+            Session::create_or_load(id_user: $user->get_id(), ip: client::get_ip());
             
             http_response::successful
             (
