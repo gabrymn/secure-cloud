@@ -61,6 +61,7 @@ services:
     #  - ../db/data:/var/lib/mysql
       - ../db/structure/:/db/structure
     environment:
+
       #- MARIADB_ALLOW_EMPTY_ROOT_PASSWORD=1
       - MARIADB_ROOT_PASSWORD=root
       #- TZ=Europe/Rome

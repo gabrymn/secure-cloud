@@ -5,9 +5,14 @@
     require_once __DIR__ .  '/../../resource/client.php';
     require_once __DIR__ .  '/../../resource/crypto.php';
     require_once __DIR__ .  '/../../resource/mydatetime.php';
-
+    
     class SessionController
     {
+        public static function render_sessions_page()
+        {
+            include __DIR__ . '/../view/sessions.php';
+        }
+
         public static function expire_session($id_session)
         {   
             session_start();
@@ -36,7 +41,7 @@
                 (
                     200, 
                     false, 
-                    array("redirect" => $_ENV['DOMAIN'] . '/signin')
+                    array("redirect" => '/signin')
                 );
             }
             

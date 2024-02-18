@@ -1,11 +1,11 @@
 
 const logoutCall = () => 
 {
-    const URL = DOMAIN + '/api/logout.php';
+    const URL = '/signout';
     window.location.href = URL;
 };
 
-const download_recoverykey = () => {
+/*const download_recoverykey = () => {
     
     const URL = DOMAIN + "/api/rsc.php";
     
@@ -37,7 +37,7 @@ const download_recoverykey = () => {
             alert(errorMsg)
         }
     })
-}
+}*/
 
 const download_file = (filename, fileCtx) => {
 

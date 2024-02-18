@@ -1,28 +1,25 @@
 $('#signup_form').on('submit', async (e) => {
     // blocca la richiesta HTTP della form
     e.preventDefault();
-
+    
     if (validateInputs())
     {
         var formData = new FormData(document.getElementById('signup_form'));
         
         formData.delete('pwd_confirm');
 
-        const url = DOMAIN + '/signup';
-        const method = 'POST';
-        
         try {
-            const response = await fetch(url, 
+            const response = await fetch('/signup', 
             {
-                method: method,
+                method: 'POST',
                 body: formData,
             });
 
             if (response.ok)
             {
                 // test
-                console.log(await response.text());
-                return false;
+                //console.log(await response.text());
+                //return false;
                 
                 const json = await response.json();
                 window.location.href = json.redirect;

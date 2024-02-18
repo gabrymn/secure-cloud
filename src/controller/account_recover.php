@@ -4,7 +4,7 @@
     {
         public static function render_recover_page()
         {
-            include __DIR__ . '/../view/dynamic/recover.php';
+            include __DIR__ . '/../view/recover.php';
         }
 
         public static function process_rkey_check($email, $rkey)
@@ -38,14 +38,6 @@
         {
             if (strlen($pwd) < 2)
                 http_response::client_error(400, "Invalid password format");
-
-            session_start();
-
-            if ((isset($_SESSION['RECOVERING_ACCOUNT']) && isset($_SESSION['ID_USER']) && isset($_SESSION['RKEY'])) === false)
-            {
-                session_destroy();
-                http_response::client_error(401);
-            }
 
             $ukh = new UserKeysHandler();
             

@@ -50,37 +50,13 @@
             }
         }
 
-        private function sendAsync($dest, $obj, $body, $html = true): Promise
-        {
-            $promise = new Promise(function ($resolve, $reject) use ($dest, $obj, $body, $html)
-            {
-                try {
-                
-                    $this->mailer->addAddress($dest);
-                    $this->mailer->isHTML($html);  
-                    $this->mailer->Subject = $obj;                          
-                    $this->mailer->Body = $body;
-
-                    return $this->mailer->send();
-    
-                } catch (Exception $e) {
-    
-                    //return $this->mailer->ErrorInfo;
-                    return false;
-                }
-            });
-
-            return $promise;
-        }
-
-
         public static function send_email_verify($email, $tkn_plain_txt)
         {
             $mailer = new MyMail();
 
-            $url = $_ENV['DOMAIN'] . '/view/pages/signin/index.php?tkn=' . $tkn_plain_txt;
+            $url = $_ENV['APP_URL'] . '/signin?token=' . $tkn_plain_txt;
             $body = 'Click the link to confirm your email: ' . $url;
-            $obj = 'secure-cloud: verify your email';
+            $obj = $_ENV['APP_NAME'] . ': verify your email';
 
             return $mailer->send($email, $obj, $body);  
         }

@@ -15,7 +15,12 @@
     {
         public static function render_signup_page()
         {
-            include __DIR__ . '/../view/dynamic/signup.php';
+            include __DIR__ . '/../view/signup.php';
+        }
+
+        public static function render_signup_success_page()
+        {
+            include __DIR__ . '/../view/static/signup_success.html';
         }
 
         public static function process_signup($email, $pwd, $name, $surname)
@@ -90,13 +95,7 @@
 
             mypdo::commit();
 
-            session_start();
-
-            $_SESSION['VERIFY_PAGE_STATUS'] = 'SIGNUP_OK';
-        
-            $redirect_url = $_ENV['DOMAIN'] . '/verify';
-                
-            http_response::successful(200, false, array("redirect" => $redirect_url));
+            http_response::successful(200, false, array("redirect" => '/signup/success'));
         }
     }
 

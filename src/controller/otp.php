@@ -1,28 +1,24 @@
 <?php
 
-
-    define('__ROOT__', '../'); 
-
-    require_once __ROOT__ . 'model/ds/http_response.php';
-    require_once __ROOT__ . 'model/ds/two_factor_auth.php';
-    require_once __ROOT__ . 'model/ds/mypdo.php';
-    require_once __ROOT__ . 'model/ds/crypto.php';
-    require_once __ROOT__ . 'model/ds/token.php';
-    require_once __ROOT__ . 'model/ds/client.php';
-    require_once __ROOT__ . 'model/ds/functions.php';
-    require_once __ROOT__ . 'model/models/session.php';
-    require_once __ROOT__ . 'model/models/user.php';
-    require_once __ROOT__ . 'model/models/user_security.php';
-    
-    main();
+    require_once __DIR__ . '/../../resource/http_response.php';
+    require_once __DIR__ . '/../../resource/two_factor_auth.php';
+    require_once __DIR__ . '/../../resource/mypdo.php';
+    require_once __DIR__ . '/../../resource/crypto.php';
+    require_once __DIR__ . '/../../resource/token.php';
+    require_once __DIR__ . '/../../resource/client.php';
+    require_once __DIR__ . '/../model/session.php';
+    require_once __DIR__ . '/../model/user.php';
+    require_once __DIR__ . '/../model/user_security.php';
     
     class OTPController
     {
+        public static function render_auth2_page()
+        {
+            include __DIR__ . '/../view/auth2.php';
+        }
 
-        public static function check_otp_format($otp)
+        private static function check_otp_format($otp)
         {   
-            $otp = htmlspecialchars($otp);
-
             if (!preg_match('/^\d{6}$/', $otp) === 1)
                 http_response::client_error(400, "Invalid OTP format"); 
         }
@@ -31,11 +27,6 @@
         {
             self::check_otp_format($otp);
 
-            session_start();
-
-            if (!isset($_SESSION['OTP_CHECKING']))
-                http_response::client_error(401);
-            
             $user = new User(id: $_SESSION['ID_USER']);
             $user->set_email($user->sel_email_from_id());
 
@@ -63,7 +54,7 @@
             (
                 200, 
                 false, 
-                array("redirect" => $_ENV['DOMAIN'] . '/view/pages/private/index.php')
+                array("redirect" => '/clouddrive')
             );
         }
     }

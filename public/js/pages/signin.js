@@ -4,13 +4,10 @@ $('#signin_form').on('submit', async (e) => {
 
     var formData = new FormData(document.getElementById('signin_form'));
 
-    const url = DOMAIN + '/signin';
-    const method = 'POST';
-    
     try {   
-            const response = await fetch(url, 
+            const response = await fetch('/signin', 
             {
-                method: method,
+                method: 'POST',
                 body: formData,
             });
 

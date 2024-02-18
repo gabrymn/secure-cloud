@@ -19,7 +19,7 @@
     {
         public static function render_signin_page($success_msg = "", $error_msg = "", $redirect = "")
         {
-            include __DIR__ . "/../view/dynamic/signin.php";
+            include __DIR__ . "/../view/signin.php";
         }
 
         public static function process_signin($email, $pwd)
@@ -75,7 +75,7 @@
                 (
                     400, 
                     "Confirm your email before sign in", 
-                    array("redirect" => $_ENV['DOMAIN'] . '/verify')
+                    array("redirect" => '/verify')
                 );
             }
 
@@ -108,7 +108,7 @@
                 http_response::successful(
                     200, 
                     false, 
-                    array("redirect" =>  $_ENV['DOMAIN'] . '/auth2')
+                    array("redirect" =>  '/auth2')
                 );
             }
 
@@ -124,24 +124,19 @@
             (
                 200, 
                 false, 
-                array("redirect" =>  $_ENV['DOMAIN'] . '/private')
+                array("redirect" =>  '/clouddrive')
             );
         }
 
         public static function process_signout()
         {
-            session_start();
+            if (session_status() == PHP_SESSION_NONE)                
+                session_start();
 
-            if (!isset($_SESSION['LOGGED']))
-            {
-                session_destroy();
-                http_response::client_error(401, "you cannot sign out since you are not signed in");
-            }
-            else
-            {
-                session_destroy();
-                http_response::redirect($_ENV['DOMAIN'] . '/signin');
-            }
+            $_SESSION = [];
+            session_destroy();
+
+            http_response::redirect('/signin');
         }
     }
 

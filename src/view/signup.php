@@ -73,9 +73,4 @@
     <script src="js/pages/signup.js"></script>
     <script src="js/url.js"></script>
 </body>
-
-<script>
-    const DOMAIN = '<?php echo $_ENV['DOMAIN']; ?>';
-</script>
-
 </html>

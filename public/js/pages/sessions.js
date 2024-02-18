@@ -1,8 +1,7 @@
 const expireSession = (id) => {
-
+    
     id = String(id)
     const id_session = sessionRefs.get(id);
-    const URL = DOMAIN + "/api/expire_session.php";
 
     if (id_session === CURRENT_ID_SESSION)
     {
@@ -12,7 +11,7 @@ const expireSession = (id) => {
 
     $.ajax({
         
-        url: URL, 
+        url: '/expire_session', 
         method: 'POST',
         data: {
             id_session: id_session,

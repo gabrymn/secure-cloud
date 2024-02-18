@@ -1,9 +1,3 @@
-<?php
-
-    require_once 'script.php';
-    main();
-
-?>
 
 <!DOCTYPE html>
 <html lang="en">
@@ -120,9 +114,7 @@
     </body>
 
     <script>
-        const DOMAIN = '<?php echo $_ENV['DOMAIN']; ?>';
         const CURRENT_ID_SESSION = '<?php echo $_SESSION['CURRENT_ID_SESSION']; ?>';
-
     </script>
 
 </html>

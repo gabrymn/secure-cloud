@@ -33,6 +33,9 @@
             if ($status_msg === false)
                 $status_msg = self::get_status_msg($status_code);
 
+            if (isset($array['redirect']))
+                $array['redirect'] = $_ENV['APP_URL'] . $array['redirect'];
+
             $json = json_encode(
                 array_merge(
                     array(
@@ -52,7 +55,6 @@
 
         public static function server_error(int $status_code = 500, $status_msg = false, array $array = array())
         {
-
             if (!self::status_code_valid($status_code, 500)) 
                 http_response::server_error(500);
 
@@ -80,7 +82,6 @@
 
         public static function successful(int $status_code = 200, $status_msg = false, array $array = array())
         {
-
             if (!self::status_code_valid($status_code, 200)) 
                 http_response::server_error(500);
             
@@ -88,6 +89,9 @@
 
             if ($status_msg === false)
                 $status_msg = self::get_status_msg($status_code);
+
+            if (isset($array['redirect']))
+                $array['redirect'] = $_ENV['APP_URL'] . $array['redirect'];
 
             $json = json_encode(
                 array_merge(
@@ -106,8 +110,9 @@
             exit;
         }
 
-        public static function redirect($redirect_url)
+        public static function redirect($page)
         {
+            $redirect_url = $_ENV['APP_URL'] . $page;
             header("location:".$redirect_url);
             exit;
         }

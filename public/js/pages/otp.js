@@ -16,14 +16,11 @@ $('#otp').on('input', () => {
 const sendOTP = async () => {
 
     var formData = new FormData(document.getElementById('otp_form'));
-
-    const url = DOMAIN + '/api/otp.php';
-    const method = 'POST';
-
+    
     try {
-        const response = await fetch(url, 
+        const response = await fetch('/auth2', 
         {
-            method: method,
+            method: 'POST',
             body: formData,
         });
 

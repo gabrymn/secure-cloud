@@ -1,11 +1,10 @@
 function redirectSignin()
 {
-    const url = DOMAIN + '/view/pages/signin/index.php';
-    window.location.href = url;
+    window.location.href = '/signin';
 }
 
-function validateEmail() {
-
+function validateEmail() 
+{
     var email = $('#id_email').val();
     
     if (isValidEmail(email)) {
@@ -16,8 +15,8 @@ function validateEmail() {
     }
 }
 
-function validateRecoverykey() {
-
+function validateRecoverykey() 
+{
     var recoverykey = $('#id_recoverykey').val();
 
     if (recoverykey.length > 0)
@@ -27,8 +26,8 @@ function validateRecoverykey() {
 
 }
 
-function validatePassword() {
-
+function validatePassword() 
+{
     var pwd1 = $('#id_pwd1').val();
     var pwd2 = $('#id_pwd2').val();
 
@@ -43,12 +42,14 @@ function validatePassword() {
 
 }
 
-function isValidEmail(email) {
+function isValidEmail(email) 
+{
     var emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
     return emailRegex.test(email);
 }
 
-function showEmailForm() {
+function showEmailForm() 
+{
     // Resetta il form
     $('#recoveryForm')[0].reset();
     // Nascondi il form di recupero
@@ -61,12 +62,10 @@ function send_pwd()
 {
     var pwd = $('#id_pwd1').val();
 
-    const URL = DOMAIN + '/api/recovery.php';
-    
     $.ajax({    
 
         method: 'POST',
-        url: URL,
+        url: '/recover',
         dataType: 'json',
         data: {
             pwd: pwd,
@@ -101,16 +100,14 @@ function send_email_rkey()
     var email = $('#id_email').val();
     var recoverykey = $('#id_recoverykey').val();
 
-    const URL = DOMAIN + '/api/recovery.php';
-
     $.ajax({
 
         method: 'POST',
-        url: URL,
+        url: '/recover',
         dataType: 'json',
         data: {
             email: email,
-            recovery_key: recoverykey
+            recoverykey: recoverykey
         },
         success: function(response) {
 
