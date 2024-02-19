@@ -32,15 +32,15 @@ $('#signin_form').on('submit', async (e) => {
                     window.location.href = errorJson.redirect;
                 else
                 {
-                    $('#login_error').css("display", "block");
-                    $('#login_error').html(errorJson.status_message);
+                    $('#error_div').css("display", "block");
+                    $('#error_div').html(errorJson.status_message);
                 }
             }
 
     } catch (error) {
         console.log(error)
-        $('#login_error').css("display", "block");
-        $('#login_error').html("There was a problem, try again");
+        $('#error_div').css("display", "block");
+        $('#error_div').html("There was a problem, try again");
     }
 
     e.preventDefault();

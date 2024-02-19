@@ -45,7 +45,7 @@ function send_email_rkey()
 
         success: function(response) {
 
-            $('#recoverykey_box').css("display", "none");
+            $('#recoverykey_box').css('display', 'none');
             $('#password_reset_box').css("display", "block");
         },
 
@@ -71,21 +71,26 @@ function send_email_rkey()
 
 
 $('#password_reset_form').on('submit', (e) => {
-
     e.preventDefault();
 
-    var pwd1 = $('#id_pwd1').val();
-    var pwd2 = $('#id_pwd2').val();
+    var pwd1 = $('#pwd').val();
+    var pwd2 = $('#pwd_confirm').val();
 
-    if (pwd1 === pwd2)
-    {
-        send_pwd();
-    }
-    else
+    if (pwd1 !== pwd2)
     {
         $('#error_div').css("display", "block");
         $('#error_div').html("Password does not match");
+        return;
     }
+
+    if (pwd1.length < 2)
+    {
+        $('#error_div').css("display", "block");
+        $('#error_div').html("Invalid password format");
+        return;
+    }
+
+    send_pwd();
 });
 
 function send_pwd()
@@ -102,7 +107,7 @@ function send_pwd()
         },
 
         success: function(response) {
-            $('#password_box').css("display", "none");
+            $('#password_reset_box').css("display", "none");
             $('#success_box').css("display", "block");
         },
 

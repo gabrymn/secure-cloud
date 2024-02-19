@@ -11,7 +11,7 @@ const expireSession = (id) => {
 
     $.ajax({
         
-        url: '/expire_session', 
+        url: '/sessions/expire', 
         method: 'POST',
         data: {
             id_session: id_session,

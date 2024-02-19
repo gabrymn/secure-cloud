@@ -7,6 +7,12 @@
     {
         $router = new Router();
 
+        $router->GET('/sessions', [], function() {
+
+            AuthController::check_protectedarea();
+            SessionController::render_sessions_page();
+        });
+
         $router->POST('/sessions/expire', ['id_session'], function($args) {
 
             AuthController::check_protectedarea(false);

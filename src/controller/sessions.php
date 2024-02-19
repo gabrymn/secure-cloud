@@ -5,7 +5,7 @@
     require_once __DIR__ .  '/../../resource/client.php';
     require_once __DIR__ .  '/../../resource/crypto.php';
     require_once __DIR__ .  '/../../resource/mydatetime.php';
-    
+
     class SessionController
     {
         public static function render_sessions_page()
@@ -15,14 +15,6 @@
 
         public static function expire_session($id_session)
         {   
-            session_start();
-
-            if ((isset($_SESSION['LOGGED']) && isset($_SESSION['ID_USER'])) === false)
-            {
-                session_destroy();
-                http_response::client_error(401);
-            }
-
             $id_user = $_SESSION['ID_USER'];
 
             $s = new Session(id_session:$id_session, id_user:$id_user);

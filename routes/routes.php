@@ -1,12 +1,14 @@
 <?php
 
     require_once __DIR__ . '/auth2.php';
-    require_once __DIR__ . '/clouddrive.php';
     require_once __DIR__ . '/recover.php';
-    require_once __DIR__ . '/sessions.php';
     require_once __DIR__ . '/signin.php';
     require_once __DIR__ . '/signup.php';
     require_once __DIR__ . '/verify.php';
+    require_once __DIR__ . '/clouddrive.php';
+    require_once __DIR__ . '/transfers.php';
+    require_once __DIR__ . '/sessions.php';
+    require_once __DIR__ . '/storage.php';
 
     require_once __DIR__ . '/../src/controller/staticpages.php';
     require_once __DIR__ . '/../src/controller/auth_checker.php';
@@ -85,6 +87,18 @@
             case '/sessions':
             {
                 return get_sessions_routes();
+                break;
+            }
+
+            case '/transfers':
+            {
+                return get_transfers_routes();
+                break;
+            }
+
+            case '/storage':
+            {
+                return get_storage_routes();
                 break;
             }
 

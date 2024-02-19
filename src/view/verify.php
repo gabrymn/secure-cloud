@@ -19,7 +19,7 @@
 </head>
 <body>
     <br>
-    <main class="login-form">
+    <main class="main-form">
         <div class="cotainer">
             <div class="row justify-content-center">
                 <div class="col-md-8">
@@ -52,5 +52,6 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/crypto-js/3.1.2/rollups/aes.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/crypto-js/3.1.2/rollups/sha256.js"></script>
     <script src="js/url.js"></script>
+
     </body>
 </html>

@@ -4,6 +4,7 @@ $('#signup_form').on('submit', async (e) => {
 
     if (validateInputs())
     {
+        alert()
         var formData = new FormData(document.getElementById('signup_form'));
         
         formData.delete('pwd_confirm');
@@ -31,37 +32,36 @@ $('#signup_form').on('submit', async (e) => {
                 
                 const errorTxt = await response.text();
                 const errorJson = JSON.parse(errorTxt);
-                $('#input_error').css("display", "block");
-                $('#input_error').html(errorJson.status_message);
+                $('#error_div').css("display", "block");
+                $('#error_div').html(errorJson.status_message);
             }
 
         } catch (error) {
             console.log(error)
-            $('#input_error').css("display", "block");
-            $('#input_error').html("There was a problem, try again");
+            $('#error_div').css("display", "block");
+            $('#error_div').html("There was a problem, try again");
         }
     }
-
-    e.preventDefault();
 });
 
 const validateInputs = () => {
+
     if ($('#id_name').val().length < 2 || $('#id_surname').val().length < 2)
     {
-        $('#input_error').css("display", "block");
-        $('#input_error').html("Name and surname must have at least 2 characters");
+        $('#error_div').css("display", "block");
+        $('#error_div').html("Name and surname must have at least 2 characters");
         return false;
     }
     if ($('#pwd').val() !== $('#pwd_confirm').val())
     {
-        $('#input_error').css("display", "block");
-        $('#input_error').html("Passwords don't match");
+        $('#error_div').css("display", "block");
+        $('#error_div').html("Passwords don't match");
         return false;
     }
     if ($('#pwd').val().length < 2)
     {
-        $('#input_error').css("display", "block");
-        $('#input_error').html("Password must have at least 8 characters");
+        $('#error_div').css("display", "block");
+        $('#error_div').html("Password must have at least 2 characters");
         return false;
     }
     

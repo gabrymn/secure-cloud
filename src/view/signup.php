@@ -8,35 +8,19 @@
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" integrity="sha384-1BmE4kWBq78iYhFldvKuhfTAU6auU8tT94WrHftjDbrCEXSU1oBoqyl2QvZ6jIW3" crossorigin="anonymous">
     <link href=img/favicon.svg rel="icon" type="image/x-icon" >
     <link href="css/shared.css" rel="stylesheet">
-    <link href="css/pages/home.css" rel="stylesheet">
     <link href="//maxcdn.bootstrapcdn.com/bootstrap/4.1.1/css/bootstrap.min.css" rel="stylesheet" id="bootstrap-css">
 </head>
 <body>
-    <nav class="navbar navbar-expand-lg navbar-dark bg-dark" style="border-bottom:1px solid #157EFB">
-        <div class="container-fluid">
-            <a class="navbar-brand" href="/">Home</a>
-            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
-            <span class="navbar-toggler-icon"></span>
-            </button>
-            <div class="collapse navbar-collapse" id="navbarNav">
-                <ul class="navbar-nav">
-                    <li class="nav-item">
-                        <a class="nav-link" style="color:white" href="/signin">Sign in</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" style="font-weight:900;color:white" href="#">Sign up</a>
-                    </li>
-                </ul>
-            </div>
-        </div>
-    </nav>
+    
+    <nav id="main-navbar" class="navbar navbar-expand-lg navbar-dark bg-dark" style="border-bottom:3px solid #157EFB"></nav>
+
     <br>
-    <main class="login-form">
+    <main class="signup-form">
         <div class="cotainer">
             <div class="row justify-content-center">
                 <div class="col-md-8">
 
-                   <div id="error_div" class="alert alert-danger" style="display:none" onclick="this.remove()" role="alert"></div>
+                   <div id="error_div" class="alert alert-danger" style="display:none" onclick="this.style.display='none'" role="alert"></div>
                    
                    <div class="card">
                         <div class="card-header">Sign up</div>
@@ -96,5 +80,13 @@
 
     <script src="js/pages/signup.js"></script>
     <script src="js/url.js"></script>
+    <script src="js/assets/public-navbar.js"></script>
+    
+    <script>
+        $(document).ready(() => {
+            $('#main-navbar').html(getPublicNavbar('signup'));
+        })
+    </script>
+
 </body>
 </html>

@@ -273,17 +273,18 @@
         
         public function sel_idsession_active_from_iduser_ipclient()
         {
-            $qry = 
-            "SELECT id_session
-            FROM session_dates
-            WHERE end IS NULL
-            AND id_session = 
-            (
-                SELECT id_session 
-                FROM sessions 
+            $qry = (
+                "SELECT id_session
+                FROM sessions
                 WHERE id_user = :id_user 
                 AND ip = :ip
-            )";
+                AND id_session = 
+                (
+                    SELECT id_session
+                    FROM session_dates
+                    WHERE end IS NULL
+                )"
+            );
             
             mypdo::connect('select');
 

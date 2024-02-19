@@ -5,6 +5,31 @@
     font-family: 'Quicksand', sans-serif;
 }
 
+body 
+{
+    margin: 0;
+    font-weight: 400;
+    line-height: 1.6;
+    color: #212529;
+}
+
+.navbar-laravel
+{
+    box-shadow: 0 2px 4px rgba(0,0,0,.04);
+}
+
+.main-form
+{
+    padding-top: 1.5rem;
+    padding-bottom: 1.5rem;
+}
+
+.main-form .row
+{
+    margin-left: 0;
+    margin-right: 0;
+}
+
 ::selection {
     color: rgb(255, 255, 255);
     background-color: black;
