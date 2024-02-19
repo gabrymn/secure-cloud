@@ -2,9 +2,10 @@
 
     require_once __DIR__ . '/../model/user_security.php';
     require_once __DIR__ . '/../model/user.php';
-
     require_once __DIR__ . '/../../resource/crypto.php';
-    
+    require_once __DIR__ . '/../view/assets/navbar.php';
+
+
     class CloudDriveController
     {
         public static function render_clouddrive_page()
@@ -17,6 +18,7 @@
 
             $rkey = $us->sel_rkey_from_id();
 
+            $navbar = Navbar::getPrivate('clouddrive');
             include __DIR__ . '/../view/clouddrive.php';
         }
     }

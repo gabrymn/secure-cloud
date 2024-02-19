@@ -5,11 +5,13 @@
     require_once __DIR__ .  '/../../resource/client.php';
     require_once __DIR__ .  '/../../resource/crypto.php';
     require_once __DIR__ .  '/../../resource/mydatetime.php';
+    require_once __DIR__ . '/../view/assets/navbar.php';
 
     class SessionController
     {
         public static function render_sessions_page()
         {
+            $navbar = Navbar::getPrivate('sessions');
             include __DIR__ . '/../view/sessions.php';
         }
 

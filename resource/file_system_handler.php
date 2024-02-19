@@ -1,19 +1,17 @@
 <?php
 
-    class file_system_handler
+    class fileSysHandler
     {
-        public static function mk_user_storage_dir($user_email, $dir_path)
+        private const ROOT_STORAGE_DIR =  __DIR__ . '/../users_storage';
+
+        public static function mk_user_storage_dir($id_user, $email_user)
         {
-            if (!is_dir($dir_path))
-                mkdir($dir_path);
+            if (!is_dir(self::ROOT_STORAGE_DIR))
+                mkdir(self::ROOT_STORAGE_DIR);
 
-            $dir_user = md5($user_email);
+            $user_dir = self::ROOT_STORAGE_DIR . '/' . md5($id_user . $email_user);
 
-//           if (is_dir($dir_path . $dir_user))
-//               return false;
-//           else
-                
-            return mkdir($dir_path . $dir_user);
+            return mkdir($user_dir);
         }
 
         function rm_dir($dir_path) 

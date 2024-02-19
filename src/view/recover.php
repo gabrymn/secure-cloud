@@ -12,8 +12,7 @@
     </head>
     <body>
 
-        <nav id="main-navbar" class="navbar navbar-expand-lg navbar-dark bg-dark" style="border-bottom:3px solid #157EFB">
-        </nav>
+        <?php echo $navbar; ?>
 
         <br>
         <main class="main-form">
@@ -114,13 +113,6 @@
 
         <script src="js/pages/recover.js"></script>
         <script src="js/url.js"></script>
-        <script src="js/assets/public-navbar.js"></script>
-
-        <script>
-            $(document).ready(() => {
-                $('#main-navbar').html(getPublicNavbar('home'));
-            })
-        </script>
 
     </body>
 </html>

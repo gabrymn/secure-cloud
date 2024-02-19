@@ -13,7 +13,7 @@
     </head>
     <body>
 
-        <nav id="main-navbar" class="navbar navbar-expand-lg navbar-dark bg-dark" style="border-bottom:3px solid #157EFB"></nav>
+        <?php echo $navbar; ?>
 
         <script src="//cdnjs.cloudflare.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
         <script src="//maxcdn.bootstrapcdn.com/bootstrap/4.1.1/js/bootstrap.min.js"></script>
@@ -21,16 +21,6 @@
         <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
         <script src="https://cdnjs.cloudflare.com/ajax/libs/crypto-js/3.1.2/rollups/aes.js"></script>
         <script src="https://cdnjs.cloudflare.com/ajax/libs/crypto-js/3.1.2/rollups/sha256.js"></script>
-        <script src="js/assets/private-navbar.js"></script>
-
-        <script>
-
-            $(document).ready(() => {
-                $('#main-navbar').html(getPrivateNavbar('transfers'));
-            })
-
-        </script>
-
 
     </body>
 </html>

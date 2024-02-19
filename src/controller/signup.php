@@ -10,11 +10,13 @@
     require_once __DIR__ . '/../model/user.php';
     require_once __DIR__ . '/../model/email_verify.php';
     require_once __DIR__ . '/../model/user_security.php';
-
+    require_once __DIR__ . '/../view/assets/navbar.php';
+    
     class SignupController
     {
         public static function render_signup_page()
         {
+            $navbar = Navbar::getPublic('signup');
             include __DIR__ . '/../view/signup.php';
         }
 
@@ -53,8 +55,8 @@
             }
 
             $user->sel_id_from_email();
-
-            file_system_handler::mk_user_storage_dir($user->get_email(), __DIR__ . '/../../users_storage/');
+            
+            FileSysHandler::mk_user_storage_dir($user->get_id(), $user->get_email());
             
             $tkn = new token(100);
             $e_verify = new EmailVerify

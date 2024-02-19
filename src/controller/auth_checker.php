@@ -5,7 +5,7 @@
     require_once __DIR__ . '/../../resource/token.php';
     require_once __DIR__ . '/../../resource/client.php';
     require_once __DIR__ . '/../model/session.php';
-
+    
     class AuthController
     {
         private const REDIRECT_PAGE = '/signin';
@@ -22,7 +22,8 @@
 
         public static function check(bool $redirect, ...$session_args_required)
         {
-            session_start();
+            if (session_status() === PHP_SESSION_NONE) 
+                session_start();
 
             foreach ($session_args_required as $session_arg) 
             {
@@ -67,7 +68,10 @@
         }
 
         public static function check_protectedarea(bool $redirect = true)
-        {
+        {   
+            if (session_status() === PHP_SESSION_NONE) 
+                session_start();
+
             self::check($redirect, 'LOGGED');
     
             $s = new Session
@@ -80,8 +84,6 @@
             
             if ($session_expired)
             {
-                session_destroy();
-
                 self::handle_response($redirect);
             }
         }

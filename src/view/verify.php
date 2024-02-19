@@ -18,6 +18,9 @@
 
 </head>
 <body>
+
+    <?php echo $navbar; ?>
+
     <br>
     <main class="main-form">
         <div class="cotainer">

@@ -1,9 +1,13 @@
 <?php
 
+    require_once __DIR__ . '/../view/assets/navbar.php';
+
+
     class AccountRecoveryController
     {
         public static function render_recover_page()
         {
+            $navbar = Navbar::getPublic();
             include __DIR__ . '/../view/recover.php';
         }
 

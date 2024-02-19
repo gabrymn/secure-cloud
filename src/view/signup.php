@@ -11,8 +11,8 @@
     <link href="//maxcdn.bootstrapcdn.com/bootstrap/4.1.1/css/bootstrap.min.css" rel="stylesheet" id="bootstrap-css">
 </head>
 <body>
-    
-    <nav id="main-navbar" class="navbar navbar-expand-lg navbar-dark bg-dark" style="border-bottom:3px solid #157EFB"></nav>
+
+    <?php echo $navbar; ?>
 
     <br>
     <main class="signup-form">
@@ -80,13 +80,6 @@
 
     <script src="js/pages/signup.js"></script>
     <script src="js/url.js"></script>
-    <script src="js/assets/public-navbar.js"></script>
-    
-    <script>
-        $(document).ready(() => {
-            $('#main-navbar').html(getPublicNavbar('signup'));
-        })
-    </script>
 
 </body>
 </html>

@@ -12,8 +12,7 @@
     </head>
     <body>
 
-        <nav id="main-navbar" class="navbar navbar-expand-lg navbar-dark bg-dark" style="border-bottom:3px solid #157EFB">
-        </nav>
+        <?php echo $navbar; ?>
 
         <br><br>
         <div class="jumbotron mainbox">
@@ -34,16 +33,7 @@
         <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-ka7Sk0Gln4gmtz2MlQnikT1wXgYsOg+OMhuP+IlRH9sENBO0LRn5q+8nbTov4+1p" crossorigin="anonymous"></script>
         <script src="//cdnjs.cloudflare.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
         <script src="//maxcdn.bootstrapcdn.com/bootstrap/4.1.1/js/bootstrap.min.js"></script>
-        <script src="js/assets/public-navbar.js"></script>
 
     </body>
-
-    <script>
-
-        $(document).ready(() => {
-            $('#main-navbar').html(getPublicNavbar('home'));
-        })
-
-    </script>
 
 </html>

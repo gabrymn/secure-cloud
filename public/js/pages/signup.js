@@ -4,7 +4,6 @@ $('#signup_form').on('submit', async (e) => {
 
     if (validateInputs())
     {
-        alert()
         var formData = new FormData(document.getElementById('signup_form'));
         
         formData.delete('pwd_confirm');

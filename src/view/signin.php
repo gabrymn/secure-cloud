@@ -8,11 +8,11 @@
         <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" integrity="sha384-1BmE4kWBq78iYhFldvKuhfTAU6auU8tT94WrHftjDbrCEXSU1oBoqyl2QvZ6jIW3" crossorigin="anonymous">
         <link rel="stylesheet" href="css/shared.css">
         <link href="img/favicon.svg" rel="icon" type="image/x-icon" >
-    <link href="//maxcdn.bootstrapcdn.com/bootstrap/4.1.1/css/bootstrap.min.css" rel="stylesheet" id="bootstrap-css">
+        <link href="//maxcdn.bootstrapcdn.com/bootstrap/4.1.1/css/bootstrap.min.css" rel="stylesheet" id="bootstrap-css">
     </head>
     <body>
         
-        <nav id="main-navbar" class="navbar navbar-expand-lg navbar-dark bg-dark" style="border-bottom:3px solid #157EFB"></nav>
+        <?php echo $navbar; ?>
 
         <br>
         <main class="signin-form">
@@ -73,15 +73,6 @@
 
         <script src="js/pages/signin.js"></script>
         <script src="js/url.js"></script>
-        <script src="js/assets/public-navbar.js"></script>
-
-        <script>
-            
-            $(document).ready(() => {
-                $('#main-navbar').html(getPublicNavbar('signin'));
-            })
-
-        </script>
 
     </body>
 </html>

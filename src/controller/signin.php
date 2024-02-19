@@ -14,11 +14,13 @@
     require_once __DIR__ . '/../model/email_verify.php';
     require_once __DIR__ . '/../model/user_security.php';
     require_once __DIR__ . '/../model/session.php';
+    require_once __DIR__ . '/../view/assets/navbar.php';
     
     class SigninController
     {
         public static function render_signin_page($success_msg = "", $error_msg = "", $redirect = "")
         {
+            $navbar = Navbar::getPublic('signin');
             include __DIR__ . "/../view/signin.php";
         }
 

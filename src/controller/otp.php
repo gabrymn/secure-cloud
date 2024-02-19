@@ -9,11 +9,13 @@
     require_once __DIR__ . '/../model/session.php';
     require_once __DIR__ . '/../model/user.php';
     require_once __DIR__ . '/../model/user_security.php';
+    require_once __DIR__ . '/../view/assets/navbar.php';
     
     class OTPController
     {
         public static function render_auth2_page()
         {
+            $navbar = Navbar::getPublic();
             include __DIR__ . '/../view/auth2.php';
         }
 

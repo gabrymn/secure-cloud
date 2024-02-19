@@ -9,7 +9,13 @@ $('#otp').on('input', () => {
     const pattern_6digits = /^\d{6}$/;
     const otp = $('#otp').val();
 
-    if (pattern_6digits.test(otp) && otp.length === 6)
+    if (!(!isNaN(parseInt(otp))))
+    {
+        $('#otp').val("");
+        return;
+    }
+
+    if (pattern_6digits.test(otp))
         sendOTP();
 })
 

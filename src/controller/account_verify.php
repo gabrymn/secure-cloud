@@ -1,7 +1,9 @@
 <?php
 
     require_once __DIR__ . '/../../resource/http_response.php';
-    
+    require_once __DIR__ . '/../view/assets/navbar.php';
+
+
     class AccountVerifyController
     {
         public static function render_verify_page()
@@ -45,7 +47,8 @@
                 }
 
             }
-    
+            
+            $navbar = Navbar::getPublic();
             include __DIR__ . '/../view/verify.php';
         }
 

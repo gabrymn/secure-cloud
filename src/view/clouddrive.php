@@ -13,7 +13,7 @@
     </head>
     <body>
     
-        <nav id="main-navbar" class="navbar navbar-expand-lg navbar-dark bg-dark" style="border-bottom:3px solid #157EFB"></nav>
+        <?php echo $navbar; ?>
 
         <div class="modal fade" id="exampleModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
             <div class="modal-dialog" role="document">
@@ -59,15 +59,6 @@
         <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
         <script src="https://cdnjs.cloudflare.com/ajax/libs/crypto-js/3.1.2/rollups/aes.js"></script>
         <script src="https://cdnjs.cloudflare.com/ajax/libs/crypto-js/3.1.2/rollups/sha256.js"></script>
-        <script src="js/assets/private-navbar.js"></script>
-
-        <script>    
-
-            $(document).ready(() => {
-                $('#main-navbar').html(getPrivateNavbar('clouddrive'));
-            })
-
-        </script>
 
     </body> 
 </html>
@@ -76,23 +67,7 @@
     
     "use strict"
 
-    import CryptoHandler from '../../js/ds/cryptoHandler.js'
-
     //var aes = new cryptolib['AES'](getpk())
-
-    //var actStg = "<php echo $size; ?>";
-    //const totStg = "<php echo $tot; ?>" * 1000000000;
-    // 100000 => 100 KB
-
-    var ids = [];
-    var ids_nms = [];
-    var ids_data = [];
-    var n_uploads = 0;
-    var fileNames = [];
-    var fid = [];
-
-    var getSessionStatus
-    var SESSION_SC_ID;
 
     $("#ID_UPLOAD").on('click', () => {
         $('#ID_FILE_UPLOADER').trigger('click');

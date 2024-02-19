@@ -14,7 +14,8 @@
     </head>
     <body>
 
-    <nav id="main-navbar" class="navbar navbar-expand-lg navbar-dark bg-dark" style="border-bottom:3px solid #157EFB"></nav>
+
+    <?php echo $navbar; ?>
     
     <br><br>
 
@@ -83,17 +84,11 @@
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/crypto-js/3.1.2/rollups/aes.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/crypto-js/3.1.2/rollups/sha256.js"></script>
-    <script src="js/assets/private-navbar.js"></script>
     <script src="js/pages/sessions.js"></script>
 </body>
 
 <script>
     const CURRENT_ID_SESSION = '<?php echo $_SESSION['CURRENT_ID_SESSION']; ?>';
-
-    $(document).ready(() => {
-        $('#main-navbar').html(getPrivateNavbar('sessions'));
-    })
-
 </script>
 
 </html>
