@@ -9,6 +9,7 @@
         <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
         <link href=img/favicon.svg rel="icon" type="image/x-icon">
         <link href="css/shared.css" rel="stylesheet">
+        <link href="css/pages/clouddrive.css" rel="stylesheet">
         <link href="//maxcdn.bootstrapcdn.com/bootstrap/4.1.1/css/bootstrap.min.css" rel="stylesheet" id="bootstrap-css">
     </head>
     <body>
@@ -53,12 +54,43 @@
 
         <br><br><br><br><br>
 
+        <table border="1">
+            <thead>
+                <tr>
+                    <th>Icon</th>
+                    <th>Name</th>
+                    <th>Type</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td><i class="fas fa-folder"></i></td>
+                    <td>Directory 1</td>
+                    <td>Directory</td>
+                </tr>
+                <tr>
+                    <td><i class="fas fa-file"></i></td>
+                    <td>File 1.txt</td>
+                    <td>File</td>
+                </tr>
+                <tr>
+                    <td><i class="fas fa-file"></i></td>
+                    <td>File 2.png</td>
+                    <td>File</td>
+                </tr>
+                <!-- Add more rows as needed -->
+            </tbody>
+        </table>
+
+
+
         <script src="//cdnjs.cloudflare.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
         <script src="//maxcdn.bootstrapcdn.com/bootstrap/4.1.1/js/bootstrap.min.js"></script>
         <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-ka7Sk0Gln4gmtz2MlQnikT1wXgYsOg+OMhuP+IlRH9sENBO0LRn5q+8nbTov4+1p" crossorigin="anonymous"></script>
         <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
         <script src="https://cdnjs.cloudflare.com/ajax/libs/crypto-js/3.1.2/rollups/aes.js"></script>
         <script src="https://cdnjs.cloudflare.com/ajax/libs/crypto-js/3.1.2/rollups/sha256.js"></script>
+        <script src="js/pages/clouddrive.js"></script>
 
     </body> 
 </html>
@@ -69,448 +101,12 @@
 
     //var aes = new cryptolib['AES'](getpk())
 
-    $("#ID_UPLOAD").on('click', () => {
-        $('#ID_FILE_UPLOADER').trigger('click');
-    });
+
 
     $('document').ready(() => {
 
-        /*
-        $.ajax({
-            url: "http://localhost/api/__test.php",
-            type: "GET",
-            success: (response) => {
-                //console.info("session status "+response);
-                console.log(JSON.parse(response));
-            },
-            error: (xhr) => {
-                
-                try
-                {
-                    console.log(JSON.parse(xhr.responseText));
-                }
-                catch (e) 
-                {
-                    alert()
-                    console.log(xhr.responseText);
-                }
-            }
-        })
-        */
-
-        //checkpk()
-        //SESSION_SC_ID = ("<php echo $_SESSION['SESSION_SC_ID']; ?>");
-        //setLoading("block");
-        //sync2FAstate();
-        //syncData();
-        //syncSession();
-        //getSessionStatus = new Polling(sessionStatus, 5000);
-        //getSessionStatus.Start();
     })
 
-
-    // Polling Session status
-    /*
-    const sessionStatus = () => {
-        $.ajax({
-            url: "../../back-end/class/sessions_handler.php",
-            data: {SESSION_ID:SESSION_SC_ID},
-            type: "GET",
-            success: (response) => {
-                //console.info("session status "+response);
-                if (response == 0)
-                {
-                    alert("Sessione terminata, clicca ok per continuare");
-                    window.location.href = "../../back-end/class/out.php"
-                }
-            },
-            error: (xhr) => {
-                console.log(xhr);
-            }
-        })
-    }*/
-
-    const syncSession = () => {
-        $.ajax({
-            url: "../../back-end/class/sessions_handler.php",
-            data: {SESSIONS_DATA:true},
-            type: "GET",
-            success: (response) => {
-                //SESSION_SC_ID = "<php echo $_SESSION['SESSION_SC_ID']; ?>";
-            },
-            error: (xhr) => {
-                console.log(xhr);
-            } 
-        });
-    }
-
-    const showFiles = (ms) => {
-
-        sleep(ms).then(() => {
-            $('#ID_NFS').css("display","none")
-            for (var key in ids_data)
-            {
-                $("#id_file_"+key).on('click', (e) => {
-                    const id = e.target.id.replaceAll("id_file_", "")
-                    var data = JSON.parse(ids_data[id])
-                    $('#ID_MODAL_TITLE').html(data.name)
-                    $('#ID_MODAL_BODY').html("<strong>Type</strong>: "+data.mime+"<br><strong>Size: </strong>"+getSizeString(data.size)+"<br><strong>Upload date</strong>: "+data.upl)
-                    $('#ID_MODAL_DOWNLOAD').prop("onclick",null).off("click");
-                    $('#ID_MODAL_DOWNLOAD').on('click', () => getCTX(id))
-                    $('#ID_MODAL_SHOW').prop("onclick",null).off("click");
-                    $('#ID_MODAL_SHOW').on('click', () => FileViewer.Show(id, aes, FILE_URL))
-                    $('#ID_MODAL_DEL').prop("onclick",null).off("click");
-                    $('#ID_MODAL_DEL').on('click', () => fdel(id))
-                })
-            }
-
-            setLoading("none");
-            $("#CONT_FILES").css("display", "block")
-        })
-    }
-
-    const getSizeString = (bytes) => bytes < 1000 ? Math.round(bytes*100)/100 + " B" : bytes >= 1000 && bytes < 1000000 ? Math.round(bytes/1000*100)/100 + " KB" : bytes >= 1000000  && bytes < 1000000000 ? Math.round(bytes/1000000*100)/100 + " MB" : Math.round(bytes/1000000000*100)/100 + " GB"; 
-
-    const fdel = id => {
-        $("#id_view_"+id).remove()
-
-        $.ajax({
-            type: 'DELETE',
-            url: "../../back-end/class/client_resource_handler.php?id="+id,
-            success: response => {
-                console.log(response)
-            },
-            error: xhr => {
-                console.log(xhr)
-            }
-        })
-
-        const name = fid[id];
-        const index = fileNames.indexOf(name);
-        fileNames.splice(index, 1);
-
-        if (fileNames.length === 0)
-        {
-            $("#CONT_FILES").css("display", "none")
-            $('#ID_NFS').css("display","block")
-        }
-    }
-
-    const syncData = () => {
-        return $.ajax({
-            type: 'GET',
-            url: "../../back-end/class/client_resource_handler.php",
-            data: {REFS:true},
-            success: (response) => {
-                if (response.file_ids.length > 0) 
-                {
-                    response.file_ids.forEach((id) => {
-                        getFilePreview(id, aes)
-                    });
-
-                    var ms = response.file_ids.length < 10 ? 200 : 900;
-                    return new Promise(resolve => showFiles(ms));
-                }
-                else 
-                {
-                    sleep(200).then(() => {
-                        setLoading("none");
-                        $('#ID_NFS').css("display","block")
-                    })
-                }
-            },
-            error: (xhr) => {
-                console.log(xhr);
-            }
-        });
-    }
-
-
-    const createFilePreview = (fname, x, ttype, filedata = false) => {
-        var aline = ""
-        aline = `<a id=${x} class='btn btn-info' role='button' data-toggle="modal" data-target="#exampleModal">&#9679;&#9679;&#9679;</a>`;
-
-        var ext = ""
-
-        if (fname.includes('.'))
-        {
-            const arrayName = fname.split(".")
-            var ext = "."+arrayName[arrayName.length-1]
-        }
-
-        if (fname.length > 17)
-        {    
-            var t = "";
-            if (ext.length > 10) ext = "" 
-            for (let i=0; i<10 - ext.length; i++)
-                t += fname[i]
-            t += " [...]"
-            t += ext
-            fname = t
-        }
-        
-        const iconFile = getIcon(ext)
-        const viewID = x.replace("id_file_", "")
-
-        return (`
-            <div id="id_view_${viewID}" class="col-6 cardmy">
-                <div class="card bg-light">
-                    <div class="card-body">
-                        <br><center><h1 class="${iconFile}" style="font-size:48px;"></h1></center><br>
-                        <center><h5 class="card-title" style="font-size:1rem">${fname}</h5></center><br>
-                        <center>${aline}</center>
-                    </div>
-                </div>
-            </div>
-        `)
-    }
-
-    const getCTX = id => {
-
-        $.ajax({
-            type: 'GET',
-            url: "../../back-end/class/client_resource_handler.php",
-            data: {ACTION:"CONTENT", ID:id, DOWNLOAD:true},
-            success: response => {
-                var a = document.createElement("a");
-                document.body.appendChild(a);
-                a.style = "display:none";
-                var [url, blob] = getFileObj(response.ctx, aes);
-                a.href = url;
-                a.download = JSON.parse(ids_nms[id]).name;
-                a.click();
-                document.body.removeChild(a);
-            },
-            error: xhr => {
-                console.log(xhr)
-            }
-        })
-    }
-    
-    const getFilePreview = (id, aes) => {
-        $.ajax({
-            type: 'GET',
-            url: "../../back-end/class/client_resource_handler.php",
-            data: {ACTION:'PREVIEW',ID:id},
-            success: (response) => {
-                var name = response.name.replaceAll("_", "/")
-                var mime = aes.decrypt(response.mme, true)
-                name = aes.decrypt(name, true)
-
-                var filedata = {
-                    name: name,
-                    mime: mime,
-                    size: response.size,
-                    upl: response.upldate
-                }
-
-                fileNames.push(name)
-                fid[id] = name
-
-                ids_data[id] = JSON.stringify(filedata)
-
-                var fp = createFilePreview(name, "id_file_"+id, "id", filedata)
-                ids.push(id)
-
-                ids_nms[id] = JSON.stringify({name:name});
-                document.getElementById("C_FILES").innerHTML += fp
-            },
-            error: (xhr) => {
-                console.log(xhr);
-            }
-        });
-    }
-
-    const handleExists = (filename) => {
-
-        if (fileNames.includes(filename))
-        {
-            const ext = filename.includes('.') ? "."+filename.split('.')[filename.split('.').length-1] : ""
-            const name = ext === '' ? filename : filename.replace(ext, '')
-            
-            var add = 1;
-            while (fileNames.includes(filename)) 
-            {
-                filename = name+"("+add+')'+ext;
-                add++;
-            }
-        }
-        return filename
-    }
-
-    const checkStorage = (uploadBytes) => {
-        
-        if ((Number(actStg) + uploadBytes) <= Number(totStg))
-        {
-            actStg = Number(actStg) + Number(uploadBytes)
-            return true;
-        }
-        return false;
-    }
-
-    $("#ID_FILE_UPLOADER").on('change', (e) => {
-
-        var files = Object.values(e.target.files)
-        var formData = new FormData();
-
-        for (var i = 0; i < files.length; i++) {
-            formData.append('file_' + i, files[i]);
-        } 
-
-        $.ajax({
-            url: "http://localhost/api/__test.php",
-            data: formData,
-            type: "POST",
-            processData: false,  
-            contentType: false,  
-            success: (response) => {
-                console.log(response);
-            },
-            error: (xhr) => {
-                console.log(xhr);
-            }
-        }); 
-
-        return;
-
-        files.forEach((file) => {
-            if (!checkStorage(Number(file.size)))
-            {
-                alert("Spazio esaurito, elimina dei contenuti e riprova")
-                return
-            }
-            CLIENT_FILE.TO_BASE64(file)
-                .then((ctx) => {
-
-                    var name = handleExists(file.name)
-                    const fobj = new CLIENT_FILE(file,ctx,name)
-
-                    const hash = cryptolib['HASH'].SHA256;
-                    const [NAM, CTX, IMP, SIZ, MME] = fobj.ENCRYPT(aes, hash);
-
-                    $.ajax({
-                        type: 'POST',
-                        url: "../../back-end/class/client_resource_handler.php",
-                        data: {NAM: NAM, CTX: CTX, IMP: IMP, SIZ: SIZ, MME: MME},
-                        success: (response) => {
-                            console.log(response)
-                            location.reload()
-                        },
-                        error: (xhr) => {
-                            console.log(xhr);
-                        }
-                    });
-                })
-                .catch((error) => alert("Errore nel caricamento del file, riprova"))
-        })
-    });
-
-    const getFileObj = (CTX, aes) => {
-        CTX = aes.decrypt(CTX, true);
-        var BLOB = FILE_URL.B64_2_BLOB(CTX);
-        var BLOB_URL =  FILE_URL.GET_BLOB_URL(BLOB);
-        return [BLOB_URL, BLOB]
-    }
-
-    $('#OTP_YN').on('change', () => {
-        const otp = $('#OTP_YN').prop('checked')? 1 : 0;
-        $.ajax({
-            type: 'POST',
-            url: "../../back-end/class/client_resource_handler.php",
-            data: {OTP:otp},
-            success: (response) => {
-                console.log(response);
-            },
-            error: (xhr) => {
-                console.log(xhr);
-            }
-        })
-    })
-
-    const sync2FAstate = () => {
-        $.ajax({
-            type: 'GET',
-            url: "../../back-end/class/client_resource_handler.php",
-            data: {OTPSTATE:1},
-            success: (response) => {
-                const val = response["2FA"];
-                if (val === 1) $('#OTP_YN').prop('checked', true)     
-            },
-            error: (xhr) => {
-                console.log(xhr);
-            }
-        })
-    }
 
 </script>
 
-<style>
-
-    input {
-        color: white;
-        border: 2px solid white;
-        outline: none;
-    }
-
-    .uploader {
-
-        width: 70%;
-        margin-left: auto;
-        margin-right: auto;
-    }
-
-    #CONT_FILES {
-        width: 90%;
-        margin-left: auto;
-        margin-right: auto;
-        border-radius: 25px;
-        padding-top: 50px;
-        padding-bottom: 50px;
-        background-color: rgb(90,90,90);
-    }
-
-    .cardmy {
-        margin: 20px;
-        width: 200px;
-    }
-
-    .nfs {
-        color: white;
-        font-size: 4rem;
-        font-weight: 100;
-        text-align: center;
-    }
-
-    .lds-dual-ring {
-        display: inline-block;
-        width: 80px;
-        height: 80px;
-    }
-
-    .lds-dual-ring:after {
-        content: " ";
-        display: block;
-        width: 64px;
-        height: 64px;
-        margin: 8px;
-        border-radius: 50%;
-        border: 6px solid #fff;
-        border-color: #fff transparent #fff transparent;
-        animation: lds-dual-ring 1.2s linear infinite;
-    }
-
-    @keyframes lds-dual-ring {
-        0% {
-            transform: rotate(0deg);
-        }
-        100% {
-            transform: rotate(360deg);
-        }
-    }
-
-
-
-
-
-
-</style>

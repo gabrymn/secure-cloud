@@ -1,11 +1,16 @@
 <?php
 
-    define('BASE64', 'BASE64');
-    define('HEX', 'HEX');
-    define('BIN', 'BIN');
-
     class crypto
     {
+        private const FILE_ENCRYPTION_BLOCKS = 10000;
+        private const AES_256_GCM_IV_LEN = 16;
+        private const AES_256_GCM_TAG_LEN = 16;
+        private const AES_256_GCM = 'aes-256-gcm';
+
+        public const BASE64 = "BASE64";
+        public const HEX = "HEX";
+        public const BIN = "BIN";
+
         public static function genAESKey($bit = 256)
         {
             if (!in_array($bit, [128,192,256]))
@@ -39,13 +44,13 @@
             return hash_pbkdf2($hashing_algo, $password, $salt, $iterations, $length, $binary);
         }
 
-        public static function encrypt_AES_GCM(string $data, string $key, $output_format) 
+        public static function encrypt(string $data, string $key, $output_format = self::BASE64) 
         {
-            if (!in_array($output_format, [BASE64, HEX]))
+            if (!in_array($output_format, [self::BASE64, self::HEX]))
                 return null; //throw new Exception("Invalid output format");    
-
-            $cipher_algo = 'aes-256-gcm';
-            $iv_len = 16; //openssl_cipher_iv_length($cipher_algo);
+            
+            $cipher_algo = self::AES_256_GCM;
+            $iv_len = self::AES_256_GCM_IV_LEN; //openssl_cipher_iv_length($cipher_algo);
 
             if (ctype_xdigit($key))
                 $key = hex2bin($key);
@@ -74,12 +79,12 @@
 
             switch($output_format)
             {
-                case BASE64:
+                case self::BASE64:
                 {
                     $output = base64_encode($iv_bin . $cipher_text_bin . $tag_bin);
                     break;
                 }
-                case HEX:
+                case self::HEX:
                 {
                     $output = bin2hex($iv_bin . $cipher_text_bin . $tag_bin);
                     break;
@@ -89,13 +94,13 @@
             return $output;
         }
         
-        public static function decrypt_AES_GCM(string $data, string $key) 
+        public static function decrypt(string $data, string $key) 
         {
-            $cipher_algo = 'aes-256-gcm';
-            $iv_len = 16; //openssl_cipher_iv_length($cipher_algo);
-            $tag_len = 16;
+            $cipher_algo = self::AES_256_GCM;;
+            $iv_len = self::AES_256_GCM_IV_LEN; //openssl_cipher_iv_length($cipher_algo);
+            $tag_len = self::AES_256_GCM_TAG_LEN;
 
-            $input_format = ctype_xdigit($data) ? HEX : BASE64;
+            $input_format = ctype_xdigit($data) ? self::HEX : self::BASE64;
 
             if (ctype_xdigit($key))
                 $key = hex2bin($key);
@@ -109,13 +114,13 @@
             
             switch ($input_format)
             {
-                case HEX:
+                case self::HEX:
                 {
                     $decoded_data = hex2bin($data);
                     break;
                 }
 
-                case BASE64:
+                case self::BASE64:
                 {
                     $decoded_data = base64_decode($data);
                     break;
@@ -144,17 +149,54 @@
             return $plain_text;
         }
 
-        public static function encryptfile_AES_GCM()
+        public static function encryptFile($source, $dest, $key)
         {
-            
+            $cipher = self::AES_256_GCM;
+            $ivLength = self::AES_256_GCM_IV_LEN;
+            $iv = openssl_random_pseudo_bytes($ivLength);
+
+            $fpSource = fopen($source, 'rb');
+            $fpDest = fopen($dest, 'w');
+
+            fwrite($fpDest, $iv);
+
+            while (!feof($fpSource)) 
+            {
+                $plaintext = fread($fpSource, $ivLength * self::FILE_ENCRYPTION_BLOCKS);
+                $ciphertext = openssl_encrypt($plaintext, $cipher, $key, OPENSSL_RAW_DATA, $iv, $tag);
+
+                fwrite($fpDest, $tag);
+                fwrite($fpDest, $ciphertext);
+            }
+
+            fclose($fpSource);
+            fclose($fpDest);
         }
 
-        public static function decryptfile_AES_GCM()
+        public static function decryptFile($source, $dest, $key)
         {
+            $cipher = self::AES_256_GCM;
+            $ivLength = self::AES_256_GCM_IV_LEN;
+
+            $fpSource = fopen($source, 'rb');
+            $fpDest = fopen($dest, 'w');
             
+            $iv = fread($fpSource, $ivLength);
+
+            while (!feof($fpSource)) 
+            {
+                $tag = fread($fpSource, $ivLength);
+                $ciphertext = fread($fpSource, $ivLength * self::FILE_ENCRYPTION_BLOCKS);
+                
+                $plaintext = openssl_decrypt($ciphertext, $cipher, $key, OPENSSL_RAW_DATA, $iv, $tag);
+                
+                fwrite($fpDest, $plaintext);
+            }
+
+            fclose($fpSource);
+            fclose($fpDest);
         }
     }
-
 
 
 ?>

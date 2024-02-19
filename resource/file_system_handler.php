@@ -1,8 +1,13 @@
 <?php
 
-    class fileSysHandler
+    class FileSysHandler
     {
         private const ROOT_STORAGE_DIR =  __DIR__ . '/../users_storage';
+
+        public static function get_user_storage_dir($id_user, $email_user)
+        {
+            return self::ROOT_STORAGE_DIR . '/' . md5($id_user . $email_user);
+        }
 
         public static function mk_user_storage_dir($id_user, $email_user)
         {
@@ -14,7 +19,13 @@
             return mkdir($user_dir);
         }
 
-        function rm_dir($dir_path) 
+        public static function create_file($path)
+        {
+            
+        }
+
+
+        public static function rm_dir($dir_path) 
         {
             if (!is_dir($dir_path)) {
                 // Non è una directory, quindi non c'è nulla da eliminare

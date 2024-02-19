@@ -12,6 +12,12 @@
             AuthController::check_protectedarea();
             CloudDriveController::render_clouddrive_page();
         }); 
+        
+        $router->POST('/clouddrive/upload', [], function($files) {
+            
+            AuthController::check_protectedarea(redirect: false);
+            CloudDriveController::upload_files($files);
+        }); 
 
         return $router->getRoutes();
     }

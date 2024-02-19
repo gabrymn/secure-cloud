@@ -1,3 +1,34 @@
+
+$("#ID_UPLOAD").on('click', () => {
+    $('#ID_FILE_UPLOADER').trigger('click');
+});
+
+$("#ID_FILE_UPLOADER").on('change', (e) => {
+
+    var files = Object.values(e.target.files)
+    var formData = new FormData();
+
+    for (var i = 0; i < files.length; i++) {
+        formData.append('file_' + i, files[i]);
+    }
+
+    $.ajax({
+        
+        url: '/clouddrive/upload',
+        data: formData,
+        type: "POST",
+        processData: false,  
+        contentType: false,  
+        
+        success: (response) => {
+            console.log(response);
+        },
+        error: (xhr) => {
+            console.log(xhr);
+        }
+    }); 
+});
+
 const download_recoverykey = () => {
     
     download_file(RECOVERY_KEY_FILENAME, RECOVERY_KEY);
