@@ -16,6 +16,9 @@ SOURCE ../db/structure/tables/user_security.sql;
 SOURCE ../db/structure/tables/email_verify.sql;
 SOURCE ../db/structure/tables/sessions.sql;
 SOURCE ../db/structure/tables/session_dates.sql;
+SOURCE ../db/structure/tables/files.sql;
+SOURCE ../db/structure/tables/file_transfers.sql;
+
 
 SOURCE ../db/structure/users/u_select.sql;
 SOURCE ../db/structure/users/u_update.sql;

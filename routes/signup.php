@@ -16,14 +16,14 @@
             StaticPagesController::render_page('signup_success');
         });
 
-        $router->POST('/signup', ['email', 'pwd', 'name', 'surname'], function() {
+        $router->POST('/signup', ['email', 'pwd', 'name', 'surname'], function($args) {
         
             SignupController::process_signup
             (
-                $_POST['email'], 
-                $_POST['pwd'], 
-                $_POST['name'], 
-                $_POST['surname']
+                $args['email'], 
+                $args['pwd'], 
+                $args['name'], 
+                $args['surname']
             );
         });
 
