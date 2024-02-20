@@ -97,7 +97,7 @@
 
             mypdo::commit();
 
-            http_response::successful(200, false, array("redirect" => '/signup/success'));
+            http_response::successful(201, false, array("redirect" => '/signup/success'));
         }
     }
 

@@ -402,7 +402,19 @@
 
             mypdo::connect('update');
 
-            return mypdo::qry_exec($qry, $this->to_assoc_array(id_session:true, end:true, id_user:true));
+            try 
+            {
+                $status = mypdo::qry_exec($qry, $this->to_assoc_array(id_session:true, end:true, id_user:true));
+                return $status;
+            }
+            catch (PDOException $e)
+            {
+                // session already expired ('end' != NULL), the query is tryin' to update 'end' to now(), 
+                //but 'end' is already setted to a value != NULL, so since there is an active SQL trigger, 
+                // it throws an exception
+
+                return -1;
+            }
         }
 
         public function is_expired_from_idsess() : int|bool

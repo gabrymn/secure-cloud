@@ -85,10 +85,16 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/crypto-js/3.1.2/rollups/aes.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/crypto-js/3.1.2/rollups/sha256.js"></script>
     <script src="js/pages/sessions.js"></script>
+    <script src="js/protected.js"></script>
 </body>
 
 <script>
     const CURRENT_ID_SESSION = '<?php echo $_SESSION['CURRENT_ID_SESSION']; ?>';
+
+    $(document).ready(() => {
+        setInterval(checkSessionStatus, 488888000);
+    })
+
 </script>
 
 </html>

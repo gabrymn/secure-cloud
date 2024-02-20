@@ -136,31 +136,31 @@
 
         public function get_rkey_encrypted()
         {
-            return crypto::encrypt_AES_GCM
+            return crypto::encrypt
             (
                 data: self::get_rkey(), 
                 key: self::get_dkey(), 
-                output_format: BASE64
+                output_format: crypto::BASE64
             );
         }
 
         public function get_ckey_encrypted()
         {   
-            return crypto::encrypt_AES_GCM
+            return crypto::encrypt
             (
                 data: self::get_ckey(), 
                 key: self::get_rkey(), 
-                output_format: BASE64
+                output_format: crypto::BASE64
             );
         }
 
         public function get_secret_2fa_encrypted()
         {
-            return crypto::encrypt_AES_GCM
+            return crypto::encrypt
             (
                 data: self::get_secret_2fa(), 
                 key: self::get_rkey(), 
-                output_format: BASE64
+                output_format: crypto::BASE64
             );
         }
     }

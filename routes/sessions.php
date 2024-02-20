@@ -19,6 +19,12 @@
             SessionController::expire_session($args['id_session']);
         });
 
+        $router->GET('/sessions/status', [], function() {
+
+            AuthController::check_protectedarea(false);
+            SessionController::check_status();
+        });
+
         return $router->getRoutes();
     }
 

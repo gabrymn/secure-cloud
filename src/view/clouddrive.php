@@ -91,22 +91,16 @@
         <script src="https://cdnjs.cloudflare.com/ajax/libs/crypto-js/3.1.2/rollups/aes.js"></script>
         <script src="https://cdnjs.cloudflare.com/ajax/libs/crypto-js/3.1.2/rollups/sha256.js"></script>
         <script src="js/pages/clouddrive.js"></script>
+        <script src="js/protected.js"></script>
 
     </body> 
 </html>
 
-<script type="module">
+<script>
     
-    "use strict"
-
-    //var aes = new cryptolib['AES'](getpk())
-
-
-
-    $('document').ready(() => {
-
+    $(document).ready(() => {
+        setInterval(checkSessionStatus, 1114000);
     })
-
 
 </script>
 

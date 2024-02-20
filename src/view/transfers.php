@@ -21,6 +21,16 @@
         <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
         <script src="https://cdnjs.cloudflare.com/ajax/libs/crypto-js/3.1.2/rollups/aes.js"></script>
         <script src="https://cdnjs.cloudflare.com/ajax/libs/crypto-js/3.1.2/rollups/sha256.js"></script>
+        <script src="js/protected.js"></script>
+
+
+        <script>
+
+            $(document).ready(() => {
+                setInterval(checkSessionStatus, 4000);
+            })
+
+        </script>
 
     </body>
 </html>

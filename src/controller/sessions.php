@@ -6,6 +6,7 @@
     require_once __DIR__ .  '/../../resource/crypto.php';
     require_once __DIR__ .  '/../../resource/mydatetime.php';
     require_once __DIR__ . '/../view/assets/navbar.php';
+    require_once __DIR__ . '/../model/session.php';
 
     class SessionController
     {
@@ -40,6 +41,21 @@
             }
             
             http_response::successful(200);
+        }
+
+        public static function check_status()
+        {
+            $session = new Session(id_session: $_SESSION['CURRENT_ID_SESSION'], id_user: $_SESSION['ID_USER']);
+            $session_expired = $session->is_expired_from_idsess();
+            
+            if ($session_expired === 1)
+            {
+                http_response::client_error(401);
+            }
+            else
+            {
+                http_response::successful(200);
+            }
         }
     }
 

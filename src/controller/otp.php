@@ -36,9 +36,9 @@
             $us->sel_rkey_from_id();
             $us->sel_secret_2fa_c_from_id();
             
-            $rkey = crypto::decrypt_AES_GCM($us->get_rkey_encrypted(), $_SESSION['DKEY']);
+            $rkey = crypto::decrypt($us->get_rkey_encrypted(), $_SESSION['DKEY']);
 
-            $secret_2fa = crypto::decrypt_AES_GCM($us->get_secret_2fa_encrypted(), $rkey);
+            $secret_2fa = crypto::decrypt($us->get_secret_2fa_encrypted(), $rkey);
 
             $tfa = new MyTFA(email: $user->get_email(), secret: $secret_2fa);
 
