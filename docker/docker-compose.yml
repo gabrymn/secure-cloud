@@ -47,7 +47,7 @@ services:
       - ../.env
       - ../.env.mail
     links:
-      - mariadb
+      - mysql
     networks: 
       - int3rnal
       
@@ -62,10 +62,7 @@ services:
     #  - ../db/data:/var/lib/mysql
       - ../db/structure/:/db/structure
     environment:
-
-      #- MARIADB_ALLOW_EMPTY_ROOT_PASSWORD=1
-      - MARIADB_ROOT_PASSWORD=root
-      #- TZ=Europe/Rome
+      - MYSQL_ROOT_PASSWORD=root
     networks: 
       - int3rnal
       

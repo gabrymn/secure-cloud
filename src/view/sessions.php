@@ -92,7 +92,7 @@
     const CURRENT_ID_SESSION = '<?php echo $_SESSION['CURRENT_ID_SESSION']; ?>';
 
     $(document).ready(() => {
-        setInterval(checkSessionStatus, 488888000);
+        setInterval(checkSessionStatus, <?php echo SessionController::SESSION_STATUS_CHECK_MS; ?>);
     })
 
 </script>

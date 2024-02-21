@@ -6,6 +6,8 @@
 
     class SessionController
     {
+        public const SESSION_STATUS_CHECK_MS = 4000;
+
         public static function render_sessions_page()
         {
             $navbar = Navbar::getPrivate('sessions');

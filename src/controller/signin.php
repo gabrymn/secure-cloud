@@ -30,25 +30,17 @@
 
             $user = new User(email:$email);
 
-            $id_user = $user->sel_id_from_email();
-            
             // There's no email in db that is equals to $user->get_email()
-            if ($id_user === -1)
+            if ($user->sel_id_from_email() === -1)
                 http_response::client_error(400, "That email doesn't exists in our system");
-
-            
-            // email $user->get_email() exists in db
-            
-            $user->set_id_user($id_user);
 
             // ------------ END User PROCESS -----------
 
 
 
-
             // ------------ BEGIN UserSecurity PROCESS -----------
 
-            $us = new UserSecurity(id_user: $id_user);
+            $us = new UserSecurity(id_user: $user->get_id_user());
             
             // there's no record in user_security that has that id_user, server error 
             if (!$us->sel_pwd_hash_from_id())
@@ -67,41 +59,38 @@
 
             session_start();
 
-            switch ($user->sel_verified_from_id())
+            $id_user = $user->sel_verified_from_id();
+
+            if ($id_user === false || $id_user === null)
             {
-                case false:
-                case null:
-                {
-                    session_destroy();
-                    http_response::server_error();
-                }
+                session_destroy();
+                http_response::server_error();
+            }
 
-                // user is tryin' to signin without have verified the email 
-                case 0:
-                {
-                    $_SESSION['VERIFY_PAGE_STATUS'] = 'SIGNIN_WITH_EMAIL_NOT_VERIFIED';
-                    $_SESSION['EMAIL'] = $user->get_email();
-    
-                    http_response::client_error
-                    (
-                        400, 
-                        "Confirm your email before sign in", 
-                        array("redirect" => '/verify')
-                    );
-                }
+            // user is tryin' to signin without have verified the email 
+            else if ($id_user === 0)
+            {
+                $_SESSION['VERIFY_PAGE_STATUS'] = 'SIGNIN_WITH_EMAIL_NOT_VERIFIED';
+                $_SESSION['EMAIL'] = $user->get_email();
 
-                case 1:
-                    // user is verified...
-                    break;
+                http_response::client_error
+                (
+                    400, 
+                    "Confirm your email before sign in", 
+                    array("redirect" => '/verify')
+                );
+            }
+
+            // user is verified
+            else
+            {
+                $_SESSION['AUTH_1FA'] = true;
+                $_SESSION['ID_USER'] = $user->get_id_user();
+
+                if (isset($_SESSION['VERIFY_PAGE_STATUS'])) unset($_SESSION['VERIFY_PAGE_STATUS']);
             }
 
 
-            // user is verified
-
-            $_SESSION['AUTH_1FA'] = true;
-            $_SESSION['ID_USER'] = $user->get_id_user();
-
-            if (isset($_SESSION['VERIFY_PAGE_STATUS'])) unset($_SESSION['VERIFY_PAGE_STATUS']);
 
 
             // ------------ END EmailVerify PROCESS -----------

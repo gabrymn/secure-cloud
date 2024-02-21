@@ -27,7 +27,7 @@
         <script>
 
             $(document).ready(() => {
-                setInterval(checkSessionStatus, 4000);
+                setInterval(checkSessionStatus, <?php echo SessionController::SESSION_STATUS_CHECK_MS; ?>);
             })
 
         </script>

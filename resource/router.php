@@ -86,7 +86,7 @@
             {
                 $res = $this->matchPath($route['path'], $parsed_path);
 
-                if ($res['status'] && $route['method'] === $method && array_diff($route['args'], $request_arg_keys) === [])
+                if ($res['status'] && $route['method'] === $method && array_diff($request_arg_keys, $route['args']) === [])
                 {
                     $this->sanitaize_user_inputs($method_array);
                     

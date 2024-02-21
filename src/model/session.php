@@ -167,7 +167,7 @@
 
             if ($id_session === -1)
             {
-                $id_session = parent::generate_uid(self::ID_SESSION_LEN);
+                $id_session = $session->generate_uid(self::ID_SESSION_LEN);
 
                 $session->set_id_session($id_session);
                 $session->set_os(client::get_os());
@@ -279,18 +279,15 @@
 
             $res = mypdo::qry_exec($qry, $this->to_assoc_array(id_user:true, ip:true));
 
-            switch($res)
+            if ($res === false)
+                return false;
+            else if ($res === array())
+                return -1;
+            else
             {
-                case false:
-                    return false;
-                case array():
-                    return -1;
-                default:
-                {
-                    $id_session = $res[0]['id_session'];
-                    $this->set_id_session($id_session);
-                    return $this->get_id_session();
-                }
+                $id_session = $res[0]['id_session'];
+                $this->set_id_session($id_session);
+                return $this->get_id_session();
             }
         }
 
@@ -425,16 +422,13 @@
             mypdo::connect('select');
 
             $res = mypdo::qry_exec($qry, $this->to_assoc_array(id_session:true, id_user:true));
-            
-            switch ($res)
-            {
-                case false:
-                    return false;
-                case array():
-                    return 1;
-                default:
-                    return 0;
-            }
+                
+            if ($res === false)
+                return false;
+            else if ($res === array())
+                return 1;
+            else
+                return 0;
         }
     }
 ?>

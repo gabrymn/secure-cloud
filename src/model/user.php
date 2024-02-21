@@ -11,21 +11,17 @@
         private int $p2fa;
         private int $verified;
 
-        private const DEFAULT_ID_VAL = -1;
-        private const DEFAULT_EMAIL_VAL = "DEFAULT_EMAIL_VALUE";
-        private const DEFAULT_NAME_VAL = "DEFAULT_NAME_VALUE";
-        private const DEFAULT_SURNAME_VAL = "DEFAULT_SURNAME_VALUE";
-        private const DEFAULT_2FA_VAL = 0;
-        private const DEFAULT_VERIFIED_VAL = 0;
+        private const DEFAULT_2FA = 0;
+        private const DEFAULT_VERIFIED = 0;
 
         public function __construct($id_user = null, $email = null, $name = null, $surname = null, $p2fa = null, $verified = null)
         {
-            self::set_id_user($id_user ? $id_user : self::DEFAULT_ID_VAL);
-            self::set_email($email ? $email : self::DEFAULT_EMAIL_VAL);
-            self::set_name($name ? $name : self::DEFAULT_NAME_VAL);
-            self::set_surname($surname ? $surname : self::DEFAULT_SURNAME_VAL);
-            self::set_p2fa($p2fa ? $p2fa : self::DEFAULT_2FA_VAL);
-            self::set_verified($verified ? $verified : self::DEFAULT_VERIFIED_VAL);
+            self::set_id_user($id_user ? $id_user : parent::DEFAULT_INT);
+            self::set_email($email ? $email : parent::DEFAULT_STR);
+            self::set_name($name ? $name : parent::DEFAULT_STR);
+            self::set_surname($surname ? $surname : parent::DEFAULT_STR);
+            self::set_p2fa($p2fa ? $p2fa : self::DEFAULT_2FA);
+            self::set_verified($verified ? $verified : self::DEFAULT_VERIFIED);
         }
 
         private function format_name($name)
@@ -135,8 +131,7 @@
         {
             $qry = "SELECT id_user FROM users WHERE email = :email";
 
-            echo mypdo::connect('select')?"SI":"NO";
-            exit;
+            mypdo::connect('select');
 
             $res = mypdo::qry_exec($qry, $this->to_assoc_array(email:true));
 
@@ -164,15 +159,14 @@
          */
         public function email_is_taken() : int|bool
         {
-            switch ($this->sel_id_from_email())
-            {
-                case false:
-                    return false;
-                case -1:
-                    return 0;
-                default:
-                    return 1;
-            }
+            $id_user = $this->sel_id_from_email();
+            
+            if ($id_user === false)
+                return false;
+            else if ($id_user === -1)
+                return 0;
+            else
+                return 1;
         }
 
         public function sel_2fa_from_id() : int|bool

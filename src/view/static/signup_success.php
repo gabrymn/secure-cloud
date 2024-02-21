@@ -47,13 +47,6 @@
         <script src="//maxcdn.bootstrapcdn.com/bootstrap/4.1.1/js/bootstrap.min.js"></script>
 
         <script src="../js/url.js"></script>
-        <script src="../js/assets/public-navbar.js"></script>
     </body>
-
-    <script>
-        $(document).ready(() => {
-            $('#main-navbar').html(getPublicNavbar());
-        })
-    </script>
 
 </html>

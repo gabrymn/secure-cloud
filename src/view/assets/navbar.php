@@ -12,6 +12,7 @@
             $storage = self::DEFAULT_STYLE;
             $transfers = self::DEFAULT_STYLE;
             $sessions = self::DEFAULT_STYLE;
+            $profile = self::DEFAULT_STYLE;
 
             switch ($focus_page)
             {
@@ -37,6 +38,12 @@
                     $sessions = self::FOCUS_STYLE;
                     break;
                 }
+
+                case 'profile':
+                {
+                    $profile = self::FOCUS_STYLE;
+                    break;
+                }
             }
 
             return ('
@@ -58,7 +65,7 @@
                                     <a class="nav-link active" ' . $sessions . ' aria-current="page" href="/sessions">Sessions</a>
                                 </li>
                                 <li class="nav-item">
-                                    <a class="nav-link active" aria-current="page" href="/profile">Profile</a>
+                                    <a class="nav-link active" ' . $profile . ' aria-current="page" href="/profile">Profile</a>
                                 </li>
                             </ul>
                         </div>

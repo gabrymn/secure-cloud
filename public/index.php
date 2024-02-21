@@ -20,7 +20,8 @@
             get_routes('/clouddrive'),
             get_routes('/sessions'),
             get_routes('/transfers'),
-            get_routes('/storage')
+            get_routes('/storage'),
+            get_routes('/profile')
         )
     );
     

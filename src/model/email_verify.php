@@ -23,8 +23,8 @@
 
         public static function generate_token() : string
         {
-            $token_plain_text = parent::generate_uid(self::PLAIN_TEXT_TOKEN_LEN);
-            return $token_plain_text;
+            $ev = new EmailVerify;
+            return $ev->generate_uid(self::PLAIN_TEXT_TOKEN_LEN);
         }
 
         public function get_mail_header() : array
@@ -140,18 +140,15 @@
 
             $res = mypdo::qry_exec($qry, $this->to_assoc_array(token_hash:true));
 
-            switch ($res)
+            if ($res === false)
+                return false;
+            else if ($res === array())
+                return -1;
+            else
             {
-                case false:
-                    return false;
-                case array():
-                    return -1;
-                default:
-                {
-                    $id_user = intval($res[0]['id_user']);
-                    $this->set_id_user($id_user);
-                    return $this->get_id_user();
-                }
+                $id_user = intval($res[0]['id_user']);
+                $this->set_id_user($id_user);
+                return $this->get_id_user();
             }
         }
 

@@ -1,0 +1,14 @@
+.container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 300px; /* Altezza del contenitore, regolala in base alle tue esigenze */
+    border: 1px solid #ccc; /* Aggiungi bordi per visualizzare il contenitore */
+}
+
+.container img {
+    max-width: 100%;
+    max-height: 100%;
+    width: auto;
+    height: auto;
+}

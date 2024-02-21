@@ -9,6 +9,7 @@
     require_once __DIR__ . '/transfers.php';
     require_once __DIR__ . '/sessions.php';
     require_once __DIR__ . '/storage.php';
+    require_once __DIR__ . '/profile.php';
     require_once __DIR__ . '/../src/controller/staticpages.php';
     require_once __DIR__ . '/../src/controller/auth_checker.php';
     require_once __DIR__ . '/../src/controller/signin.php';
@@ -113,6 +114,12 @@
             case '/storage':
             {
                 return get_storage_routes();
+                break;
+            }
+
+            case '/profile':
+            {
+                return get_profile_routes();
                 break;
             }
 

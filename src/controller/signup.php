@@ -39,26 +39,18 @@
 
             $user = new User(email:$email, name:$name, surname:$surname);
 
-            switch ($user->email_is_taken())
+            $email_is_taken = $user->email_is_taken();
+
+            if ($email_is_taken === 1)
             {
-                case 1:
-                {
-                    http_response::client_error(400, "Email already taken");
-                    break;
-                }
-
-                case 0:
-                {
-                    // email is available
-                    break;
-                }
-
-                case false:
-                default:
-                {
-                    http_response::server_error();
-                }
+                http_response::client_error(400, "Email already taken");
             }
+            else if ($email_is_taken === 0)
+            {
+                // email is available
+            }
+            else
+                http_response::server_error();
 
             mypdo::connect('insert');
             mypdo::begin_transaction();
@@ -103,7 +95,7 @@
 
             // ----------- BEGIN Email-Verify CREATION -------------
 
-            $email_sent = EmailVerifyController::send_email_verify($user->get_email());
+            $email_sent = true;//EmailVerifyController::send_email_verify($user->get_email());
 
             if ($email_sent === false)
             {

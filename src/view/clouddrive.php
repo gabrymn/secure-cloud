@@ -94,13 +94,16 @@
         <script src="js/protected.js"></script>
 
     </body> 
+
+    <script>
+    
+        $(document).ready(() => {
+            setInterval(checkSessionStatus, <?php echo SessionController::SESSION_STATUS_CHECK_MS; ?>);
+        })
+
+    </script>
+
 </html>
 
-<script>
-    
-    $(document).ready(() => {
-        setInterval(checkSessionStatus, 1114000);
-    })
 
-</script>
 
