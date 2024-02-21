@@ -16,7 +16,6 @@ SOURCE ../db/structure/tables/session_dates.sql;
 SOURCE ../db/structure/tables/files.sql;
 SOURCE ../db/structure/tables/file_transfers.sql;
 
-SOURCE ../db/structure/triggers/before_update_sessions.sql;
 SOURCE ../db/structure/triggers/before_insert_session_dates.sql;
 SOURCE ../db/structure/triggers/before_update_session_dates.sql;
 
