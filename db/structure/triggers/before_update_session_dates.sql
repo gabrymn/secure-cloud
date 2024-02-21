@@ -1,7 +1,6 @@
-DELIMITER //
-CREATE TRIGGER before_update_session_dates
-BEFORE UPDATE ON session_dates
-FOR EACH ROW
+DELIMITER ;;
+
+CREATE TRIGGER before_update_session_dates BEFORE UPDATE ON session_dates FOR EACH ROW
 BEGIN
   DECLARE msg VARCHAR(255);
 
@@ -37,6 +36,6 @@ BEGIN
 
     END IF; 
   
-END;
-//
+END;;
+
 DELIMITER ;
