@@ -54,6 +54,13 @@
 
         <br><br><br><br><br>
 
+        <?php
+            foreach ($file_names as $file_name)
+            {
+                echo "<p style='font-size:18px;'>".$file_name."</p>";
+            }
+        ?>
+
         <table border="1">
             <thead>
                 <tr>
@@ -98,7 +105,7 @@
     <script>
     
         $(document).ready(() => {
-            setInterval(checkSessionStatus, <?php echo SessionController::SESSION_STATUS_CHECK_MS; ?>);
+           // setInterval(checkSessionStatus, <?php echo SessionController::SESSION_STATUS_CHECK_MS; ?>);
         })
 
     </script>
