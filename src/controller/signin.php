@@ -13,7 +13,7 @@
     
     class SigninController
     {
-        public static function render_signin_page($success_msg = "", $error_msg = "", $redirect = "")
+        public static function render_signin_page($success_msg = "", $error_msg = "")
         {
             $navbar = Navbar::getPublic('signin');
             include __DIR__ . "/../view/signin.php";
@@ -49,10 +49,9 @@
             // ------------ BEGIN UserSecurity PROCESS -----------
 
             $us = new UserSecurity(id_user: $id_user);
-            $us->sel_pwd_hash_from_id();
-
+            
             // there's no record in user_security that has that id_user, server error 
-            if ($us->get_pwd_hash() === -1)
+            if (!$us->sel_pwd_hash_from_id())
                 http_response::server_error(500, "Something wrong, try again");
 
             // password is wrong (1FA FAILED)
@@ -68,27 +67,34 @@
 
             session_start();
 
-            $verified = $user->sel_verified_from_id();
-
-            if ($verified === null)
+            switch ($user->sel_verified_from_id())
             {
-                session_destroy();
-                http_response::server_error();
+                case false:
+                case null:
+                {
+                    session_destroy();
+                    http_response::server_error();
+                }
+
+                // user is tryin' to signin without have verified the email 
+                case 0:
+                {
+                    $_SESSION['VERIFY_PAGE_STATUS'] = 'SIGNIN_WITH_EMAIL_NOT_VERIFIED';
+                    $_SESSION['EMAIL'] = $user->get_email();
+    
+                    http_response::client_error
+                    (
+                        400, 
+                        "Confirm your email before sign in", 
+                        array("redirect" => '/verify')
+                    );
+                }
+
+                case 1:
+                    // user is verified...
+                    break;
             }
 
-            // user is tryin' to signin without have verified the email 
-            if ($verified === 0)
-            {
-                $_SESSION['VERIFY_PAGE_STATUS'] = 'SIGNIN_WITH_EMAIL_NOT_VERIFIED';
-                $_SESSION['EMAIL'] = $user->get_email();
-
-                http_response::client_error
-                (
-                    400, 
-                    "Confirm your email before sign in", 
-                    array("redirect" => '/verify')
-                );
-            }
 
             // user is verified
 
@@ -109,9 +115,7 @@
 
             // check if 2FA isset
 
-            $p2fa = $user->sel_2fa_from_id();
-
-            if ($p2fa === null)
+            if ($user->sel_2fa_from_id() === null)
             {
                 session_destroy();
                 http_response::server_error(500);
@@ -124,12 +128,13 @@
             $_SESSION['DKEY'] = crypto::deriveKey($pwd, $dkey_salt);
 
 
-            // User has 2FA active, redirect to 2FA page
-            if ($p2fa === 1)
+            // If the user has 2FA active, redirect to 2FA page
+            if ($user->get_p2fa() === 1)
             {
                 $_SESSION['OTP_CHECKING'] = true;
 
-                http_response::successful(
+                http_response::successful
+                (
                     200, 
                     false, 
                     array("redirect" =>  '/auth2')
@@ -142,7 +147,6 @@
 
 
             // ------------ END 2FA PROCESS -----------
-
 
 
 

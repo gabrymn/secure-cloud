@@ -39,9 +39,9 @@
 
                 default:
                 {
-                    http_response::redirect('/signin');
                     unset($_SESSION['VERIFY_PAGE_STATUS']);
                     session_destroy();
+                    http_response::redirect('/signin');
 
                     break;
                 }
@@ -71,10 +71,9 @@
         public static function send_email_verify($email)
         {
             $user = new User(email: $email);
-            $user->set_id_user($user->sel_id_from_email());
+            $user->sel_id_from_email();
 
-            $ev_token = 
-                (new CryptoRNDString()) -> generate(EmailVerify::PLAIN_TEXT_TOKEN_LEN);
+            $ev_token = EmailVerify::generate_token();
 
             $ev = new EmailVerify
             (
@@ -109,50 +108,50 @@
         {
             $success_msg = "";
             $error_msg = "";
-            $redirect = "";
     
             $ev = new EmailVerify
             (
                 token_hash: hash("sha256", $token)
             );
     
-            $id_user = $ev->sel_id_user_from_token_hash();
-
-            if ($id_user === false)
+            switch ($ev->sel_id_user_from_token_hash())
             {
-                http_response_code(500);
-                $error_msg = "Internal Server Error";
-            }
+                case false:
+                {
+                    http_response_code(500);
+                    $error_msg = "Internal Server Error";
+                    break;
+                }
 
-            else if ($id_user === -1)
-            {
-                http_response_code(400);
-                $error_msg = "Invalid or expired email verify link.";
-            }
+                case -1:
+                {
+                    http_response_code(400);
+                    $error_msg = "Invalid or expired email verify link.";
+                    break;
+                }
 
-            else
-            {
-                if (session_status() !== PHP_SESSION_ACTIVE)
+                default:
+                {
+                    if (session_status() !== PHP_SESSION_ACTIVE)
                     session_start();
     
-                if (isset($_SESSION['VERIFING_EMAIL']))
-                    unset($_SESSION['VERIFING_EMAIL']);
-    
-                $user = new User(id_user: $id_user);
-                $user->upd_user_to_verified();
-    
-                $ev->del_from_token_hash();
-    
-                $success_msg = "Email verified, sign in";
+                    if (isset($_SESSION['VERIFING_EMAIL']))
+                        unset($_SESSION['VERIFING_EMAIL']);
+        
+                    $user = new User(id_user: $ev->get_id_user());
+
+                    $user->upd_user_to_verified();
+                    $ev->del_from_token_hash();
+                    
+                    $success_msg = "Email verified, sign in";
+                    break;
+                }
             }
-            
-            $redirect = '/signin';
-    
+
             return 
             [
                 "success_msg" => $success_msg, 
-                "error_msg"  => $error_msg,
-                "redirect" => $redirect
+                "error_msg"  => $error_msg
             ];
         }
     }

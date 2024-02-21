@@ -1,29 +1,30 @@
 <?php
 
-    class EmailVerify 
+    require_once __DIR__ . '/model.php';
+
+    class EmailVerify extends Model
     {
         private string $token_hash;
         private int $id_user;
         private $expires;
         private string $email;
 
-        private const DEFAULT_EMAIL_VAL = "EMAIL_DEFAULT_VALUE";
-        private const DEFAULT_ID_USER_VAL = -1;
-        private const DEFAULT_EXPIRES_VAL = "EXPIRES_DEFAULT_VALUE";
-        private const DEFAULT_TOKEN_HASH_VAL = "TOKEN_HASH_DEFAULT_VALUE";
-
         public const PLAIN_TEXT_TOKEN_LEN = 100;
         private const EXP_MINUTES = 30;
-        private const TZ = 'Europe/Rome';
-        private const DATE_FORMAT = 'Y-m-d H:i:s';
 
         public function __construct($token_hash = null, $id_user = null, $expires = null, $email = null)
         {
             date_default_timezone_set(self::TZ);
-            self::set_token_hash($token_hash ? $token_hash : self::DEFAULT_TOKEN_HASH_VAL);
+            self::set_token_hash($token_hash ? $token_hash : parent::DEFAULT_STR);
             self::set_expires($expires ? $expires : $this->set_expires());
-            self::set_id_user($id_user ? $id_user : self::DEFAULT_ID_USER_VAL);
-            self::set_email($email ? $email : self::DEFAULT_EMAIL_VAL);
+            self::set_id_user($id_user ? $id_user : parent::DEFAULT_INT);
+            self::set_email($email ? $email : parent::DEFAULT_STR);
+        }
+
+        public static function generate_token() : string
+        {
+            $token_plain_text = parent::generate_uid(self::PLAIN_TEXT_TOKEN_LEN);
+            return $token_plain_text;
         }
 
         public function get_mail_header() : array
@@ -82,8 +83,8 @@
 
         public function set_expires($expires = false)
         {
-            if (!$expires)
-                $expires = date(self::DATE_FORMAT, strtotime("+" . strval(self::EXP_MINUTES) . " minutes", time()));
+            if ($expires === false)
+                $expires = date(parent::DATE_FORMAT, strtotime("+" . strval(self::EXP_MINUTES) . " minutes", time()));
             
             $this->expires = $expires;
         }
@@ -91,7 +92,7 @@
         public function check_expires() : bool
         {
             $expires = new DateTime(self::get_expires());
-            $now = new DateTime(date(self::DATE_FORMAT));
+            $now = new DateTime(date(parent::DATE_FORMAT));
 
             return $expires < $now;
         }
@@ -116,7 +117,7 @@
         }
 
         /**
-            query insert email_verify object 
+         *   query insert email_verify record 
         */
         public function ins($email_insert = false) : bool
         {
@@ -139,16 +140,18 @@
 
             $res = mypdo::qry_exec($qry, $this->to_assoc_array(token_hash:true));
 
-            if ($res === false)
-                return false;
-
-            if ($res === array())
-                return -1;
-            else
+            switch ($res)
             {
-                $id_user = intval($res[0]['id_user']);
-                $this->set_id_user($id_user);
-                return $this->get_id_user();
+                case false:
+                    return false;
+                case array():
+                    return -1;
+                default:
+                {
+                    $id_user = intval($res[0]['id_user']);
+                    $this->set_id_user($id_user);
+                    return $this->get_id_user();
+                }
             }
         }
 

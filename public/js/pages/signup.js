@@ -18,8 +18,8 @@ $('#signup_form').on('submit', async (e) => {
             if (response.ok)
             {
                 // test
-                //console.log(await response.text());
-                //return false;
+                console.log(await response.text());
+                return false;
                 
                 const json = await response.json();
                 window.location.href = json.redirect;

@@ -1,6 +1,6 @@
 DROP TABLE IF EXISTS `files`;
 CREATE TABLE `files` (
-    `id_file` uuid NOT NULL,
+    `id_file` varchar(255) NOT NULL,
     `full_path` varchar(255) NOT NULL,
     `size` int(11) NOT NULL,
     `mime_type` varchar(255) NOT NULL,

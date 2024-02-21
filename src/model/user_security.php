@@ -1,6 +1,8 @@
 <?php
 
-    class UserSecurity 
+    require_once __DIR__ . '/model.php';
+
+    class UserSecurity extends Model
     {
         private string $pwd_hash;
         private string $rkey_hash;
@@ -10,71 +12,68 @@
         private string $dkey_salt;
         private int $id_user;
 
-        private const DEFAULT_ATTR_VAL = "DEFAULT_ATTR_VALUE";
-        private const DEFAULT_ID_USER_VAL = -1;
-
         public function __construct($pwd_hash=null, $rkey_hash=null, $rkey_encrypted=null, $ckey_encrypted=null, $secret_2fa_encrypted=null, $dkey_salt=null, $id_user=null)
         {
-            self::set_pwd_hash($pwd_hash ? $pwd_hash : self::DEFAULT_ATTR_VAL);
-            self::set_rkey_hash($rkey_hash ? $rkey_hash : self::DEFAULT_ATTR_VAL);
-            self::set_rkey_encrypted($rkey_encrypted ? $rkey_encrypted : self::DEFAULT_ATTR_VAL);
-            self::set_ckey_encrypted($ckey_encrypted ? $ckey_encrypted : self::DEFAULT_ATTR_VAL);
-            self::set_secret_2fa_encrypted($secret_2fa_encrypted ? $secret_2fa_encrypted: self::DEFAULT_ATTR_VAL);
-            self::set_dkey_salt($dkey_salt ? $dkey_salt: self::DEFAULT_ATTR_VAL);
-            self::set_id_user($id_user ? $id_user : self::DEFAULT_ID_USER_VAL);
+            self::set_pwd_hash($pwd_hash ? $pwd_hash : parent::DEFAULT_STR);
+            self::set_rkey_hash($rkey_hash ? $rkey_hash : parent::DEFAULT_STR);
+            self::set_rkey_encrypted($rkey_encrypted ? $rkey_encrypted : parent::DEFAULT_STR);
+            self::set_ckey_encrypted($ckey_encrypted ? $ckey_encrypted : parent::DEFAULT_STR);
+            self::set_secret_2fa_encrypted($secret_2fa_encrypted ? $secret_2fa_encrypted: parent::DEFAULT_STR);
+            self::set_dkey_salt($dkey_salt ? $dkey_salt: parent::DEFAULT_STR);
+            self::set_id_user($id_user ? $id_user : parent::DEFAULT_INT);
         }
 
-        public function set_pwd_hash($pwd_hash)
+        public function set_pwd_hash(string $pwd_hash) : void
         {
             $this->pwd_hash = $pwd_hash;
         }
 
-        public function get_pwd_hash()
+        public function get_pwd_hash() : string
         {
             return $this->pwd_hash;
         }
 
-        public function set_rkey_hash($rkey_hash)
+        public function set_rkey_hash(string $rkey_hash) : void
         {
             $this->rkey_hash = $rkey_hash;
         }
 
-        public function get_rkey_hash()
+        public function get_rkey_hash() : string
         {
             return $this->rkey_hash;
         }
 
-        public function set_rkey_encrypted($rkey_encrypted)
+        public function set_rkey_encrypted(string $rkey_encrypted) : void
         {
             $this->rkey_encrypted = $rkey_encrypted;
         }
 
-        public function get_rkey_encrypted()
+        public function get_rkey_encrypted() : string
         {
             return $this->rkey_encrypted;
         }
 
-        public function set_ckey_encrypted($ckey_encrypted)
+        public function set_ckey_encrypted(string $ckey_encrypted) : void
         {
             $this->ckey_encrypted = $ckey_encrypted;
         }
 
-        public function get_ckey_encrypted()
+        public function get_ckey_encrypted() : string
         {
             return $this->ckey_encrypted;
         }
 
-        public function set_secret_2fa_encrypted($secret_2fa_encrypted)
+        public function set_secret_2fa_encrypted(string $secret_2fa_encrypted) : void
         {
             $this->secret_2fa_encrypted = $secret_2fa_encrypted;
         }
 
-        public function get_secret_2fa_encrypted()
+        public function get_secret_2fa_encrypted() : string
         {
             return $this->secret_2fa_encrypted;
         }
 
-        public function set_dkey_salt($dkey_salt)
+        public function set_dkey_salt(string $dkey_salt) : void
         {
             $this->dkey_salt = $dkey_salt;
         }
@@ -84,7 +83,7 @@
             return $this->dkey_salt;
         }
 
-        public function set_id_user($id_user)
+        public function set_id_user(int $id_user) : void
         {
             $this->id_user = $id_user;
         }
@@ -153,16 +152,18 @@
 
             $res = mypdo::qry_exec($qry, $this->to_assoc_array(id_user:true));
             
-            if ($res === false)
-                return false;
-
-            if ($res === array())
-                return null;
-            else
+            switch ($res)
             {
-                $pwd_hash = $res[0]['pwd_hash'];
-                $this->set_pwd_hash($pwd_hash);
-                return $this->get_pwd_hash();
+                case false:
+                    return false;
+                case array():
+                    return null;
+                default:
+                {
+                    $pwd_hash = $res[0]['pwd_hash'];
+                    $this->set_pwd_hash($pwd_hash);
+                    return $this->get_pwd_hash();
+                } 
             }
         }
 
@@ -174,16 +175,18 @@
 
             $res = mypdo::qry_exec($qry, $this->to_assoc_array(id_user:true));
 
-            if ($res === false)
-                return false;
-
-            if ($res === array())
-                return null;
-            else
+            switch ($res)
             {
-                $secret_2fa_c = $res[0]['secret_2fa_c'];
-                $this->set_secret_2fa_encrypted($secret_2fa_c);
-                return $this->get_secret_2fa_encrypted();
+                case false:
+                    return false;
+                case array():
+                    return null;
+                default:
+                {
+                    $secret_2fa_c = $res[0]['secret_2fa_c'];
+                    $this->set_secret_2fa_encrypted($secret_2fa_c);
+                    return $this->get_secret_2fa_encrypted();
+                }
             }
         }
         
@@ -195,16 +198,18 @@
 
             $res = mypdo::qry_exec($qry, $this->to_assoc_array(id_user:true));
 
-            if ($res === false)
-                return false;
-
-            if ($res === array())
-                return null;
-            else
+            switch ($res)
             {
-                $rkey_c = $res[0]['rkey_c'];
-                $this->set_rkey_encrypted($rkey_c);
-                return $this->get_rkey_encrypted();
+                case false:
+                    return false;
+                case array():
+                    return null;
+                default:
+                {
+                    $rkey_c = $res[0]['rkey_c'];
+                    $this->set_rkey_encrypted($rkey_c);
+                    return $this->get_rkey_encrypted();
+                }
             }
         }
 
@@ -216,16 +221,18 @@
 
             $res = mypdo::qry_exec($qry, $this->to_assoc_array(id_user:true));
 
-            if ($res === false)
-                return false;
-
-            if ($res === array())
-                return null;
-            else
+            switch ($res)
             {
-                $ckey_c = $res[0]['ckey_c'];
-                $this->set_ckey_encrypted($ckey_c);
-                return $this->get_ckey_encrypted();
+                case false:
+                    return false;
+                case array():
+                    return null;
+                default:
+                {
+                    $ckey_c = $res[0]['ckey_c'];
+                    $this->set_ckey_encrypted($ckey_c);
+                    return $this->get_ckey_encrypted();
+                }
             }
         }
 
@@ -237,16 +244,18 @@
 
             $res = mypdo::qry_exec($qry, $this->to_assoc_array(id_user:true));
 
-            if ($res === false)
-                return false;
-
-            if ($res === array())
-                return null;
-            else
+            switch ($res)
             {
-                $dkey_salt = $res[0]['dkey_salt'];
-                $this->set_dkey_salt($dkey_salt);
-                return $this->get_dkey_salt();
+                case false:
+                    return false;
+                case array():
+                    return null;
+                default:
+                {
+                    $dkey_salt = $res[0]['dkey_salt'];
+                    $this->set_dkey_salt($dkey_salt);
+                    return $this->get_dkey_salt();
+                }
             }
         }
 
@@ -261,19 +270,20 @@
 
             $res = mypdo::qry_exec($qry, $assoc_array);
 
-            if ($res === false)
-                return false;
-
-            if ($res === array())
-                return null;
-            else
+            switch ($res)
             {
-                $rkey_hash = $res[0]['rkey_hash'];
-                $this->set_rkey_hash($rkey_hash);
-                return $this->get_rkey_hash();
+                case false:
+                    return false;
+                case array():
+                    return null;
+                default:
+                {
+                    $rkey_hash = $res[0]['rkey_hash'];
+                    $this->set_rkey_hash($rkey_hash);
+                    return $this->get_rkey_hash();
+                }
             }
         }
-
 
         public function upd_pwdhash_rkeyc_dkeysalt_from_iduser()
         {

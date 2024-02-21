@@ -51,11 +51,11 @@ services:
     networks: 
       - int3rnal
       
-  mariadb:
+  mysql:
     build:
-      context: ./mariadb
+      context: ./mysql
       dockerfile: Dockerfile
-    container_name: mariadb_container
+    container_name: mysql_container
     restart: unless-stopped
 
     volumes:

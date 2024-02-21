@@ -2,13 +2,19 @@
 
     class mypdo
     {
+        /*SOURCE ../db/structure/users/u_select.sql;
+        SOURCE ../db/structure/users/u_update.sql;
+        SOURCE ../db/structure/users/u_delete.sql;
+        SOURCE ../db/structure/users/u_insert.sql;
+        SOURCE ../db/structure/users/u_admin.sql;*/
+        
         private static string|null $operation_type = self::OPERATION_TYPES[0];
         private static PDO|null $conn = null;
         private static PDOStatement|null $stmt = null;
 
         private const OPERATION_TYPES = ['select', 'insert', 'update', 'delete'];
 
-        public static function connect($operation_type = self::OPERATION_TYPES[0], $user='admin', $host="mariadb_container", $dbname="secure_cloud", array $options = null)
+        public static function connect($operation_type = self::OPERATION_TYPES[0], $user='root', $host="mysql_container", $dbname="secure_cloud", array $options = null)
         {
             if (!in_array($operation_type, self::OPERATION_TYPES))
                 return false;
@@ -20,7 +26,6 @@
                 return true;
 
             $credentials = self::get_credentials($user);
-            //$credentials = ['user' => 'USER_ADMIN', 'pwd' => $_ENV['USER_ADMIN_PWD']];
 
             try 
             {
@@ -53,13 +58,13 @@
             return self::$operation_type;
         }
 
-        public static function qry_exec(string $qry, array $params = null, $x = null)
+        public static function qry_exec(string $qry, array $params = null)
         {
             self::prep($qry);
 
             if ($params !== null)
                 self::bindAllParams($params);
-            
+
             $qry_status = self::$stmt->execute();
 
             $response = null;
@@ -110,6 +115,13 @@
                 {
                     $credentials['username'] = 'USER_ADMIN';
                     $credentials['pwd'] = $_ENV['USER_ADMIN_PWD'];
+                    break;
+                };
+
+                case 'root':
+                {
+                    $credentials['username'] = 'root';
+                    $credentials['pwd'] = 'root';
                     break;
                 };
 

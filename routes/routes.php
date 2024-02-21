@@ -4,12 +4,11 @@
     require_once __DIR__ . '/recover.php';
     require_once __DIR__ . '/signin.php';
     require_once __DIR__ . '/signup.php';
-    require_once __DIR__ . '/verify.php';
+    require_once __DIR__ . '/email_verify.php';
     require_once __DIR__ . '/clouddrive.php';
     require_once __DIR__ . '/transfers.php';
     require_once __DIR__ . '/sessions.php';
     require_once __DIR__ . '/storage.php';
-
     require_once __DIR__ . '/../src/controller/staticpages.php';
     require_once __DIR__ . '/../src/controller/auth_checker.php';
     require_once __DIR__ . '/../src/controller/signin.php';

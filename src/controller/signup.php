@@ -4,8 +4,8 @@
     require_once __DIR__ . '/../../resource/file_sys_handler.php';
     require_once __DIR__ . '/../../resource/crypto_rnd_string.php';
     require_once __DIR__ . '/../../resource/mypdo.php';
-    require_once __DIR__ . '/../../resource/mail.php';
-    require_once __DIR__ . '/../../resource/two_factor_auth.php';
+    require_once __DIR__ . '/../../resource/mymail.php';
+    require_once __DIR__ . '/../../resource/my_two_factor_auth.php';
     require_once __DIR__ . '/../../resource/user_keys_handler.php';
     require_once __DIR__ . '/../view/assets/navbar.php';
     require_once __DIR__ . '/../model/user.php';
@@ -35,19 +35,30 @@
 
                 
 
-            // ----------- Start User creation -------------
+            // ----------- BEGIN User CREATION -------------
 
             $user = new User(email:$email, name:$name, surname:$surname);
 
-            $id_user = $user->sel_id_from_email();
+            switch ($user->email_is_taken())
+            {
+                case 1:
+                {
+                    http_response::client_error(400, "Email already taken");
+                    break;
+                }
 
-            if ($id_user === false)
-                http_response::server_error();
-            
-            if ($id_user !== -1)
-                http_response::client_error(400, "Email already taken");
-            
-            unset($id_user);
+                case 0:
+                {
+                    // email is available
+                    break;
+                }
+
+                case false:
+                default:
+                {
+                    http_response::server_error();
+                }
+            }
 
             mypdo::connect('insert');
             mypdo::begin_transaction();
@@ -57,16 +68,14 @@
                 mypdo::roll_back();
                 http_response::server_error(500);
             }
+            
+            // ----------- END User CREATION -------------
+
+
+            
+            // ----------- BEGIN User-Security CREATION -------------
 
             $user->sel_id_from_email();
-            
-            FileSysHandler::mk_user_storage_dir($user->get_id_user(), $user->get_email());
-
-            // ----------- End User creation -------------
-
-
-
-            // ----------- Start User-Security creation -------------
 
             $user_keys = UserKeysHandler::get_instance_from_pwd($pwd);
 
@@ -87,12 +96,12 @@
                 http_response::server_error();
             }
 
-            // ----------- End User-Security creation -------------
+            // ----------- END User-Security CREATION -------------
 
 
 
 
-            // ----------- Start Email-Verify creation -------------
+            // ----------- BEGIN Email-Verify CREATION -------------
 
             $email_sent = EmailVerifyController::send_email_verify($user->get_email());
 
@@ -102,12 +111,19 @@
                 http_response::client_error(400, "There is an issue with the provided email address, it may not exist.");
             }
             
-            // ----------- End Email-Verify creation -------------
+            // ----------- END Email-Verify CREATION -------------
 
 
             mypdo::commit();
 
-            http_response::successful(201, false, array("redirect" => '/signup/success'));
+            FileSysHandler::mk_user_storage_dir($user->get_id_user(), $user->get_email());
+
+            http_response::successful
+            (
+                201, 
+                false, 
+                array("redirect" => '/signup/success')
+            );
         }
     }
 

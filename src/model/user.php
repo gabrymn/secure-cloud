@@ -1,6 +1,8 @@
-<?php
+<?php   
 
-    class User 
+    require_once __DIR__ . '/model.php';
+
+    class User extends Model
     {
         private int $id_user;
         private string $email;
@@ -119,7 +121,7 @@
         }
 
         /**
-         insertion user SQL query
+         * insertion user SQL query
          */
         public function ins()
         {
@@ -133,9 +135,10 @@
         {
             $qry = "SELECT id_user FROM users WHERE email = :email";
 
-            mypdo::connect('select');
-            
-            $res = mypdo::qry_exec($qry, $this->to_assoc_array(email:true), 12);
+            echo mypdo::connect('select')?"SI":"NO";
+            exit;
+
+            $res = mypdo::qry_exec($qry, $this->to_assoc_array(email:true));
 
             if ($res === false)
                 return false;
@@ -150,13 +153,26 @@
             }
         }
 
-        public function del_from_email()
+
+        /**
+         * Check if the email is already taken in the database.
+         *
+         * @return bool|int Returns 
+         *   false if there is an internal query error,
+         *   0 if the email is available, 
+         *   1 if the email is already taken.
+         */
+        public function email_is_taken() : int|bool
         {
-            $qry = "DELETE FROM users WHERE email = :email";
-
-            mypdo::connect('delete');
-
-            return mypdo::qry_exec($qry, $this->to_assoc_array(email:true));
+            switch ($this->sel_id_from_email())
+            {
+                case false:
+                    return false;
+                case -1:
+                    return 0;
+                default:
+                    return 1;
+            }
         }
 
         public function sel_2fa_from_id() : int|bool

@@ -1,8 +1,8 @@
 <?php
 
-    require_once __DIR__ . '/../../resource/crypto_rnd_string.php';
+    require_once __DIR__ . '/model.php';
 
-    class Session 
+    class Session extends Model
     {
         private string $id_session;
         private string $ip;
@@ -10,41 +10,32 @@
         private string $browser;
         private int $id_user;
 
-        private const DEFAULT_ID_SESSION_VAL = "DEFAULT_ID_SESSION";
-        private const DEFAULT_IP_VAL = "x.x.x.x";
-        private const DEFAULT_OS_VAL = "DEFAULT_OS_VALUE";
-        private const DEFAULT_BROWSER_VAL = "DEFAULT_BROWSER_VALUE";
-        private const DEFAULT_ID_USER = -1;
-        private const ID_SESSION_LEN = 32;
-
         private $start;
         private $end;
         private $recent_activity;
 
-        private const DEFAULT_DATE_VAL = "DEFAULT_DATE_VALUE";
-        private const TZ = 'Europe/Rome';
-        private const DATE_FORMAT = 'Y-m-d H:i:s';
+        private const ID_SESSION_LEN = 32;
 
         public function __construct($id_session=null, $ip=null, $os=null, $browser=null, $start=null, $end=null, $recent_activity=null, $id_user=null)
         {
-            date_default_timezone_set(self::TZ);
+            date_default_timezone_set(parent::TZ);
 
-            $this->set_id_session($id_session ? $id_session : self::DEFAULT_ID_SESSION_VAL);
-            $this->set_ip($ip ? $ip : self::DEFAULT_IP_VAL);
-            $this->set_os($os ? $os : self::DEFAULT_OS_VAL);
-            $this->set_browser($browser ? $browser: self::DEFAULT_BROWSER_VAL);
+            $this->set_id_session($id_session ? $id_session : parent::DEFAULT_STR);
+            $this->set_ip($ip ? $ip : parent::DEFAULT_STR);
+            $this->set_os($os ? $os : parent::DEFAULT_STR);
+            $this->set_browser($browser ? $browser: parent::DEFAULT_STR);
 
-            $this->set_start($start ? $start : self::DEFAULT_DATE_VAL);
-            $this->set_end($end ? $end : self::DEFAULT_DATE_VAL);
-            $this->set_recent_activity($recent_activity ? $recent_activity : self::DEFAULT_DATE_VAL);
+            $this->set_start($start ? $start : parent::DEFAULT_STR);
+            $this->set_end($end ? $end : parent::DEFAULT_STR);
+            $this->set_recent_activity($recent_activity ? $recent_activity : parent::DEFAULT_STR);
 
-            $this->set_id_user($id_user ? $id_user : self::DEFAULT_ID_USER);
+            $this->set_id_user($id_user ? $id_user : parent::DEFAULT_INT);
         }
 
         public function set_id_session(string $id_session): void
         {
-            if ($id_session === self::DEFAULT_ID_SESSION_VAL || strlen($id_session) !== self::ID_SESSION_LEN)
-                $this->id_session = self::DEFAULT_ID_SESSION_VAL;
+            if ($id_session === parent::DEFAULT_STR || strlen($id_session) !== self::ID_SESSION_LEN)
+                $this->id_session = parent::DEFAULT_STR;
             else
                 $this->id_session = $id_session;
         }
@@ -176,7 +167,7 @@
 
             if ($id_session === -1)
             {
-                $id_session = (new CryptoRNDString())->generate(self::ID_SESSION_LEN);
+                $id_session = parent::generate_uid(self::ID_SESSION_LEN);
 
                 $session->set_id_session($id_session);
                 $session->set_os(client::get_os());
@@ -288,16 +279,18 @@
 
             $res = mypdo::qry_exec($qry, $this->to_assoc_array(id_user:true, ip:true));
 
-            if ($res === false) 
-                return false;
-
-            if ($res === array())
-                return -1;
-            else
+            switch($res)
             {
-                $id_session = $res[0]['id_session'];
-                $this->set_id_session($id_session);
-                return $this->get_id_session();
+                case false:
+                    return false;
+                case array():
+                    return -1;
+                default:
+                {
+                    $id_session = $res[0]['id_session'];
+                    $this->set_id_session($id_session);
+                    return $this->get_id_session();
+                }
             }
         }
 
@@ -331,7 +324,7 @@
 
             $res = mypdo::qry_exec($qry, $this->to_assoc_array(ip:true, id_user:true));
             
-            if (!$res)
+            if ($res === false)
                 return false;
             else
             {
@@ -433,13 +426,15 @@
 
             $res = mypdo::qry_exec($qry, $this->to_assoc_array(id_session:true, id_user:true));
             
-            if ($res === false)
-                return false;
-                
-            else if ($res === array())
-                return intval(1);
-            else
-                return intval(0);
+            switch ($res)
+            {
+                case false:
+                    return false;
+                case array():
+                    return 1;
+                default:
+                    return 0;
+            }
         }
     }
 ?>

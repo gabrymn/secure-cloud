@@ -24,9 +24,8 @@
             
             $success_msg = $response['success_msg'];
             $error_msg = $response['error_msg'];
-            $redirect = $response['redirect'];
     
-            SigninController::render_signin_page($success_msg, $error_msg, $redirect);
+            SigninController::render_signin_page($success_msg, $error_msg);
         });
 
         return $router_signin->getRoutes();
