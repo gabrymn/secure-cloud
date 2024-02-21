@@ -1,7 +1,6 @@
 <?php
 
     require_once __DIR__ . '/../src/controller/auth_checker.php';
-    require_once __DIR__ . '/../src/controller/account_verify.php';
     require_once __DIR__ . '/../src/controller/account_recover.php';
 
     function get_recover_routes()

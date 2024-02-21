@@ -1,6 +1,10 @@
 <?php
 
     require_once __DIR__ . '/../view/assets/navbar.php';
+    require_once __DIR__ . '/../model/user_security.php';
+
+    require_once __DIR__ . '/../../resource/http_response.php';
+    require_once __DIR__ . '/../../resource/user_keys_handler.php';
 
 
     class AccountRecoveryController
@@ -32,7 +36,7 @@
             session_start();
             
             $_SESSION['RECOVERING_ACCOUNT'] = true;
-            $_SESSION['ID_USER'] = $user->get_id();
+            $_SESSION['ID_USER'] = $user->get_id_user();
             $_SESSION['RKEY'] = $rkey;
     
             http_response::successful(200);

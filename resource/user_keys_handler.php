@@ -1,7 +1,7 @@
 <?php
 
     require_once 'crypto.php';
-    require_once 'two_factor_auth.php';
+    require_once 'my_two_factor_auth.php';
 
     class UserKeysHandler
     {

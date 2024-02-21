@@ -4,7 +4,7 @@
     require_once __DIR__ . '/../model/user.php';
     require_once __DIR__ . '/../../resource/crypto.php';
     require_once __DIR__ . '/../../resource/http_response.php';
-    require_once __DIR__ . '/../../resource/file_system_handler.php';
+    require_once __DIR__ . '/../../resource/file_sys_handler.php';
     require_once __DIR__ . '/../view/assets/navbar.php';
 
     class CloudDriveController
@@ -13,11 +13,11 @@
         {
             $dkey = $_SESSION['DKEY'];
 
-            $user = new User(id: $_SESSION['ID_USER']);
+            $user = new User(id_user: $_SESSION['ID_USER']);
 
             $user->sel_email_from_id();
 
-            $us = new UserSecurity(id_user: $user->get_id());
+            $us = new UserSecurity(id_user: $user->get_id_user());
 
             $rkey = $us->sel_rkey_from_id();
 
@@ -27,10 +27,10 @@
 
         public static function upload_files($files)
         {
-            $user = new User(id: $_SESSION['ID_USER']);
+            $user = new User(id_user: $_SESSION['ID_USER']);
             $user->sel_email_from_id();
 
-            $us = new UserSecurity(id_user: $user->get_id());
+            $us = new UserSecurity(id_user: $user->get_id_user());
 
             $ckey_c = $us->sel_ckey_from_id();
             $rkey_c = $us->sel_rkey_from_id();
@@ -39,7 +39,7 @@
 
             $ckey = crypto::decrypt($ckey_c, $rkey);
 
-            $root_dir = FileSysHandler::get_user_storage_dir($user->get_id(), $user->get_email());
+            $root_dir = FileSysHandler::get_user_storage_dir($user->get_id_user(), $user->get_email());
             
             foreach ($files as $file)
             {

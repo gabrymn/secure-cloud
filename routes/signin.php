@@ -2,7 +2,7 @@
 
     require_once __DIR__ . '/../resource/router.php';
     require_once __DIR__ . '/../src/controller/signin.php';
-    require_once __DIR__ . '/../src/controller/account_verify.php';
+    require_once __DIR__ . '/../src/controller/email_verify.php';
 
     function get_signin_routes() : array
     {
@@ -20,7 +20,7 @@
         
         $router_signin->GET('/signin', ['token'], function($args) {
 
-            $response = AccountVerifyController::check_email_verify_token($args['token']);
+            $response = EmailVerifyController::check_email_verify_token($args['token']);
             
             $success_msg = $response['success_msg'];
             $error_msg = $response['error_msg'];

@@ -13,12 +13,27 @@
     require_once __DIR__ . '/../src/controller/staticpages.php';
     require_once __DIR__ . '/../src/controller/auth_checker.php';
     require_once __DIR__ . '/../src/controller/signin.php';
+    require_once __DIR__ . '/../src/controller/test.php';
 
 
     function get_routes($path)
     {
         switch($path)
         {
+            case '/test':
+            {
+                $router = new Router();
+                
+                $router->GET('/test', [], function () {
+            
+                    TestController::process_test();
+                });
+
+                return $router->getRoutes();
+
+                break;
+            }
+
             case '/':
             {
                 $router = new Router();
@@ -61,7 +76,7 @@
 
             case '/verify':
             {
-                return get_verify_routes();
+                return get_email_verify_routes();
                 break;
             }
 

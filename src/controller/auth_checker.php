@@ -1,9 +1,6 @@
 <?php
 
     require_once __DIR__ . '/../../resource/http_response.php';
-    require_once __DIR__ . '/../../resource/crypto.php';
-    require_once __DIR__ . '/../../resource/token.php';
-    require_once __DIR__ . '/../../resource/client.php';
     require_once __DIR__ . '/../model/session.php';
     
     class AuthController

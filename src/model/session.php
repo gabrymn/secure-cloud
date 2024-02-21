@@ -1,5 +1,7 @@
 <?php
 
+    require_once __DIR__ . '/../../resource/crypto_rnd_string.php';
+
     class Session 
     {
         private string $id_session;
@@ -22,12 +24,6 @@
         private const DEFAULT_DATE_VAL = "DEFAULT_DATE_VALUE";
         private const TZ = 'Europe/Rome';
         private const DATE_FORMAT = 'Y-m-d H:i:s';
-
-        public static function gen_uid_session(int $len = 32) : string
-        {
-            $uid = bin2hex(openssl_random_pseudo_bytes($len/2));
-            return $uid;
-        }
 
         public function __construct($id_session=null, $ip=null, $os=null, $browser=null, $start=null, $end=null, $recent_activity=null, $id_user=null)
         {
@@ -91,7 +87,7 @@
         public function set_start($start = false): void
         {
             if (!$start)
-                $start = MyDT::now();
+                $start = MyDatetime::now();
                 
             $this->start = $start;
         }
@@ -105,7 +101,7 @@
         public function set_end($end = false): void
         {
             if (!$end)
-                $end = MyDT::now();
+                $end = MyDatetime::now();
 
             $this->end = $end;
         }
@@ -118,7 +114,7 @@
         public function set_recent_activity($recent_activity = false): void
         {
             if (!$recent_activity)
-                $recent_activity = MyDT::now();
+                $recent_activity = MyDatetime::now();
             
             $this->recent_activity = $recent_activity;
         }
@@ -180,7 +176,9 @@
 
             if ($id_session === -1)
             {
-                $session->set_id_session(self::gen_uid_session(self::ID_SESSION_LEN));
+                $id_session = (new CryptoRNDString())->generate(self::ID_SESSION_LEN);
+
+                $session->set_id_session($id_session);
                 $session->set_os(client::get_os());
                 $session->set_browser(client::get_browser());
 
@@ -217,7 +215,7 @@
             {
                 $ip_info_session = client::get_ip_info_restr($session['ip']);
 
-                $client_date = MyDT::get_client_dt($session['recent_activity'], $actual_client_timezone);
+                $client_date = MyDatetime::get_client_dt($session['recent_activity'], $actual_client_timezone);
                 
                 $session['recent_activity'] = $client_date;
 

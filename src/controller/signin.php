@@ -2,17 +2,12 @@
 
 
     require_once __DIR__ . '/../../resource/http_response.php';
-    require_once __DIR__ . '/../../resource/http_response.php';
-    require_once __DIR__ . '/../../resource/file_system_handler.php';
-    require_once __DIR__ . '/../../resource/token.php';
     require_once __DIR__ . '/../../resource/crypto.php';
     require_once __DIR__ . '/../../resource/mypdo.php';
-    require_once __DIR__ . '/../../resource/mail.php';
     require_once __DIR__ . '/../../resource/mydatetime.php';
     require_once __DIR__ . '/../../resource/client.php';
     require_once __DIR__ . '/../model/user.php';
     require_once __DIR__ . '/../model/email_verify.php';
-    require_once __DIR__ . '/../model/user_security.php';
     require_once __DIR__ . '/../model/session.php';
     require_once __DIR__ . '/../view/assets/navbar.php';
     
@@ -29,6 +24,10 @@
             if (!filter_var($email, FILTER_VALIDATE_EMAIL))
                 http_response::client_error(400, "Invalid email format");
 
+
+            
+            // ------------ BEGIN User PROCESS -----------
+
             $user = new User(email:$email);
 
             $id_user = $user->sel_id_from_email();
@@ -40,22 +39,32 @@
             
             // email $user->get_email() exists in db
             
-            $user->set_id($id_user);
+            $user->set_id_user($id_user);
 
-            // get hashed pwd from db
+            // ------------ END User PROCESS -----------
+
+
+
+
+            // ------------ BEGIN UserSecurity PROCESS -----------
 
             $us = new UserSecurity(id_user: $id_user);
-            $pwd_hash = $us->sel_pwd_hash_from_id();
+            $us->sel_pwd_hash_from_id();
 
             // there's no record in user_security that has that id_user, server error 
-            if ($pwd_hash === -1)
+            if ($us->get_pwd_hash() === -1)
                 http_response::server_error(500, "Something wrong, try again");
-
-            $us->set_pwd_hash($pwd_hash);
 
             // password is wrong (1FA FAILED)
             if (!password_verify($pwd, $us->get_pwd_hash()))
                 http_response::client_error(400, "Password is wrong");
+
+            // ------------ END UserSecurity PROCESS -----------
+
+            
+
+
+            // ------------ BEGIN EmailVerify PROCESS -----------
 
             session_start();
 
@@ -67,7 +76,7 @@
                 http_response::server_error();
             }
 
-            // user is tryin' to login without have verified the email 
+            // user is tryin' to signin without have verified the email 
             if ($verified === 0)
             {
                 $_SESSION['VERIFY_PAGE_STATUS'] = 'SIGNIN_WITH_EMAIL_NOT_VERIFIED';
@@ -84,11 +93,21 @@
             // user is verified
 
             $_SESSION['AUTH_1FA'] = true;
-            $_SESSION['ID_USER'] = $user->get_id();
+            $_SESSION['ID_USER'] = $user->get_id_user();
 
             if (isset($_SESSION['VERIFY_PAGE_STATUS'])) unset($_SESSION['VERIFY_PAGE_STATUS']);
 
-            // check if 2FA is setted
+
+            // ------------ END EmailVerify PROCESS -----------
+
+
+
+
+
+            // ------------ BEGIN 2FA PROCESS -----------
+
+
+            // check if 2FA isset
 
             $p2fa = $user->sel_2fa_from_id();
 
@@ -98,9 +117,12 @@
                 http_response::server_error(500);
             }
 
-            $us->set_id_user($user->get_id());
+            // Set DKEY (a key derived from password and a random salt) to a session variable
+
+            $us->set_id_user($user->get_id_user());
             $dkey_salt = $us->sel_dkey_salt_from_id();
             $_SESSION['DKEY'] = crypto::deriveKey($pwd, $dkey_salt);
+
 
             // User has 2FA active, redirect to 2FA page
             if ($p2fa === 1)
@@ -118,9 +140,17 @@
 
             $_SESSION['LOGGED'] = true;
 
+
+            // ------------ END 2FA PROCESS -----------
+
+
+
+
+
+
             // check if there is an active session with the client IP
 
-            Session::create_or_load(client::get_ip(), $user->get_id());
+            Session::create_or_load(client::get_ip(), $user->get_id_user());
 
             http_response::successful
             (

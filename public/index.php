@@ -9,6 +9,7 @@
     (
         array_merge
         (
+            get_routes('/test'),
             get_routes('/'),
             get_routes('/signin'),
             get_routes('/signup'),

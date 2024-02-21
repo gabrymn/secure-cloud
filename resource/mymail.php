@@ -50,15 +50,17 @@
             }
         }
 
-        public static function send_email_verify($email, $tkn_plain_txt)
+        public function send_array(array $mail, $html = true)
         {
-            $mailer = new MyMail();
+            try {
+                
+                return $this->mailer->send($mail["dest"], $mail["obj"], $mail["body"]);
 
-            $url = $_ENV['APP_URL'] . '/signin?token=' . $tkn_plain_txt;
-            $body = 'Click the link to confirm your email: ' . $url;
-            $obj = $_ENV['APP_NAME'] . ': verify your email';
+            } catch (Exception $e) {
 
-            return $mailer->send($email, $obj, $body);  
+                //return $this->mailer->ErrorInfo;
+                return false;
+            }
         }
     }
 

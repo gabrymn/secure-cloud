@@ -15,7 +15,7 @@
 
             self::set_optype($operation_type);
             
-            // already connected for this operation type
+            // already connected
             if (self::$conn !== null)
                 return true;
 

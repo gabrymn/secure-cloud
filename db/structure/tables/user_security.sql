@@ -8,5 +8,5 @@ CREATE TABLE `user_security` (
   `dkey_salt` varchar(50) NOT NULL,
   `id_user` int(11) NOT NULL,
   KEY `id_user` (`id_user`),
-  CONSTRAINT `user_security_ibfk_1` FOREIGN KEY (`id_user`) REFERENCES `users` (`id`)
+  CONSTRAINT `user_security_ibfk_1` FOREIGN KEY (`id_user`) REFERENCES `users` (`id_user`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;

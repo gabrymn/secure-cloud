@@ -1,16 +1,16 @@
 <?php
 
     require_once __DIR__ . '/../../resource/http_response.php';
-    require_once __DIR__ . '/../../resource/file_system_handler.php';
-    require_once __DIR__ . '/../../resource/token.php';
+    require_once __DIR__ . '/../../resource/file_sys_handler.php';
+    require_once __DIR__ . '/../../resource/crypto_rnd_string.php';
     require_once __DIR__ . '/../../resource/mypdo.php';
     require_once __DIR__ . '/../../resource/mail.php';
     require_once __DIR__ . '/../../resource/two_factor_auth.php';
     require_once __DIR__ . '/../../resource/user_keys_handler.php';
+    require_once __DIR__ . '/../view/assets/navbar.php';
     require_once __DIR__ . '/../model/user.php';
     require_once __DIR__ . '/../model/email_verify.php';
     require_once __DIR__ . '/../model/user_security.php';
-    require_once __DIR__ . '/../view/assets/navbar.php';
     
     class SignupController
     {
@@ -22,17 +22,21 @@
 
         public static function render_signup_success_page()
         {
-            include __DIR__ . '/../view/static/signup_success.html';
+            include __DIR__ . '/../view/static/signup_success.php';
         }
 
         public static function process_signup($email, $pwd, $name, $surname)
         {
-            if (!filter_var($_POST['email'], FILTER_VALIDATE_EMAIL))
+            if (!filter_var($email, FILTER_VALIDATE_EMAIL))
                 http_response::client_error(400, "Invalid email format");
 
-            if (strlen($_POST['pwd']) < 1)
+            if (strlen($pwd) < 1)
                 http_response::client_error(400, "Password too short");
-            
+
+                
+
+            // ----------- Start User creation -------------
+
             $user = new User(email:$email, name:$name, surname:$surname);
 
             $id_user = $user->sel_id_from_email();
@@ -56,28 +60,16 @@
 
             $user->sel_id_from_email();
             
-            FileSysHandler::mk_user_storage_dir($user->get_id(), $user->get_email());
-            
-            $tkn = new token(100);
-            $e_verify = new EmailVerify
-            (
-                tkn_hash: $tkn->hashed(), 
-                id_user: $user->get_id()
-            );
+            FileSysHandler::mk_user_storage_dir($user->get_id_user(), $user->get_email());
 
-            if (!$e_verify->ins())
-            {
-                mypdo::roll_back();
-                http_response::server_error();
-            }
+            // ----------- End User creation -------------
 
-            /*$email_sent = MyMail::send_email_verify($user->get_email(), (string)$tkn);
-            if ($email_sent === false)
-                http_response::client_error(400, "There is an issue with the provided email address, it may not exist.");
-            */
+
+
+            // ----------- Start User-Security creation -------------
 
             $user_keys = UserKeysHandler::get_instance_from_pwd($pwd);
-            
+
             $user_security_data = new UserSecurity
             (
                 pwd_hash:               $user_keys->get_pwd_hashed(),
@@ -86,7 +78,7 @@
                 ckey_encrypted:         $user_keys->get_ckey_encrypted(),
                 secret_2fa_encrypted:   $user_keys->get_secret_2fa_encrypted(),
                 dkey_salt:              $user_keys->get_dkey_salt(),
-                id_user:                $user->get_id()
+                id_user:                $user->get_id_user()
             );
 
             if (!$user_security_data->ins())
@@ -94,6 +86,24 @@
                 mypdo::roll_back();
                 http_response::server_error();
             }
+
+            // ----------- End User-Security creation -------------
+
+
+
+
+            // ----------- Start Email-Verify creation -------------
+
+            $email_sent = EmailVerifyController::send_email_verify($user->get_email());
+
+            if ($email_sent === false)
+            {
+                mypdo::roll_back();
+                http_response::client_error(400, "There is an issue with the provided email address, it may not exist.");
+            }
+            
+            // ----------- End Email-Verify creation -------------
+
 
             mypdo::commit();
 

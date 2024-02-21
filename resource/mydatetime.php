@@ -1,6 +1,6 @@
 <?php
 
-    class MyDT 
+    class MyDatetime 
     {
         public const UTC_TZ = 'UTC'; // TZ of php and mariadb
         public const SERVER_DT_FORMAT = 'Y-m-d H:i:s';

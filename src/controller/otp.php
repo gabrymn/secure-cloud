@@ -1,10 +1,9 @@
 <?php
 
     require_once __DIR__ . '/../../resource/http_response.php';
-    require_once __DIR__ . '/../../resource/two_factor_auth.php';
+    require_once __DIR__ . '/../../resource/my_two_factor_auth.php';
     require_once __DIR__ . '/../../resource/mypdo.php';
     require_once __DIR__ . '/../../resource/crypto.php';
-    require_once __DIR__ . '/../../resource/token.php';
     require_once __DIR__ . '/../../resource/client.php';
     require_once __DIR__ . '/../model/session.php';
     require_once __DIR__ . '/../model/user.php';
@@ -29,10 +28,10 @@
         {
             self::check_otp_format($otp);
 
-            $user = new User(id: $_SESSION['ID_USER']);
+            $user = new User(id_user: $_SESSION['ID_USER']);
             $user->set_email($user->sel_email_from_id());
 
-            $us = new UserSecurity(id_user:$user->get_id());
+            $us = new UserSecurity(id_user:$user->get_id_user());
             $us->sel_rkey_from_id();
             $us->sel_secret_2fa_c_from_id();
             
@@ -50,7 +49,7 @@
 
             unset($_SESSION['OTP_CHECKING']);
 
-            Session::create_or_load(id_user: $user->get_id(), ip: client::get_ip());
+            Session::create_or_load(id_user: $user->get_id_user(), ip: client::get_ip());
             
             http_response::successful
             (

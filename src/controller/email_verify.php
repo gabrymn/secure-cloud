@@ -1,10 +1,10 @@
 <?php
 
     require_once __DIR__ . '/../../resource/http_response.php';
+    require_once __DIR__ . '/../../resource/crypto_rnd_string.php';
     require_once __DIR__ . '/../view/assets/navbar.php';
 
-
-    class AccountVerifyController
+    class EmailVerifyController
     {
         public static function render_verify_page()
         {
@@ -45,23 +45,17 @@
 
                     break;
                 }
-
             }
             
             $navbar = Navbar::getPublic();
             include __DIR__ . '/../view/verify.php';
         }
 
-        public static function send_verify_email()
+        public static function send_email_verify_from_signin()
         {
-            $user = new User(email: $_SESSION['EMAIL']);
-            $user->set_id($user->sel_id_from_email());
+            $email = $_SESSION['EMAIL'];
 
-            $tkn = new token(100);
-            $everify = new EmailVerify(tkn_hash:$tkn->hashed(), id_user:$user->get_id());
-            $everify->ins();
-
-            if (MyMail::send_email_verify($user->get_email(), (string)$tkn))
+            if (self::send_email_verify($email))
             {
                 $_SESSION['VERIFY_PAGE_STATUS'] = 'VERIFY_EMAIL_SENT';
                 unset($_SESSION['EMAIL']);
@@ -69,7 +63,46 @@
                 http_response::redirect('/verify');
             }
             else
+            {
                 http_response::server_error(500);
+            }
+        }
+
+        public static function send_email_verify($email)
+        {
+            $user = new User(email: $email);
+            $user->set_id_user($user->sel_id_from_email());
+
+            $ev_token = 
+                (new CryptoRNDString()) -> generate(EmailVerify::PLAIN_TEXT_TOKEN_LEN);
+
+            $ev = new EmailVerify
+            (
+                token_hash: hash("sha256", $ev_token), 
+                id_user: $user->get_id_user()
+            );
+
+            mypdo::begin_transaction();
+
+            if (!$ev->ins())
+            {
+                mypdo::roll_back();
+                return false;
+            }
+
+            $mail_header = $ev->get_mail_header();
+            $mail_body = $ev->get_mail_body($ev_token);
+
+            $mymail = new MyMail();
+
+            if (!$mymail->send_array(array_merge($mail_header, $mail_body)))
+            {
+                mypdo::roll_back();
+                return false;
+            }
+
+            mypdo::commit();
+            return true;
         }
 
         public static function check_email_verify_token($token)
@@ -78,30 +111,37 @@
             $error_msg = "";
             $redirect = "";
     
-            $tkn = new Token;
-            $tkn->set($token);
+            $ev = new EmailVerify
+            (
+                token_hash: hash("sha256", $token)
+            );
     
-            $e_verify = new EmailVerify(tkn_hash: $tkn->hashed());
-    
-            $id_user = $e_verify->sel_id_from_tkn();
-    
-            if ($id_user === -1)
+            $id_user = $ev->sel_id_user_from_token_hash();
+
+            if ($id_user === false)
+            {
+                http_response_code(500);
+                $error_msg = "Internal Server Error";
+            }
+
+            else if ($id_user === -1)
             {
                 http_response_code(400);
                 $error_msg = "Invalid or expired email verify link.";
             }
+
             else
             {
-                if (!session_status()) 
+                if (session_status() !== PHP_SESSION_ACTIVE)
                     session_start();
     
                 if (isset($_SESSION['VERIFING_EMAIL']))
                     unset($_SESSION['VERIFING_EMAIL']);
     
-                $user = new User(id: $id_user);
-                $user->upd_user_verified();
+                $user = new User(id_user: $id_user);
+                $user->upd_user_to_verified();
     
-                $e_verify->del_ver_from_tkn();
+                $ev->del_from_token_hash();
     
                 $success_msg = "Email verified, sign in";
             }

@@ -2,7 +2,7 @@
 
     class EmailVerify 
     {
-        private string $tkn_hash;
+        private string $token_hash;
         private int $id_user;
         private $expires;
         private string $email;
@@ -12,17 +12,37 @@
         private const DEFAULT_EXPIRES_VAL = "EXPIRES_DEFAULT_VALUE";
         private const DEFAULT_TOKEN_HASH_VAL = "TOKEN_HASH_DEFAULT_VALUE";
 
+        public const PLAIN_TEXT_TOKEN_LEN = 100;
         private const EXP_MINUTES = 30;
         private const TZ = 'Europe/Rome';
         private const DATE_FORMAT = 'Y-m-d H:i:s';
 
-        public function __construct($tkn_hash = null, $id_user = null, $expires = null, $email = null)
+        public function __construct($token_hash = null, $id_user = null, $expires = null, $email = null)
         {
             date_default_timezone_set(self::TZ);
-            self::set_tkn_hash($tkn_hash ? $tkn_hash : self::DEFAULT_TOKEN_HASH_VAL);
+            self::set_token_hash($token_hash ? $token_hash : self::DEFAULT_TOKEN_HASH_VAL);
             self::set_expires($expires ? $expires : $this->set_expires());
             self::set_id_user($id_user ? $id_user : self::DEFAULT_ID_USER_VAL);
             self::set_email($email ? $email : self::DEFAULT_EMAIL_VAL);
+        }
+
+        public function get_mail_header() : array
+        {
+            return
+            [
+                "dest" => $this->get_email(),
+                "obj" => $_ENV['APP_NAME'] . ': verify your email',
+            ];
+        }
+
+        public function get_mail_body($token_plain_text) : array
+        {
+            $url = $_ENV['APP_URL'] . '/signin?token=' . $token_plain_text;
+
+            return 
+            [
+                "body" => 'Click the link to confirm your email: ' . $url
+            ];
         }
 
         public function set_email($email)
@@ -35,9 +55,9 @@
             return $this->email;
         }
 
-        public function get_tkn_hash()
+        public function get_token_hash()
         {
-            return $this->tkn_hash;
+            return $this->token_hash;
         }
 
         public function get_id_user()
@@ -50,9 +70,9 @@
             return $this->expires;
         }
 
-        public function set_tkn_hash($tkn_hash)
+        public function set_token_hash($token_hash)
         {
-            $this->tkn_hash = $tkn_hash;
+            $this->token_hash = $token_hash;
         }
 
         public function set_id_user($id_user)
@@ -76,12 +96,12 @@
             return $expires < $now;
         }
 
-        public function to_assoc_array($tkn_hash = false, $expires = false, $email = false, $id_user = false)
+        public function to_assoc_array($token_hash = false, $expires = false, $email = false, $id_user = false)
         {
             $params = array();
 
-            if ($tkn_hash)
-                $params['tkn_hash'] =  $this->get_tkn_hash();
+            if ($token_hash)
+                $params['token_hash'] =  $this->get_token_hash();
 
             if ($expires)
                 $params['expires'] =  $this->get_expires();
@@ -100,24 +120,24 @@
         */
         public function ins($email_insert = false) : bool
         {
-            $qry = "INSERT INTO email_verify (tkn_hash, expires, id_user) VALUES (:tkn_hash, :expires, :id_user)";
+            $qry = "INSERT INTO email_verify (token_hash, expires, id_user) VALUES (:token_hash, :expires, :id_user)";
 
             mypdo::connect('insert');
 
             return mypdo::qry_exec
             (
                 $qry, 
-                $this->to_assoc_array(tkn_hash:true, expires:true, email:$email_insert, id_user:true)
+                $this->to_assoc_array(token_hash:true, expires:true, email:$email_insert, id_user:true)
             );
         }
 
-        public function sel_id_from_tkn()
+        public function sel_id_user_from_token_hash()
         {
-            $qry = "SELECT id_user FROM email_verify WHERE tkn_hash = :tkn_hash";
+            $qry = "SELECT id_user FROM email_verify WHERE token_hash = :token_hash";
 
             mypdo::connect('select');
 
-            $res = mypdo::qry_exec($qry, $this->to_assoc_array(tkn_hash:true));
+            $res = mypdo::qry_exec($qry, $this->to_assoc_array(token_hash:true));
 
             if ($res === false)
                 return false;
@@ -132,13 +152,13 @@
             }
         }
 
-        public function del_ver_from_tkn()
+        public function del_from_token_hash()
         {
-            $qry = "DELETE FROM email_verify WHERE tkn_hash = :tkn_hash OR id_user = :id_user";
+            $qry = "DELETE FROM email_verify WHERE token_hash = :token_hash OR id_user = :id_user";
 
             mypdo::connect('delete');
 
-            return mypdo::qry_exec($qry, $this->to_assoc_array(tkn_hash:true, id_user:true));
+            return mypdo::qry_exec($qry, $this->to_assoc_array(token_hash:true, id_user:true));
         }
     }
 
