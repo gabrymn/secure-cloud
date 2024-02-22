@@ -8,9 +8,35 @@
     {
         public static function process_test()
         {
-            mypdo::connect('insert');
+            $filename = "ciao.env";
 
-            print_r(mypdo::qry_exec("SELECT * FROM users"));
+            echo self::handle($filename);
+        }
+
+        public static function handle($filename)
+        {
+            $ext = pathinfo($filename, PATHINFO_EXTENSION);
+            $name = pathinfo($filename, PATHINFO_FILENAME);
+
+            $filename = "";
+
+            if ($name)
+            {
+                $filename .= $name;
+                $filename .= '_';
+                $filename .= uniqid();
+    
+                if ($ext)
+                    $filename .= '.'.$ext;
+            }
+            else
+            {
+                $filename .= '.'.$ext;
+                $filename .= '_';
+                $filename .= uniqid();
+            }
+
+            return $filename;
         }
     }
 ?>

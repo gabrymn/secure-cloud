@@ -2,7 +2,7 @@
 
     require_once __DIR__ . '/model.php';
 
-    class EmailVerify extends Model
+    class EmailVerifyModel extends Model
     {
         private string $token_hash;
         private int $id_user;
@@ -23,7 +23,7 @@
 
         public static function generate_token() : string
         {
-            $ev = new EmailVerify;
+            $ev = new EmailVerifyModel;
             return $ev->generate_uid(self::PLAIN_TEXT_TOKEN_LEN);
         }
 

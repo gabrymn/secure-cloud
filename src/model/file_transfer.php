@@ -3,7 +3,7 @@
     require_once __DIR__ . '/model.php';
     require_once __DIR__ . '/../../resource/mydatetime.php';
 
-    class FileTransfer extends Model
+    class FileTransferModel extends Model
     {
         private $transfer_date;
         private string $transfer_type;

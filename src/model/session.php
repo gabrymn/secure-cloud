@@ -2,7 +2,7 @@
 
     require_once __DIR__ . '/model.php';
 
-    class Session extends Model
+    class SessionModel extends Model
     {
         private string $id_session;
         private string $ip;
@@ -158,7 +158,7 @@
 
         public static function create_or_load($ip, $id_user)
         {   
-            $session = new Session(ip:$ip, id_user:$id_user);
+            $session = new SessionModel(ip:$ip, id_user:$id_user);
 
             if (session_status() !== PHP_SESSION_ACTIVE) 
                 session_start();
@@ -198,7 +198,7 @@
 
         public static function get_sessions_of($id_user, $id_session)
         {
-            $s = new Session(id_user:$id_user, id_session:$id_session);
+            $s = new SessionModel(id_user:$id_user, id_session:$id_session);
             $sessions = $s->sel_sessions_from_iduser_ordby_idsess();
             $actual_client_timezone = client::get_timezone();
 

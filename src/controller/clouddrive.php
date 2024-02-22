@@ -8,98 +8,74 @@
     require_once __DIR__ . '/../../resource/http_response.php';
     require_once __DIR__ . '/../../resource/file_sys_handler.php';
     require_once __DIR__ . '/../../resource/crypto_rnd_string.php';
+    require_once __DIR__ . '/../../resource/user_keys_handler.php';
     require_once __DIR__ . '/../../resource/mydatetime.php';
     require_once __DIR__ . '/../view/assets/navbar.php';
+    require_once __DIR__ . '/file.php';
+    require_once __DIR__ . '/userkeys.php';
 
     class CloudDriveController
     {
+        private const TEMP_DIR = 'TEMP_DIR';
+        private const FINAL_DIR = 'FINAL_DIR';
+
         public static function render_clouddrive_page()
         {
-            $dkey = $_SESSION['DKEY'];
-
-            $user = new User(id_user: $_SESSION['ID_USER']);
-
-            $user->sel_email_from_id();
-
-            $us = new UserSecurity(id_user: $user->get_id_user());
-
-            $rkey_c = $us->sel_rkey_from_id();
-            $ckey_c = $us->sel_ckey_from_id();
-
-            $rkey = crypto::decrypt($rkey_c, $_SESSION['DKEY']);
-
-            $ckey = crypto::decrypt($ckey_c, $rkey);
+            //$file_names = FileController::get_file_names_of($_SESSION['ID_USER']);
 
             $navbar = Navbar::getPrivate('clouddrive');
 
-            $file_names = File::sel_file_names_from_id_user($user->get_id_user());
-
-            foreach ($file_names as &$file_name)
-            {
-                $file_name = crypto::decrypt($file_name, $ckey);
-            }
-
             include __DIR__ . '/../view/clouddrive.php';
         }
-
+        
+        /*
         public static function upload_files($files_php)
+        {       
+            // files_sum_size = FileController::get_size_of(array_column(files_php, 'size'))
+            
+            // if files_sum_size >= MAX_SPACE
+            //     => error 400
+
+            // status = FileController::store_files(files_php)
+            
+            // if (!status)
+            //     => error 500
+            
+            // => successful 200
+        }*/
+
+        public static function check_space($args)
         {
-            $user = new User(id_user: $_SESSION['ID_USER']);
-            $user->sel_email_from_id();
-
-            $us = new UserSecurity(id_user: $user->get_id_user());
-
-            $ckey_c = $us->sel_ckey_from_id();
-            $rkey_c = $us->sel_rkey_from_id();
-
-            $rkey = crypto::decrypt($rkey_c, $_SESSION['DKEY']);
-
-            $ckey = crypto::decrypt($ckey_c, $rkey);
-
-            $root_dir = FileSysHandler::get_user_storage_dir($user->get_id_user(), $user->get_email());
-
-            $rnd_str = new CryptoRNDString();
-
-            foreach ($files_php as $file_php)
+            if ($args['request_space'] >= 111111)
             {
-                $id_file = $rnd_str->generate(File::ID_FILE_LEN);
+                http_response::client_error(400);
+            }
+            else
+            {
+                http_response::successful(200);
+            }
+        }
 
-                $file_name_encrypted = crypto::encrypt($file_php['name'], $ckey, crypto::HEX);
+        public static function upload($args)
+        {   
+            FileController::upload_chunk(self::TEMP_DIR, $args['filename'], $args['index'], $args['file']['tmp_name']);
 
-                mypdo::connect('insert');
-                mypdo::begin_transaction();
-
-                $file = new File
-                (
-                    id_file:$id_file, 
-                    full_path: $file_name_encrypted, 
-                    size: $file_php['size'], 
-                    mime_type: $file_php['type'], 
-                    id_user: $user->get_id_user()
-                );
-
-                $file_transfer = new FileTransfer
-                (
-                    transfer_type: "upload",
-                    id_file: $id_file
-                );
-
-                if ($file->ins() && $file_transfer->ins())
-                {
-                    mypdo::commit();
-                }
-                else
-                {
-                    mypdo::roll_back();
-                }
-
-                $full_path = $root_dir . '/' .  $file_name_encrypted;   
-
-                crypto::encryptFile($file_php['tmp_name'], $full_path, $ckey);
-                unlink($file_php['tmp_name']);
+            if (FileSysHandler::count_files_of(self::TEMP_DIR) == $args['chunks_n'])
+            {
+                FileController::gather_uploaded_chunks(self::TEMP_DIR, self::FINAL_DIR, $args['filename']);
             }
 
             http_response::successful(200);
+        }
+
+        public static function download_files(array $id_files)
+        {
+            
+        }
+
+        public static function render_file_view()
+        {
+
         }
     }
 

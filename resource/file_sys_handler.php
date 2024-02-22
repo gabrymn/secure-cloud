@@ -19,11 +19,33 @@
             return mkdir($user_dir);
         }
 
-        public static function create_file($path)
+        public static function count_files_of($dir)
         {
-            
+            $dir .= "/";            
+            $fileCount = 0;
+        
+            if (is_dir($dir)) 
+            {
+                $files = scandir($dir);
+        
+                foreach ($files as $file) 
+                {
+                    $filePath = $dir . $file;
+                    
+                    // Escludi le directory e i collegamenti simbolici
+                    if (is_file($filePath)) 
+                    {
+                        $fileCount++;
+                    }
+                }
+        
+                return $fileCount;
+            } 
+            else 
+            {
+                return -1; // Codice di errore: directory non esistente
+            }
         }
-
 
         public static function rm_dir($dir_path) 
         {

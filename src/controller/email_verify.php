@@ -70,12 +70,12 @@
 
         public static function send_email_verify($email)
         {
-            $user = new User(email: $email);
+            $user = new UserModel(email: $email);
             $user->sel_id_from_email();
 
-            $ev_token = EmailVerify::generate_token();
+            $ev_token = EmailVerifyModel::generate_token();
 
-            $ev = new EmailVerify
+            $ev = new EmailVerifyModel
             (
                 token_hash: hash("sha256", $ev_token), 
                 id_user: $user->get_id_user()
@@ -109,7 +109,7 @@
             $success_msg = "";
             $error_msg = "";
     
-            $ev = new EmailVerify
+            $ev = new EmailVerifyModel
             (
                 token_hash: hash("sha256", $token)
             );
@@ -138,7 +138,7 @@
                     if (isset($_SESSION['VERIFING_EMAIL']))
                         unset($_SESSION['VERIFING_EMAIL']);
         
-                    $user = new User(id_user: $ev->get_id_user());
+                    $user = new UserModel(id_user: $ev->get_id_user());
 
                     $user->upd_user_to_verified();
                     $ev->del_from_token_hash();

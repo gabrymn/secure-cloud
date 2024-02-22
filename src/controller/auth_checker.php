@@ -71,7 +71,7 @@
 
             self::check($redirect, 'LOGGED');
     
-            $s = new Session
+            $s = new SessionModel
             (
                 id_session: $_SESSION['CURRENT_ID_SESSION'], 
                 id_user: $_SESSION['ID_USER']

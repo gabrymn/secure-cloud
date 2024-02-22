@@ -20,10 +20,10 @@
             if (!filter_var($email, FILTER_VALIDATE_EMAIL))
                 http_response::client_error(400, "Invalid email format");
 
-            $user = new User(email:$email);
+            $user = new UserModel(email:$email);
             $user->sel_id_from_email($user->get_email());
             
-            $us = new UserSecurity();
+            $us = new UserSecurityModel();
     
             $us->sel_rkey_hash_from_email
             (
@@ -54,7 +54,7 @@
             $ukh->set_dkey_auto();
             $ukh->set_rkey($_SESSION['RKEY']);
 
-            $us = new UserSecurity
+            $us = new UserSecurityModel
             (
                 pwd_hash:       $ukh->get_pwd_hashed(),
                 rkey_encrypted: $ukh->get_rkey_encrypted(),

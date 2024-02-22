@@ -11,10 +11,10 @@
         {
             $navbar = Navbar::getPrivate('profile');
 
-            $user = new User(id_user: $_SESSION['ID_USER']);
+            $user = new UserModel(id_user: $_SESSION['ID_USER']);
             $user->sel_email_from_id();
 
-            $us = new UserSecurity(id_user: $user->get_id_user());
+            $us = new UserSecurityModel(id_user: $user->get_id_user());
 
             $us->sel_secret_2fa_c_from_id();
             $us->sel_rkey_from_id();

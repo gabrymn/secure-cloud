@@ -13,10 +13,10 @@
             CloudDriveController::render_clouddrive_page();
         }); 
         
-        $router->POST('/clouddrive/upload', [], function($files) {
+        $router->POST('/clouddrive/upload', ['file', 'filename', 'index', 'chunks_n'], function($file) {
             
             AuthController::check_protectedarea(redirect: false);
-            CloudDriveController::upload_files($files);
+            CloudDriveController::upload($file);
         }); 
 
         return $router->getRoutes();

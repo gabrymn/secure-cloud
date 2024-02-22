@@ -37,7 +37,7 @@
 
             // ----------- BEGIN User CREATION -------------
 
-            $user = new User(email:$email, name:$name, surname:$surname);
+            $user = new UserModel(email:$email, name:$name, surname:$surname);
 
             $email_is_taken = $user->email_is_taken();
 
@@ -70,8 +70,8 @@
             $user->sel_id_from_email();
 
             $user_keys = UserKeysHandler::get_instance_from_pwd($pwd);
-
-            $user_security_data = new UserSecurity
+            
+            $user_security_data = new UserSecurityModel
             (
                 pwd_hash:               $user_keys->get_pwd_hashed(),
                 rkey_hash:              $user_keys->get_rkey_hashed(),

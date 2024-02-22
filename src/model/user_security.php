@@ -2,7 +2,7 @@
 
     require_once __DIR__ . '/model.php';
 
-    class UserSecurity extends Model
+    class UserSecurityModel extends Model
     {
         private string $pwd_hash;
         private string $rkey_hash;

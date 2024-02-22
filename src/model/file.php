@@ -3,7 +3,7 @@
     require_once __DIR__ . '/../../resource/mypdo.php';
     require_once __DIR__ . '/model.php';
 
-    class File extends Model
+    class FileModel extends Model
     {
         private string $id_file;
         private string $full_path;
@@ -108,7 +108,7 @@
 
         public static function sel_file_names_from_id_user($id_user)
         {
-            $file = new File(id_user: $id_user);
+            $file = new FileModel(id_user: $id_user);
 
             $qry = "SELECT full_path FROM files WHERE id_user = :id_user";
 

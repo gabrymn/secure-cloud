@@ -5,11 +5,64 @@ $("#ID_UPLOAD").on('click', () => {
 
 $("#ID_FILE_UPLOADER").on('change', (e) => {
 
+    const CHUNK_SIZE = 1000000; // 1MB
+    let start = 0;
+    let chunks = [];
+    let files = Object.values(e.target.files);
+
+    for (let i=0; i<files.length; i++)
+    {
+        start = 0;
+        chunks[i] = [];
+
+        while (start < files[0].size) 
+        {
+            let chunk = files[i].slice(start, start + CHUNK_SIZE);
+    
+            chunks[i].push(chunk);
+    
+            start += CHUNK_SIZE;
+        }
+    }
+
+    for (let i=0; i<chunks.length; i++)
+    {
+        chunks[i].forEach((chunk, index) => {
+        
+            let formData = new FormData();
+    
+            formData.append('file', chunk);
+            formData.append('filename', files[index].name);
+            formData.append('index', index);
+            formData.append('chunks_n', chunks[index].length);
+    
+            $.ajax({
+            
+                url: '/clouddrive/upload',
+                data: formData,
+                type: "POST",
+                processData: false,  
+                contentType: false,  
+                
+                success: (response) => {
+                    console.log(response);
+                },
+                error: (xhr) => {
+                    console.log(xhr);
+                }
+            }); 
+        })
+    }
+})
+
+
+/*$("#ID_FILE_UPLOADER").on('change', (e) => {
+
     var files = Object.values(e.target.files)
     var formData = new FormData();
 
     for (var i = 0; i < files.length; i++) {
-        formData.append('file_' + i, files[i]);
+        formData.append(i, files[i]);
     }
 
     $.ajax({
@@ -27,7 +80,7 @@ $("#ID_FILE_UPLOADER").on('change', (e) => {
             console.log(xhr);
         }
     }); 
-});
+});*/
 
 const download_recoverykey = () => {
     

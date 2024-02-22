@@ -2,7 +2,7 @@
 
     require_once __DIR__ . '/model.php';
 
-    class User extends Model
+    class UserModel extends Model
     {
         private int $id_user;
         private string $email;

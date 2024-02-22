@@ -28,7 +28,7 @@
             
             // ------------ BEGIN User PROCESS -----------
 
-            $user = new User(email:$email);
+            $user = new UserModel(email:$email);
 
             // There's no email in db that is equals to $user->get_email()
             if ($user->sel_id_from_email() === -1)
@@ -40,7 +40,7 @@
 
             // ------------ BEGIN UserSecurity PROCESS -----------
 
-            $us = new UserSecurity(id_user: $user->get_id_user());
+            $us = new UserSecurityModel(id_user: $user->get_id_user());
             
             // there's no record in user_security that has that id_user, server error 
             if (!$us->sel_pwd_hash_from_id())
@@ -143,7 +143,7 @@
 
             // check if there is an active session with the client IP
 
-            Session::create_or_load(client::get_ip(), $user->get_id_user());
+            SessionModel::create_or_load(client::get_ip(), $user->get_id_user());
 
             http_response::successful
             (

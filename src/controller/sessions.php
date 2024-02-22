@@ -16,7 +16,7 @@
 
         public static function expire_session($id_session)
         {   
-            $s = new Session
+            $s = new SessionModel
             (   
                 id_session: $id_session, 
                 id_user:    $_SESSION['ID_USER']
