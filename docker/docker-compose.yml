@@ -56,8 +56,8 @@ services:
     restart: unless-stopped
 
     volumes:
-    #  - ../db/data:/var/lib/mysql
-      - ../db/structure/:/db/structure
+    #  - ../database/data:/var/lib/mysql
+      - ../database/structure/:/database/structure
     environment:
       - MYSQL_ROOT_PASSWORD=root
     networks: 

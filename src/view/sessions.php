@@ -36,7 +36,7 @@
             <!-- this PHP add all the sessions related to the current user -->
             <?php
 
-                $sessions = Session::get_sessions_of($_SESSION['ID_USER'], $_SESSION['CURRENT_ID_SESSION']);
+                $sessions = SessionModel::get_sessions_of($_SESSION['ID_USER'], $_SESSION['CURRENT_ID_SESSION']);
                 
                 echo "<script>let sessionRefs = new Map();</script>";
 

@@ -2,12 +2,6 @@
 
     class mypdo
     {
-        /*SOURCE ../db/structure/users/u_select.sql;
-        SOURCE ../db/structure/users/u_update.sql;
-        SOURCE ../db/structure/users/u_delete.sql;
-        SOURCE ../db/structure/users/u_insert.sql;
-        SOURCE ../db/structure/users/u_admin.sql;*/
-        
         private static string|null $operation_type = self::OPERATION_TYPES[0];
         private static PDO|null $conn = null;
         private static PDOStatement|null $stmt = null;
