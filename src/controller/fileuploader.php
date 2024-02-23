@@ -20,7 +20,7 @@
             // SPACE_LIMIT = UserModel::select_limit_space_from_id_user()
             define('SPACE_LIMIT', 19283238);
 
-            if ($args['upload_space_required'] <= SPACE_LIMIT)
+            if ($args['upload_space_required'] >= SPACE_LIMIT)
                 http_response::client_error(400, "Storage space available exceeded, delete files first");
             
             if (!isset($_SESSION['upload_sessions']))
