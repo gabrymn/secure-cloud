@@ -1,58 +1,21 @@
+import FileUploader from "../ds/file_uploader.js";
 
 $("#ID_UPLOAD").on('click', () => {
     $('#ID_FILE_UPLOADER').trigger('click');
 });
 
-$("#ID_FILE_UPLOADER").on('change', (e) => {
+$("#ID_FILE_UPLOADER").on('change', async (e) => {
 
-    const CHUNK_SIZE = 1000000; // 1MB
-    let start = 0;
-    let chunks = [];
     let files = Object.values(e.target.files);
 
-    for (let i=0; i<files.length; i++)
-    {
-        start = 0;
-        chunks[i] = [];
+    let uploader = new FileUploader(files);
 
-        while (start < files[0].size) 
-        {
-            let chunk = files[i].slice(start, start + CHUNK_SIZE);
+    const session_initialized = await uploader.initUploadSession();
     
-            chunks[i].push(chunk);
-    
-            start += CHUNK_SIZE;
-        }
-    }
+    if (session_initialized === false)
+        return;
 
-    for (let i=0; i<chunks.length; i++)
-    {
-        chunks[i].forEach((chunk, index) => {
-        
-            let formData = new FormData();
-    
-            formData.append('file', chunk);
-            formData.append('filename', files[index].name);
-            formData.append('index', index);
-            formData.append('chunks_n', chunks[index].length);
-    
-            $.ajax({
-            
-                url: '/clouddrive/upload',
-                data: formData,
-                type: "POST",
-                processData: false,  
-                contentType: false,  
-                
-                success: (response) => {
-                    console.log(response);
-                },
-                error: (xhr) => {
-                    console.log(xhr);
-                }
-            }); 
-        })
-    }
+    await uploader.upload();
 })
 
 

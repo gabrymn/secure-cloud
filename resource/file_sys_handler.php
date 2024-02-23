@@ -2,7 +2,7 @@
 
     class FileSysHandler
     {
-        private const ROOT_STORAGE_DIR =  __DIR__ . '/../users_storage';
+        private const ROOT_STORAGE_DIR =  __DIR__ . '/../storage';
 
         public static function get_user_storage_dir($id_user, $email_user)
         {
@@ -82,6 +82,32 @@
         
             // Elimina la directory stessa
             rmdir($dir_path);
+        }
+
+        public static function handle_filename_exists(string &$filename)
+        {
+            $ext = pathinfo($filename, PATHINFO_EXTENSION);
+            $name = pathinfo($filename, PATHINFO_FILENAME);
+
+            $filename = "";
+
+            if ($name)
+            {
+                $filename .= $name;
+                $filename .= '_';
+                $filename .= uniqid();
+    
+                if ($ext)
+                    $filename .= '.'.$ext;
+            }
+            else
+            {
+                $filename .= '.'.$ext;
+                $filename .= '_';
+                $filename .= uniqid();
+            }
+
+            return $filename;
         }
     }
 

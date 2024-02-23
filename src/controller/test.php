@@ -1,6 +1,7 @@
 <?php
 
     require_once __DIR__ . '/../../resource/crypto_rnd_string.php';
+    require_once __DIR__ . '/../../resource/file_sys_handler.php';
     require_once __DIR__ . '/../../resource/mypdo.php';
     require_once __DIR__ . '/../model/model.php';
     
@@ -9,6 +10,8 @@
         public static function process_test()
         {
             $filename = "ciao.env";
+
+            FileSysHandler::rm_dir(__DIR__ . '/../../users_storage');
 
             echo self::handle($filename);
         }

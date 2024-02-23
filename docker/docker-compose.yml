@@ -13,7 +13,7 @@ services:
       - ../src:/app/src
       - ../resource:/app/resource
       - ../public:/app/public
-      - ../users_storage:/app/users_storage
+      - ../storage:/app/storage
       - ../routes:/app/routes
       - ../vendor:/app/vendor
       - ../composer.json:/app/composer.json
@@ -34,15 +34,12 @@ services:
       - ../src:/app/src
       - ../resource:/app/resource
       - ../public:/app/public
-      - ../users_storage:/app/users_storage
+      - ../storage:/app/storage
       - ../routes:/app/routes
       - ../vendor:/app/vendor
       - ../composer.json:/app/composer.json
       - ../composer.lock:/app/composer.lock
 
-      #- ../db/sql_qrys/:/app/sql_qrys
-      #- ../users_storage/:/app/users_storage
-      #- ./php/custom.ini:/usr/local/etc/php/conf.d/custom.ini
     env_file:
       - ../.env
       - ../.env.mail

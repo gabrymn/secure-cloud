@@ -12,11 +12,17 @@
             AuthController::check_protectedarea();
             CloudDriveController::render_clouddrive_page();
         }); 
-        
-        $router->POST('/clouddrive/upload', ['file', 'filename', 'index', 'chunks_n'], function($file) {
+
+        $router->POST('/clouddrive/upload/initialize', ['upload_space_required'], function($args) {
             
             AuthController::check_protectedarea(redirect: false);
-            CloudDriveController::upload($file);
+            FileUploaderController::initialize_upload_session($args);
+        }); 
+        
+        $router->POST('/clouddrive/upload', ['file', 'upload_session_id', 'filename', 'filetype', 'index', 'chunks_len'], function($args) {
+
+            AuthController::check_protectedarea(redirect: false);
+            FileUploaderController::handle_filechunk($args);
         }); 
 
         return $router->getRoutes();

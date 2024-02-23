@@ -108,8 +108,6 @@
 
             mypdo::commit();
 
-            FileSysHandler::mk_user_storage_dir($user->get_id_user(), $user->get_email());
-
             http_response::successful
             (
                 201, 
