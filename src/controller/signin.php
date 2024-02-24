@@ -1,11 +1,11 @@
 <?php
 
 
-    require_once __DIR__ . '/../../resource/http_response.php';
-    require_once __DIR__ . '/../../resource/crypto.php';
-    require_once __DIR__ . '/../../resource/mypdo.php';
+    require_once __DIR__ . '/../../resource/http/http_response.php';
+    require_once __DIR__ . '/../../resource/security/crypto.php';
+    require_once __DIR__ . '/../../resource/storage/mypdo.php';
     require_once __DIR__ . '/../../resource/mydatetime.php';
-    require_once __DIR__ . '/../../resource/client.php';
+    require_once __DIR__ . '/../../resource/http/client.php';
     require_once __DIR__ . '/../model/user.php';
     require_once __DIR__ . '/../model/email_verify.php';
     require_once __DIR__ . '/../model/session.php';
@@ -152,6 +152,8 @@
                 array("redirect" =>  '/clouddrive')
             );
         }
+
+        
 
         public static function process_signout()
         {

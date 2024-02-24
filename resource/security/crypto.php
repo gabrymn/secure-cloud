@@ -164,7 +164,7 @@
             {
                 $plaintext = fread($fpSource, $ivLength * self::FILE_ENCRYPTION_BLOCKS);
                 $ciphertext = openssl_encrypt($plaintext, $cipher, $key, OPENSSL_RAW_DATA, $iv, $tag);
-
+                
                 fwrite($fpDest, $tag);
                 fwrite($fpDest, $ciphertext);
             }

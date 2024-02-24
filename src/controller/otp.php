@@ -1,10 +1,10 @@
 <?php
 
-    require_once __DIR__ . '/../../resource/http_response.php';
-    require_once __DIR__ . '/../../resource/my_two_factor_auth.php';
-    require_once __DIR__ . '/../../resource/mypdo.php';
-    require_once __DIR__ . '/../../resource/crypto.php';
-    require_once __DIR__ . '/../../resource/client.php';
+    require_once __DIR__ . '/../../resource/http/http_response.php';
+    require_once __DIR__ . '/../../resource/security/my_two_factor_auth.php';
+    require_once __DIR__ . '/../../resource/storage/mypdo.php';
+    require_once __DIR__ . '/../../resource/security/crypto.php';
+    require_once __DIR__ . '/../../resource/http/client.php';
     require_once __DIR__ . '/../model/session.php';
     require_once __DIR__ . '/../model/user.php';
     require_once __DIR__ . '/../model/user_security.php';

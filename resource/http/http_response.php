@@ -2,11 +2,18 @@
 
     class http_response 
     {
-        private const CT_JSON = "Content-Type: application/json; charset=utf-8";
-        private const CT_TEXT = "Content-Type: text/plain; charset=utf-8";
-        private const CT_HTML = "Content-Type: text/html; charset=UTF-8";
+        private const DOWNLOAD_CHUNK_SIZE = 1000000; // 1MB
 
-        private const HTTP_RESPONSE_STATUS_CODES = array(
+        private const CTS = 
+        [
+            'JSON' => 'application/json; charset=utf-8',
+            'TEXT' => 'text/plain; charset=utf-8',
+            'HTML' => 'text/html; charset=UTF-8',
+            'OCTET_STREAM'  => 'application/octet-stream',
+        ];
+
+        private const HTTP_RESPONSE_STATUS_CODES =
+        [
             200 => "OK",
             201 => "Created",
             204 => "No Content",
@@ -20,11 +27,10 @@
             
             500 => "Internal Server Error",
             501 => "Not Implemented"
-        );
+        ];
 
         public static function client_error(int $status_code = 400, $status_msg = false, array $array = array())
         {
-
             if (!self::status_code_valid($status_code, 400)) 
                 http_response::server_error(500);
 
@@ -48,7 +54,8 @@
                 JSON_PRETTY_PRINT
             );
 
-            self::ctype('JSON');
+            header('Content-Type: ' . self::CTS['JSON']);
+
             echo $json;
             exit;
         }
@@ -75,7 +82,8 @@
                 JSON_PRETTY_PRINT
             );
 
-            self::ctype('JSON');
+            header('Content-Type: ' . self::CTS['JSON']);
+
             echo $json;
             exit;
         }
@@ -105,7 +113,8 @@
                 JSON_PRETTY_PRINT
             );
             
-            self::ctype('JSON');
+            header('Content-Type: ' . self::CTS['JSON']);
+
             echo $json;
             exit;
         }
@@ -113,29 +122,35 @@
         public static function redirect($page)
         {
             $redirect_url = $_ENV['APP_URL'] . $page;
-            header("location:".$redirect_url);
+            header("location: ".$redirect_url);
             exit;
         }
 
-        public static function ctype($option)
+        public static function download($file_path)
         {
+            if (!file_exists($file_path))
+                http_response::client_error(404, "File not found");
 
-            switch (strtoupper($option)){
-                case 'TEXT': default: {   
-                    header(self::CT_TEXT);
-                    break;
-                }
-                case 'JSON': {
-                    header(self::CT_JSON);
-                    break;
-                }
-                case 'HTML': {
-                    header(self::CT_HTML);
-                    break;
+            header('Content-Type: ' . self::CTS['OCTET_STREAM']);
+            header("Content-Transfer-Encoding: Binary");
+            header("Content-disposition: attachment; filename=\"" . basename($file_path) . "\"");
+            
+            $file = fopen($file_path, 'rb');
+    
+            while (!feof($file)) 
+            {
+                echo fread($file, self::DOWNLOAD_CHUNK_SIZE);
+    
+                if (ob_get_length() > 0) 
+                {
+                    ob_flush();
+                    flush();
                 }
             }
+    
+            fclose($file);
         }
-
+    
         private static function status_code_valid(int $status_code, int $id)
         {
             // for example 404 is ok bcs is between 400 ($id) and 499
@@ -144,7 +159,6 @@
 
         private static function get_status_msg(int $status_code)
         {
-
             if (@self::HTTP_RESPONSE_STATUS_CODES[$status_code] === null)
                 return "Status Message Not Available";
             else

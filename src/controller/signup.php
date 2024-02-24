@@ -1,12 +1,12 @@
 <?php
 
-    require_once __DIR__ . '/../../resource/http_response.php';
-    require_once __DIR__ . '/../../resource/file_sys_handler.php';
-    require_once __DIR__ . '/../../resource/crypto_rnd_string.php';
-    require_once __DIR__ . '/../../resource/mypdo.php';
+    require_once __DIR__ . '/../../resource/http/http_response.php';
+    require_once __DIR__ . '/../../resource/storage/file_system_handler.php';
+    require_once __DIR__ . '/../../resource/security/crypto_rnd_string.php';
+    require_once __DIR__ . '/../../resource/storage/mypdo.php';
     require_once __DIR__ . '/../../resource/mymail.php';
-    require_once __DIR__ . '/../../resource/my_two_factor_auth.php';
-    require_once __DIR__ . '/../../resource/user_keys_handler.php';
+    require_once __DIR__ . '/../../resource/security/my_two_factor_auth.php';
+    require_once __DIR__ . '/../../resource/security/user_keys_handler.php';
     require_once __DIR__ . '/../view/assets/navbar.php';
     require_once __DIR__ . '/../model/user.php';
     require_once __DIR__ . '/../model/email_verify.php';
@@ -105,8 +105,9 @@
             
             // ----------- END Email-Verify CREATION -------------
 
-
             mypdo::commit();
+
+            FileSysHandler::mk_user_dir($user->get_id_user(), $user->get_email());
 
             http_response::successful
             (

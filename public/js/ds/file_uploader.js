@@ -57,15 +57,14 @@ export default class FileUploader {
 
     async upload()
     {
-        this.files.forEach(async (file) => {
-
-            let chunks = await this.calculateChunks(file);
-
+        for (const file of this.files) 
+        {
+            const chunks = await this.calculateChunks(file);
             await this.uploadChunks(file.name, file.type, chunks);
-        })
+        }
     }
 
-    async calculateChunks(file)
+    calculateChunks(file)
     {
         let start = 0;
         let chunks = [];
@@ -80,7 +79,12 @@ export default class FileUploader {
         return chunks;
     }
 
-    async uploadChunks(filename, filetype, chunks)
+    sleep = async (ms) =>  
+    {
+        return new Promise(resolve => setTimeout(resolve, ms));
+    }
+
+    uploadChunks(filename, filetype, chunks)
     {
         chunks.forEach((chunk, index) => {
 
@@ -90,7 +94,7 @@ export default class FileUploader {
             formData.append('upload_session_id', this.getUploadSessionID());
             formData.append('filename', filename);
             formData.append('filetype', filetype);
-            formData.append('index', index);
+            formData.append('chunk_index', index);
             formData.append('chunks_len', chunks.length);
 
             $.ajax({
@@ -107,7 +111,7 @@ export default class FileUploader {
                 error: (xhr) => {
                     alert(xhr.responseJSON.status_message);
                 }
-            }); 
+            });
         })
 
         return true;

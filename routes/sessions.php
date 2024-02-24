@@ -2,7 +2,7 @@
 
     require_once __DIR__ . '/../src/controller/auth_checker.php';
     require_once __DIR__ . '/../src/controller/sessions.php';
-    require_once __DIR__ . '/../resource/http_response.php';
+    require_once __DIR__ . '/../resource/http/http_response.php';
 
     function get_sessions_routes()
     {

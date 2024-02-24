@@ -2,8 +2,8 @@
 
     require_once __DIR__ . '/../view/assets/navbar.php';
     require_once __DIR__ . '/../model/user.php';
-    require_once __DIR__ . '/../../resource/crypto.php';
-    require_once __DIR__ . '/../../resource/my_two_factor_auth.php';
+    require_once __DIR__ . '/../../resource/security/crypto.php';
+    require_once __DIR__ . '/../../resource/security/my_two_factor_auth.php';
     
     class ProfileController
     {
