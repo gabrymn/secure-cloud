@@ -1,21 +1,21 @@
 <?php
 
-    class client
+    class Client
     {
-        private const DEFAULT_PARAMS_VALUE = "UNKNOWN";
+        private const DEFAULT_PARAMS_VALUE = "Unknown";
 
-        public static function get_info() : array
+        public static function getInfo() : array
         {
             return 
             [
-                "os" => self::get_os(),
-                "browser" => self::get_browser(),
-                "ip" => self::get_ip(),
-                "ip_info" => self::get_ip_info()
+                "os" => self::getOS(),
+                "browser" => self::getBrowser(),
+                "ip" => self::getIP(),
+                "ip_info" => self::getIPInfo()
             ];
         }
 
-        public static function get_os() : null|string
+        public static function getOS() : null|string
         {
             $user_agent = isset($_SERVER['HTTP_USER_AGENT']) ? $_SERVER['HTTP_USER_AGENT'] : false;
             
@@ -40,7 +40,7 @@
             return $os;
         }
 
-        public static function get_browser() : null|string
+        public static function getBrowser() : null|string
         {
             $user_agent = isset($_SERVER['HTTP_USER_AGENT']) ? $_SERVER['HTTP_USER_AGENT'] : false;
 
@@ -67,7 +67,7 @@
             return $browser;
         }
 
-        public static function get_ip() : null|string
+        public static function getIP() : null|string
         {
             $ipaddress = '';
 
@@ -95,10 +95,10 @@
             return $ipaddress;
         }
 
-        public static function get_ip_info($ip = null) : null|array
+        public static function getIPInfo($ip = null) : null|array
         {
             if (!$ip)  
-                $ip = self::get_ip();
+                $ip = self::getIP();
 
             if (!$ip)
                 return null;
@@ -109,29 +109,15 @@
             return $ip_info;
         }
 
-        public static function get_timezone($ip = null)
+        public static function getIPInfoLimited($ip = null) : null|array
         {
             if (!$ip)  
-                $ip = self::get_ip();
-
-            if (!$ip)
-                return null;
-
-            $api_url = "https://ipinfo.io/{$ip}/timezone";
-            $timezone = file_get_contents($api_url);
-
-            return trim($timezone);
-        }
-
-        public static function get_ip_info_restr($ip = null) : null|array
-        {
-            if (!$ip)  
-                $ip = self::get_ip();
+                $ip = self::getIP();
 
             if (!$ip)
                 return null;
             
-            $ip_info = self::get_ip_info($ip);
+            $ip_info = self::getIPInfo($ip);
 
             unset($ip_info['readme']);
             unset($ip_info['timezone']);
@@ -141,6 +127,20 @@
             unset($ip_info['loc']);
 
             return $ip_info;
+        }
+
+        public static function getTimezone($ip = null)
+        {
+            if (!$ip)  
+                $ip = self::getIP();
+
+            if (!$ip)
+                return null;
+
+            $api_url = "https://ipinfo.io/{$ip}/timezone";
+            $timezone = file_get_contents($api_url);
+
+            return trim($timezone);
         }
     }
 

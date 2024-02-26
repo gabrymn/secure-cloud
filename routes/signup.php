@@ -1,33 +1,37 @@
 <?php
 
+    require_once __DIR__ . '/routes_interface.php';
     require_once __DIR__ . '/../src/controller/signup.php';
 
-    function get_signup_routes()
+    abstract class signup implements RoutesInterface
     {
-        $router = new Router();
+        public static function getRoutes()
+        {
+            $router = new Router();
 
-        $router->GET('/signup', [], function() {
-
-            SignupController::render_signup_page();
-        });
+            $router->GET('/signup', [], function() {
     
-        $router->GET('/signup/success', [], function() {
-            
-            StaticPagesController::render_page('signup_success');
-        });
-
-        $router->POST('/signup', ['email', 'pwd', 'name', 'surname'], function($args) {
+                SignupController::renderSignupPage();
+            });
         
-            SignupController::process_signup
-            (
-                $args['email'], 
-                $args['pwd'], 
-                $args['name'], 
-                $args['surname']
-            );
-        });
-
-        return $router->getRoutes();
+            $router->GET('/signup/success', [], function() {
+                
+                StaticPagesController::renderPage('signup_success');
+            });
+    
+            $router->POST('/signup', ['email', 'pwd', 'name', 'surname'], function($args) {
+            
+                SignupController::processSignup
+                (
+                    $args['email'], 
+                    $args['pwd'], 
+                    $args['name'], 
+                    $args['surname']
+                );
+            });
+    
+            return $router->getRoutes();
+        }
     }
 
 ?>

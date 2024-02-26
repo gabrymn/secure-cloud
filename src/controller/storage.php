@@ -4,7 +4,7 @@
 
     class StorageController
     {
-        public static function render_storage_page()
+        public static function renderStoragePage()
         {
             $navbar = Navbar::getPrivate('storage');
             include __DIR__ . '/../view/storage.php';

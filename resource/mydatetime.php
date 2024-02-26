@@ -10,7 +10,7 @@
         public const DT_FORMAT_12H_AMERICA = 'm/d/Y h:i:s A';
         public const DT_FORMAT_DEFAULT = 'Y/m/d H:i:s';
 
-        public static function get_client_dt($datetime_x, $timezone_y)
+        public static function getClientDatetime($datetime_x, $timezone_y)
         {
             $datetime_format_x = self::SERVER_DT_FORMAT;
             $timezone_x = self::UTC_TZ;
@@ -18,7 +18,7 @@
             if (!in_array($timezone_y, timezone_identifiers_list()))
                 $timezone_y = self::UTC_TZ;
             
-            $datetime_format_y = self::get_client_dt_format($timezone_y);
+            $datetime_format_y = self::getClientDateTimeFormat($timezone_y);
 
             $datetime_x = DateTime::createFromFormat
             (
@@ -39,7 +39,7 @@
             return $datetime_y;
         }
 
-        private static function get_client_dt_format($tz)
+        private static function getClientDateTimeFormat($tz)
         {
             if ($tz === self::UTC_TZ)
                 return self::DT_FORMAT_24H;

@@ -9,19 +9,19 @@
     (
         array_merge
         (
-            get_routes('/test'),
-            get_routes('/'),
-            get_routes('/signin'),
-            get_routes('/signup'),
-            get_routes('/signout'),
-            get_routes('/recover'),
-            get_routes('/verify'),
-            get_routes('/auth2'),
-            get_routes('/clouddrive'),
-            get_routes('/sessions'),
-            get_routes('/transfers'),
-            get_routes('/storage'),
-            get_routes('/profile')
+            Routes::get('/'),
+            Routes::get('/test'),
+            Routes::get('/signin'),
+            Routes::get('/signup'),
+            Routes::get('/signout'),
+            Routes::get('/recover'),
+            Routes::get('/verify'),
+            Routes::get('/auth2'),
+            Routes::get('/clouddrive'),
+            Routes::get('/sessions'),
+            Routes::get('/transfers'),
+            Routes::get('/storage'),
+            Routes::get('/profile')
         )
     );
     

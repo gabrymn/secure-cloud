@@ -2,74 +2,68 @@
 
     require_once __DIR__ . '/../view/assets/navbar.php';
     require_once __DIR__ . '/../model/user_security.php';
-
     require_once __DIR__ . '/../../resource/http/http_response.php';
     require_once __DIR__ . '/../../resource/security/user_keys_handler.php';
 
-
     class AccountRecoveryController
     {
-        public static function render_recover_page()
+        public static function renderRecoverPage()
         {
             $navbar = Navbar::getPublic();
             include __DIR__ . '/../view/recover.php';
         }
 
-        public static function process_rkey_check($email, $rkey)
+        public static function processRecoveryKeyCheck($email, $recovery_key)
         {
             if (!filter_var($email, FILTER_VALIDATE_EMAIL))
-                http_response::client_error(400, "Invalid email format");
+                HttpResponse::clientError(400, "Invalid email format");
 
             $user = new UserModel(email:$email);
-            $user->sel_id_from_email($user->get_email());
+            $user->selIDFromEmail($user->getEmail());
             
             $us = new UserSecurityModel();
-    
-            $us->sel_rkey_hash_from_email
+            
+            $us->sel_rKeyHash_by_email
             (
-                $user->to_assoc_array(email:true)
+                $user->toAssocArray(email:true)
             );
 
-            if (!password_verify($rkey, $us->get_rkey_hash()))
-                http_response::client_error(400, "The provided recovery key is incorrect. Please double-check the key and try again.");
+            if (!password_verify($recovery_key, $us->getRecoveryKeyHash()))
+                HttpResponse::clientError(400, "The provided recovery key is incorrect. Please double-check the key and try again.");
             
             session_start();
             
             $_SESSION['RECOVERING_ACCOUNT'] = true;
-            $_SESSION['ID_USER'] = $user->get_id_user();
-            $_SESSION['RKEY'] = $rkey;
+            $_SESSION['ID_USER'] = $user->getUserID();
+            $_SESSION['RECOVERY_KEY'] = $recovery_key;
     
-            http_response::successful(200);
+            HttpResponse::successful(200);
         }
 
-        public static function process_pwd_reset($pwd)
+        public static function processPasswordReset($password)
         {
-            if (strlen($pwd) < 2)
-                http_response::client_error(400, "Invalid password format");
+            if (strlen($password) < 2)
+                HttpResponse::clientError(400, "Invalid password format");
 
-            $ukh = new UserKeysHandler();
-            
-            $ukh->set_pwd($pwd);
-            $ukh->set_dkey_salt_random();
-            $ukh->set_dkey_auto();
-            $ukh->set_rkey($_SESSION['RKEY']);
+            $ukh = UserKeysHandler::getInstanceFromPassword($password);
+            $ukh->setRecoveryKey($_SESSION['RKEY']);
 
             $us = new UserSecurityModel
             (
-                pwd_hash:       $ukh->get_pwd_hashed(),
-                rkey_encrypted: $ukh->get_rkey_encrypted(),
-                dkey_salt:      $ukh->get_dkey_salt(),
-                id_user:        $_SESSION['ID_USER']
+                password_hash:         $ukh->getPasswordHashed(),
+                recoverykey_encrypted: $ukh->getRecoveryKeyEncrypted(),
+                masterkey_salt:        $ukh->getMasterKeySalt(),
+                id_user:               $_SESSION['ID_USER']
             );
 
-            $status = $us->upd_pwdhash_rkeyc_dkeysalt_from_iduser();
+            $status = $us->upd_pwdHash_rKeyEnc_mKeySalt_by_userID();
 
             session_destroy();
             
             if ($status === false)
-                http_response::server_error();
-
-            http_response::successful();
+                HttpResponse::serverError();
+            else
+                HttpResponse::successful();
         }
     }
 

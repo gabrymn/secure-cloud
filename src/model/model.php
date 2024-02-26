@@ -10,11 +10,11 @@
         protected const TZ = 'Europe/Rome';
         protected const DATE_FORMAT = 'Y-m-d H:i:s';
 
-        abstract public function to_assoc_array();
+        abstract public function toAssocArray();
 
         abstract public function ins();
 
-        protected function generate_uid(int $len, ?string $alphabet = null) : string
+        protected function generateUID(int $len, ?string $alphabet = null) : string
         {
             $crypto_rnd = new CryptoRNDString($alphabet);
             return $crypto_rnd->generate($len);

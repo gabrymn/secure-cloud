@@ -4,7 +4,7 @@
 
     class TransfersController
     {
-        public static function render_transfers_page()
+        public static function renderTransfersPage()
         {
             $navbar = Navbar::getPrivate('transfers');
             include __DIR__ . '/../view/transfers.php';

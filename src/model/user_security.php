@@ -4,153 +4,155 @@
 
     class UserSecurityModel extends Model
     {
-        private string $pwd_hash;
-        private string $rkey_hash;
-        private string $rkey_encrypted;
-        private string $ckey_encrypted;
-        private string $secret_2fa_encrypted;
-        private string $dkey_salt;
+        private string $password_hash;
+        private string $recoverykey_hash;
+        private string $recoverykey_encrypted;
+        private string $cipherkey_encrypted;
+        private string $secret2fa_encrypted;
+        private string $masterkey_salt;
         private int $id_user;
 
-        public function __construct($pwd_hash=null, $rkey_hash=null, $rkey_encrypted=null, $ckey_encrypted=null, $secret_2fa_encrypted=null, $dkey_salt=null, $id_user=null)
+        public function __construct($password_hash=null, $recoverykey_hash=null, $recoverykey_encrypted=null, $cipherkey_encrypted=null, $secret2fa_encrypted=null, $masterkey_salt=null, $id_user=null)
         {
-            self::set_pwd_hash($pwd_hash ? $pwd_hash : parent::DEFAULT_STR);
-            self::set_rkey_hash($rkey_hash ? $rkey_hash : parent::DEFAULT_STR);
-            self::set_rkey_encrypted($rkey_encrypted ? $rkey_encrypted : parent::DEFAULT_STR);
-            self::set_ckey_encrypted($ckey_encrypted ? $ckey_encrypted : parent::DEFAULT_STR);
-            self::set_secret_2fa_encrypted($secret_2fa_encrypted ? $secret_2fa_encrypted: parent::DEFAULT_STR);
-            self::set_dkey_salt($dkey_salt ? $dkey_salt: parent::DEFAULT_STR);
-            self::set_id_user($id_user ? $id_user : parent::DEFAULT_INT);
+            self::setPasswordHash($password_hash ? $password_hash : parent::DEFAULT_STR);
+            self::setRecoveryKeyHash($recoverykey_hash ? $recoverykey_hash : parent::DEFAULT_STR);
+            self::setRecoveryKeyEncrypted($recoverykey_encrypted ? $recoverykey_encrypted : parent::DEFAULT_STR);
+            self::setCipherKeyEncrypted($cipherkey_encrypted ? $cipherkey_encrypted : parent::DEFAULT_STR);
+            self::setSecret2faEncrypted($secret2fa_encrypted ? $secret2fa_encrypted: parent::DEFAULT_STR);
+            self::setMasterKeySalt($masterkey_salt ? $masterkey_salt: parent::DEFAULT_STR);
+            self::setUserID($id_user ? $id_user : parent::DEFAULT_INT);
         }
 
-        public function set_pwd_hash(string $pwd_hash) : void
+        public function setPasswordHash(string $password_hash) : void
         {
-            $this->pwd_hash = $pwd_hash;
+            $this->password_hash = $password_hash;
         }
 
-        public function get_pwd_hash() : string
+        public function getPasswordHash() : string
         {
-            return $this->pwd_hash;
+            return $this->password_hash;
         }
 
-        public function set_rkey_hash(string $rkey_hash) : void
+        public function setRecoveryKeyHash(string $recoverykey_hash) : void
         {
-            $this->rkey_hash = $rkey_hash;
+            $this->recoverykey_hash = $recoverykey_hash;
         }
 
-        public function get_rkey_hash() : string
+        public function getRecoveryKeyHash() : string
         {
-            return $this->rkey_hash;
+            return $this->recoverykey_hash;
         }
 
-        public function set_rkey_encrypted(string $rkey_encrypted) : void
+        public function setRecoveryKeyEncrypted(string $recoverykey_encrypted) : void
         {
-            $this->rkey_encrypted = $rkey_encrypted;
+            $this->recoverykey_encrypted = $recoverykey_encrypted;
         }
 
-        public function get_rkey_encrypted() : string
+        public function getRecoveryKeyEncrypted() : string
         {
-            return $this->rkey_encrypted;
+            return $this->recoverykey_encrypted;
         }
 
-        public function set_ckey_encrypted(string $ckey_encrypted) : void
+        public function setCipherkeyEncrypted(string $cipherkey_encrypted) : void
         {
-            $this->ckey_encrypted = $ckey_encrypted;
+            $this->cipherkey_encrypted = $cipherkey_encrypted;
         }
 
-        public function get_ckey_encrypted() : string
+        public function getCipherkeyEncrypted() : string
         {
-            return $this->ckey_encrypted;
+            return $this->cipherkey_encrypted;
         }
 
-        public function set_secret_2fa_encrypted(string $secret_2fa_encrypted) : void
+        public function setSecret2faEncrypted(string $secret2fa_encrypted) : void
         {
-            $this->secret_2fa_encrypted = $secret_2fa_encrypted;
+            $this->secret2fa_encrypted = $secret2fa_encrypted;
         }
 
-        public function get_secret_2fa_encrypted() : string
+        public function getSecret2faEncrypted() : string
         {
-            return $this->secret_2fa_encrypted;
+            return $this->secret2fa_encrypted;
         }
 
-        public function set_dkey_salt(string $dkey_salt) : void
+        public function setMasterKeySalt(string $masterkey_salt) : void
         {
-            $this->dkey_salt = $dkey_salt;
+            $this->masterkey_salt = $masterkey_salt;
         }
 
-        public function get_dkey_salt()
+        public function getMasterKeySalt()
         {
-            return $this->dkey_salt;
+            return $this->masterkey_salt;
         }
 
-        public function set_id_user(int $id_user) : void
+        public function setUserID(int $id_user) : void
         {
             $this->id_user = $id_user;
         }
 
-        public function get_id_user()
+        public function getUserID()
         {
             return $this->id_user;
         }
 
-        public function to_assoc_array($pwd_hash=false, $rkey_hash=false, $rkey_encrypted=false, $ckey_encrypted=false, $secret_2fa_encrypted=false, $dkey_salt=false, $id_user=false) : array
+        public function toAssocArray($password_hash=false, $recoverykey_hash=false, $recoverykey_encrypted=false, $cipherkey_encrypted=false, $secret2fa_encrypted=false, $masterkey_salt=false, $id_user=false) : array
         {
             $params = array();
             
-            if ($pwd_hash)
-                $params["pwd_hash"] = $this->get_pwd_hash();
+            if ($password_hash)
+                $params["password_hash"] = $this->getPasswordHash();
 
-            if ($rkey_hash)
-                $params["rkey_hash"] = $this->get_rkey_hash();
+            if ($recoverykey_hash)
+                $params["recoverykey_hash"] = $this->getRecoveryKeyHash();
 
-            if ($rkey_encrypted)
-                $params["rkey_c"] = $this->get_rkey_encrypted();
+            if ($recoverykey_encrypted)
+                $params["recoverykey_encrypted"] = $this->getRecoveryKeyEncrypted();
 
-            if ($ckey_encrypted)
-                $params["ckey_c"] = $this->get_ckey_encrypted();
+            if ($cipherkey_encrypted)
+                $params["cipherkey_encrypted"] = $this->getCipherKeyEncrypted();
             
-            if ($secret_2fa_encrypted)
-                $params["secret_2fa_c"] = $this->get_secret_2fa_encrypted();
+            if ($secret2fa_encrypted)
+                $params["secret2fa_encrypted"] = $this->getSecret2faEncrypted();
 
-            if ($dkey_salt)
-                $params["dkey_salt"] = $this->get_dkey_salt();
+            if ($masterkey_salt)
+                $params["masterkey_salt"] = $this->getMasterKeySalt();
 
             if ($id_user)
-                $params["id_user"] = $this->get_id_user();
+                $params["id_user"] = $this->getUserID();
 
             return $params;
         }
 
         public function ins()
         {
-            $qry = "INSERT INTO user_security (pwd_hash, rkey_hash, rkey_c, ckey_c, secret_2fa_c, dkey_salt, id_user)
-            VALUES (:pwd_hash, :rkey_hash, :rkey_c, :ckey_c, :secret_2fa_c, :dkey_salt, :id_user)";
+            $qry = "INSERT INTO user_security 
+            (password_hash, recoverykey_hash, recoverykey_encrypted, cipherkey_encrypted, secret2fa_encrypted, masterkey_salt, id_user)
+            VALUES 
+            (:password_hash, :recoverykey_hash, :recoverykey_encrypted, :cipherkey_encrypted, :secret2fa_encrypted, :masterkey_salt, :id_user)";
+    
+            MyPDO::connect('insert');
 
-            mypdo::connect('insert');
-
-            return mypdo::qry_exec
+            return MyPDO::qryExec
             (
                 $qry, 
-                $this->to_assoc_array
+                $this->toAssocArray
                 (
-                    pwd_hash:true,
-                    rkey_hash:true,
-                    rkey_encrypted:true,
-                    ckey_encrypted:true,
-                    secret_2fa_encrypted:true,
-                    dkey_salt:true,
+                    password_hash:true,
+                    recoverykey_hash:true,
+                    recoverykey_encrypted:true,
+                    cipherkey_encrypted:true,
+                    secret2fa_encrypted:true,
+                    masterkey_salt:true,
                     id_user:true
                 )
             );
         }
 
-        public function sel_pwd_hash_from_id()
+        public function sel_pwdHash_by_userID()
         {
-            $qry = "SELECT pwd_hash FROM user_security WHERE id_user = :id_user";
+            $qry = "SELECT password_hash FROM user_security WHERE id_user = :id_user";
 
-            mypdo::connect('select');
+            MyPDO::connect('select');
 
-            $res = mypdo::qry_exec($qry, $this->to_assoc_array(id_user:true));
+            $res = MyPDO::qryExec($qry, $this->toAssocArray(id_user:true));
 
             if ($res === false)
                 return false;
@@ -158,19 +160,19 @@
                 return null;
             else
             {
-                $pwd_hash = $res[0]['pwd_hash'];
-                $this->set_pwd_hash($pwd_hash);
-                return $this->get_pwd_hash();
+                $password_hash = $res[0]['password_hash'];
+                $this->setPasswordHash($password_hash);
+                return $this->getPasswordHash();
             }
         }
 
-        public function sel_secret_2fa_c_from_id()
+        public function sel_secret2faEnc_by_userID()
         {
-            $qry = "SELECT secret_2fa_c FROM user_security WHERE id_user = :id_user";
+            $qry = "SELECT secret2fa_encrypted FROM user_security WHERE id_user = :id_user";
             
-            mypdo::connect('select');
+            MyPDO::connect('select');
 
-            $res = mypdo::qry_exec($qry, $this->to_assoc_array(id_user:true));
+            $res = MyPDO::qryExec($qry, $this->toAssocArray(id_user:true));
 
             if ($res === false)
                 return false;
@@ -178,19 +180,19 @@
                 return null;
             else
             {
-                $secret_2fa_c = $res[0]['secret_2fa_c'];
-                $this->set_secret_2fa_encrypted($secret_2fa_c);
-                return $this->get_secret_2fa_encrypted();
+                $secret2fa_encrypted = $res[0]['secret2fa_encrypted'];
+                $this->setSecret2faEncrypted($secret2fa_encrypted);
+                return $this->getSecret2faEncrypted();
             }
         }
         
-        public function sel_rkey_from_id()
+        public function sel_rKeyEnc_by_userID()
         {
-            $qry = "SELECT rkey_c FROM user_security WHERE id_user = :id_user";
+            $qry = "SELECT recoverykey_encrypted FROM user_security WHERE id_user = :id_user";
 
-            mypdo::connect('select');
+            MyPDO::connect('select');
 
-            $res = mypdo::qry_exec($qry, $this->to_assoc_array(id_user:true));
+            $res = MyPDO::qryExec($qry, $this->toAssocArray(id_user:true));
 
             if ($res === false)
                 return false;
@@ -198,19 +200,19 @@
                 return null;
             else
             {
-                $rkey_c = $res[0]['rkey_c'];
-                $this->set_rkey_encrypted($rkey_c);
-                return $this->get_rkey_encrypted();
+                $recoverykey_encrypted = $res[0]['recoverykey_encrypted'];
+                $this->setRecoveryKeyEncrypted($recoverykey_encrypted);
+                return $this->getRecoveryKeyEncrypted();
             }
         }
 
-        public function sel_ckey_from_id()
+        public function sel_cKeyEnc_by_userID()
         {
-            $qry = "SELECT ckey_c FROM user_security WHERE id_user = :id_user";
+            $qry = "SELECT cipherkey_encrypted FROM user_security WHERE id_user = :id_user";
 
-            mypdo::connect('select');
+            MyPDO::connect('select');
 
-            $res = mypdo::qry_exec($qry, $this->to_assoc_array(id_user:true));
+            $res = MyPDO::qryExec($qry, $this->toAssocArray(id_user:true));
 
             if ($res === false)
                 return false;
@@ -218,19 +220,19 @@
                 return null;
             else
             {
-                $ckey_c = $res[0]['ckey_c'];
-                $this->set_ckey_encrypted($ckey_c);
-                return $this->get_ckey_encrypted();
+                $cipherkey_encrypted = $res[0]['cipherkey_encrypted'];
+                $this->setCipherKeyEncrypted($cipherkey_encrypted);
+                return $this->getCipherkeyEncrypted();
             }
         }
 
-        public function sel_dkey_salt_from_id()
+        public function sel_mKeySalt_by_userID()
         {
-            $qry = "SELECT dkey_salt FROM user_security WHERE id_user = :id_user";
+            $qry = "SELECT masterkey_salt FROM user_security WHERE id_user = :id_user";
 
-            mypdo::connect('select');
+            MyPDO::connect('select');
 
-            $res = mypdo::qry_exec($qry, $this->to_assoc_array(id_user:true));
+            $res = MyPDO::qryExec($qry, $this->toAssocArray(id_user:true));
 
             if ($res === false)
                 return false;
@@ -238,22 +240,22 @@
                 return null;
             else
             {
-                $dkey_salt = $res[0]['dkey_salt'];
-                $this->set_dkey_salt($dkey_salt);
-                return $this->get_dkey_salt();
+                $masterkey_salt = $res[0]['masterkey_salt'];
+                $this->setMasterKeySalt($masterkey_salt);
+                return $this->getMasterKeySalt();
             }
         }
 
-        public function sel_rkey_hash_from_email(array $assoc_array)
+        public function sel_rKeyHash_by_email(array $assoc_array)
         {
             $qry = 
-            "SELECT rkey_hash 
+            "SELECT recoverykey_hash 
             FROM user_security 
             WHERE id_user = (SELECT id_user FROM users WHERE email = :email)";
             
-            mypdo::connect('select');
+            MyPDO::connect('select');
 
-            $res = mypdo::qry_exec($qry, $assoc_array);
+            $res = MyPDO::qryExec($qry, $assoc_array);
 
             if ($res === false)
                 return false;
@@ -261,28 +263,28 @@
                 return null;
             else
             {
-                $rkey_hash = $res[0]['rkey_hash'];
-                $this->set_rkey_hash($rkey_hash);
-                return $this->get_rkey_hash();
+                $recoverykey_hash = $res[0]['recoverykey_hash'];
+                $this->setRecoveryKeyHash($recoverykey_hash);
+                return $this->getRecoveryKeyHash();
             }
         }
 
-        public function upd_pwdhash_rkeyc_dkeysalt_from_iduser()
+        public function upd_pwdHash_rKeyEnc_mKeySalt_by_userID()
         {
             $qry = "UPDATE user_security 
-            SET pwd_hash = :pwd_hash, rkey_c = :rkey_c, dkey_salt = :dkey_salt 
+            SET password_hash = :password_hash, recoverykey_encrypted = :recoverykey_encrypted, masterkey_salt = :masterkey_salt 
             WHERE id_user = :id_user";
 
-            mypdo::connect('update');
+            MyPDO::connect('update');
 
-            return mypdo::qry_exec
+            return MyPDO::qryExec
             (
                 $qry, 
-                $this->to_assoc_array
+                $this->toAssocArray
                 (
-                    pwd_hash:true, 
-                    rkey_encrypted:true, 
-                    dkey_salt:true, 
+                    password_hash:true, 
+                    recoverykey_encrypted:true, 
+                    masterkey_salt:true, 
                     id_user:true
                 )
             );

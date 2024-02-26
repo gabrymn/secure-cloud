@@ -3,163 +3,161 @@
     require_once 'crypto.php';
     require_once 'my_two_factor_auth.php';
 
-    class UserKeysHandler
+    class UserKeysHandler extends DataStructure
     {
-        private string $pwd;
-        private string $dkey;
-        private string $rkey;
-        private string $ckey;
+        private string $password;
+        private string $master_key;
+        private string $recovery_key;
+        private string $cipher_key;
         private string $secret_2fa;
-        private string $dkey_salt;
+        private string $master_key_salt;
 
-        private const DEFAULT_KEY_VAL = "DEFAULT_KEY_VALUE";
-        private const DEFAULT_SALT_VAL = "DEFAULT_SALT_VALUE";
-
-        public function __construct($pwd=null, $dkey=null, $rkey=null, $ckey=null, $secret_2fa=null, $dkey_salt=null)
+        public function __construct($password=null, $master_key=null, $recovery_key=null, $cipher_key=null, $secret_2fa=null, $masterkey_salt=null)
         {
-            self::set_pwd($pwd? $pwd : self::DEFAULT_KEY_VAL);
-            self::set_dkey($dkey? $dkey : self::DEFAULT_KEY_VAL);
-            self::set_rkey($rkey? $rkey : self::DEFAULT_KEY_VAL);
-            self::set_ckey($ckey? $ckey : self::DEFAULT_KEY_VAL);
-            self::set_secret_2fa($secret_2fa? $secret_2fa : self::DEFAULT_KEY_VAL);
-            self::set_dkey_salt($dkey_salt? $dkey_salt : self::DEFAULT_SALT_VAL);
+            self::setPassword($password? $password : self::DEFAULT_STR);
+            self::setMasterKey($master_key? $master_key : self::DEFAULT_STR);
+            self::setRecoveryKey($recovery_key? $recovery_key : self::DEFAULT_STR);
+            self::setCipherKey($cipher_key? $cipher_key : self::DEFAULT_STR);
+            self::setSecret2FA($secret_2fa? $secret_2fa : self::DEFAULT_STR);
+            self::setMasterKeySalt($masterkey_salt? $masterkey_salt : self::DEFAULT_STR);
         }
 
-        public static function get_instance_from_pwd($pwd) : UserKeysHandler|null
+        public static function getInstanceFromPassword(string $password) : UserKeysHandler|null
         {
             $obj = new UserKeysHandler();
 
-            $dkey_salt = crypto::genSalt();
-            $dkey = crypto::deriveKey($pwd, $dkey_salt);
-            $rkey = crypto::genAESKey();
-            $ckey = crypto::genAESKey();
+            $master_key_salt = crypto::genSalt();
+            $master_key = crypto::deriveKey($password, $master_key_salt);
+            $recovery_key = crypto::genAESKey();
+            $cipher_key = crypto::genAESKey();
 
-            $secret_2fa = MyTFA::get_random_secret();
+            $secret_2fa = MyTFA::getRandomSecret();
 
-            $obj->set_pwd($pwd);
-            $obj->set_dkey($dkey);
-            $obj->set_dkey_salt($dkey_salt);
-            $obj->set_rkey($rkey);
-            $obj->set_ckey($ckey);
-            $obj->set_secret_2fa($secret_2fa);
+            $obj->setPassword($password);
+            $obj->setMasterKey($master_key);
+            $obj->setMasterKeySalt($master_key_salt);
+            $obj->setRecoveryKey($recovery_key);
+            $obj->setCipherKey($cipher_key);
+            $obj->setSecret2FA($secret_2fa);
 
             return $obj;
         }
 
-        public function set_pwd($pwd)
+        public function setPassword($password)
         {
-            $this->pwd = $pwd;
+            $this->password = $password;
         }
 
-        public function get_pwd()
+        public function getPassword()
         {
-            return $this->pwd;
+            return $this->password;
         }
 
-        public function set_dkey($dkey)
+        public function setMasterKey($master_key)
         {
-            $this->dkey = $dkey;
+            $this->master_key = $master_key;
         }
 
         /**
-            Derive a key with the password and dkey_salt. 
-            If the password or dkey_salt is not provided, 
-            they are set to the default values specified in self::DEFAULT_KEY_VAL
+            *Derive the master key using the password and master_key_salt provided. 
         */
-        public function set_dkey_auto() : void
+        public function setMasterKeyAuto() : void
         {
-            $pwd = self::get_pwd();
-            $dkey_salt = self::get_dkey_salt();
-            $dkey = crypto::deriveKey($pwd, $dkey_salt);
-            self::set_dkey($dkey);
+            $password = self::getPassword();
+            $master_key_salt = self::getMasterKeySalt();
+
+            if ($password === parent::DEFAULT_STR || $master_key_salt === parent::DEFAULT_STR)
+
+            $master_key = Crypto::deriveKey($password, $master_key_salt);
+            self::setMasterKey($master_key);
         }
 
-        public function get_dkey()
+        public function getMasterKey()
         {
-            return $this->dkey;
+            return $this->master_key;
         }
 
-        public function set_rkey($rkey)
+        public function setRecoveryKey($recovery_key)
         {
-            $this->rkey = $rkey;
+            $this->recovery_key = $recovery_key;
         }
 
-        public function get_rkey()
+        public function getRecoveryKey()
         {
-           return $this->rkey;
+           return $this->recovery_key;
         }
 
-        public function set_ckey($ckey)
+        public function setCipherKey($cipher_key)
         {
-            $this->ckey = $ckey;
+            $this->cipher_key = $cipher_key;
         }
 
-        public function get_ckey()
+        public function getCipherKey()
         {
-            return $this->ckey;
+            return $this->cipher_key;
         }
 
-        public function set_secret_2fa($secret_2fa)
+        public function setSecret2FA($secret_2fa)
         {
             $this->secret_2fa = $secret_2fa;
         }
 
-        public function get_secret_2fa()
+        public function getsecret2FA()
         {
             return $this->secret_2fa;
         }
 
-        public function set_dkey_salt($dkey_salt)
+        public function setMasterKeySalt($master_key_salt)
         {
-            $this->dkey_salt = $dkey_salt;
+            $this->master_key_salt = $master_key_salt;
         }
 
-        public function set_dkey_salt_random()
+        public function setMasterKeySaltRandom()
         {
-            self::set_dkey_salt(crypto::genSalt());
+            self::setMasterKeySalt(Crypto::genSalt());
         }
 
-        public function get_dkey_salt()
+        public function getMasterKeySalt()
         {
-            return $this->dkey_salt;
+            return $this->master_key_salt;
         }
 
-        public function get_pwd_hashed()
+        public function getPasswordHashed($algo = PASSWORD_ARGON2ID)
         {
-            return password_hash($this->pwd, PASSWORD_ARGON2ID);
+            return password_hash($this->password, $algo);
         }
 
-        public function get_rkey_hashed()
+        public function getRecoveryKeyHashed($algo = PASSWORD_ARGON2ID)
         {
-            return password_hash($this->rkey, PASSWORD_ARGON2ID);
+            return password_hash($this->master_key, $algo);
         }
 
-        public function get_rkey_encrypted()
+        public function getRecoveryKeyEncrypted()
         {
-            return crypto::encrypt
+            return Crypto::encrypt
             (
-                data: self::get_rkey(), 
-                key: self::get_dkey(), 
-                output_format: crypto::BASE64
+                data: self::getRecoveryKey(), 
+                key: self::getMasterKey(), 
+                output_format: Crypto::BASE64
             );
         }
 
-        public function get_ckey_encrypted()
+        public function getCipherKeyEncrypted()
         {   
-            return crypto::encrypt
+            return Crypto::encrypt
             (
-                data: self::get_ckey(), 
-                key: self::get_rkey(), 
+                data: self::getCipherKey(), 
+                key: self::getRecoveryKey(), 
                 output_format: crypto::BASE64
             );
         }
 
-        public function get_secret_2fa_encrypted()
+        public function getSecret2FA_Encrypted()
         {
             return crypto::encrypt
             (
-                data: self::get_secret_2fa(), 
-                key: self::get_rkey(), 
+                data: self::getSecret2FA(), 
+                key: self::getRecoveryKey(), 
                 output_format: crypto::BASE64
             );
         }

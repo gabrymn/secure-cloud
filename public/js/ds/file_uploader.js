@@ -27,6 +27,8 @@ export default class FileUploader {
                 processData: false,
                 contentType: false,
             });
+            
+            console.log(response);
 
             if (response.upload_session_id && response.chunk_size) 
             {
@@ -59,8 +61,8 @@ export default class FileUploader {
     {
         for (const file of this.files) 
         {
-            const chunks = await this.calculateChunks(file);
-            await this.uploadChunks(file.name, file.type, chunks);
+            const chunks = this.calculateChunks(file);
+            this.uploadChunks(file.name, file.type, chunks);
         }
     }
 
@@ -77,11 +79,6 @@ export default class FileUploader {
         }
 
         return chunks;
-    }
-
-    sleep = async (ms) =>  
-    {
-        return new Promise(resolve => setTimeout(resolve, ms));
     }
 
     uploadChunks(filename, filetype, chunks)

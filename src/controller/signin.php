@@ -13,16 +13,16 @@
     
     class SigninController
     {
-        public static function render_signin_page($success_msg = "", $error_msg = "")
+        public static function renderSigninPage($success_msg = "", $error_msg = "")
         {
             $navbar = Navbar::getPublic('signin');
             include __DIR__ . "/../view/signin.php";
         }
 
-        public static function process_signin($email, $pwd)
+        public static function processSignin($email, $pwd)
         {
             if (!filter_var($email, FILTER_VALIDATE_EMAIL))
-                http_response::client_error(400, "Invalid email format");
+                httpResponse::clientError(400, "Invalid email format");
 
 
             
@@ -31,8 +31,8 @@
             $user = new UserModel(email:$email);
 
             // There's no email in db that is equals to $user->get_email()
-            if ($user->sel_id_from_email() === -1)
-                http_response::client_error(400, "That email doesn't exists in our system");
+            if ($user->selIDFromEmail() === -1)
+                httpResponse::clientError(400, "That email doesn't exists in our system");
 
             // ------------ END User PROCESS -----------
 
@@ -40,15 +40,15 @@
 
             // ------------ BEGIN UserSecurity PROCESS -----------
 
-            $us = new UserSecurityModel(id_user: $user->get_id_user());
+            $us = new UserSecurityModel(id_user: $user->getUserID());
             
             // there's no record in user_security that has that id_user, server error 
-            if (!$us->sel_pwd_hash_from_id())
-                http_response::server_error(500, "Something wrong, try again");
+            if (!$us->sel_pwdHash_by_userID())
+                httpResponse::serverError(500, "Something wrong, try again");
 
             // password is wrong (1FA FAILED)
-            if (!password_verify($pwd, $us->get_pwd_hash()))
-                http_response::client_error(400, "Password is wrong");
+            if (!password_verify($pwd, $us->getPasswordHash()))
+                httpResponse::clientError(400, "Password is wrong");
 
             // ------------ END UserSecurity PROCESS -----------
 
@@ -59,21 +59,21 @@
 
             session_start();
 
-            $id_user = $user->sel_verified_from_id();
+            $id_user = $user->selVerifiedFromID();
 
             if ($id_user === false || $id_user === null)
             {
                 session_destroy();
-                http_response::server_error();
+                httpResponse::serverError();
             }
 
             // user is tryin' to signin without have verified the email 
             else if ($id_user === 0)
             {
                 $_SESSION['VERIFY_PAGE_STATUS'] = 'SIGNIN_WITH_EMAIL_NOT_VERIFIED';
-                $_SESSION['EMAIL'] = $user->get_email();
+                $_SESSION['EMAIL'] = $user->getEmail();
 
-                http_response::client_error
+                httpResponse::clientError
                 (
                     400, 
                     "Confirm your email before sign in", 
@@ -85,7 +85,7 @@
             else
             {
                 $_SESSION['AUTH_1FA'] = true;
-                $_SESSION['ID_USER'] = $user->get_id_user();
+                $_SESSION['ID_USER'] = $user->getUserID();
 
                 if (isset($_SESSION['VERIFY_PAGE_STATUS'])) unset($_SESSION['VERIFY_PAGE_STATUS']);
             }
@@ -104,25 +104,24 @@
 
             // check if 2FA isset
 
-            if ($user->sel_2fa_from_id() === null)
+            if ($user->sel2FAFromID() === null)
             {
                 session_destroy();
-                http_response::server_error(500);
+                httpResponse::serverError(500);
             }
 
             // Set DKEY (a key derived from password and a random salt) to a session variable
 
-            $us->set_id_user($user->get_id_user());
-            $dkey_salt = $us->sel_dkey_salt_from_id();
-            $_SESSION['DKEY'] = crypto::deriveKey($pwd, $dkey_salt);
-
+            $us->setUserID($user->getUserID());
+            $masterkey_salt = $us->sel_mKeySalt_by_userID();
+            $_SESSION['MASTER_KEY'] = Crypto::deriveKey($pwd, $masterkey_salt);
 
             // If the user has 2FA active, redirect to 2FA page
-            if ($user->get_p2fa() === 1)
+            if ($user->get2FA() === 1)
             {
                 $_SESSION['OTP_CHECKING'] = true;
 
-                http_response::successful
+                httpResponse::successful
                 (
                     200, 
                     false, 
@@ -143,9 +142,9 @@
 
             // check if there is an active session with the client IP
 
-            SessionModel::create_or_load(client::get_ip(), $user->get_id_user());
+            SessionModel::create_or_load(Client::getIP(), $user->getUserID());
 
-            http_response::successful
+            httpResponse::successful
             (
                 200, 
                 false, 
@@ -155,7 +154,7 @@
 
         
 
-        public static function process_signout()
+        public static function processSignout()
         {
             if (session_status() == PHP_SESSION_NONE)                
                 session_start();
@@ -163,7 +162,7 @@
             $_SESSION = [];
             session_destroy();
 
-            http_response::redirect('/signin');
+            httpResponse::redirect('/signin');
         }
     }
 

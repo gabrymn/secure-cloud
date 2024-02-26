@@ -7,31 +7,31 @@
     
     class ProfileController
     {
-        public static function render_profile_page()
+        public static function renderProfilePage()
         {
             $navbar = Navbar::getPrivate('profile');
-
+            
             $user = new UserModel(id_user: $_SESSION['ID_USER']);
-            $user->sel_email_from_id();
+            $user->selEmailFromID();
 
-            $us = new UserSecurityModel(id_user: $user->get_id_user());
+            $us = new UserSecurityModel(id_user: $user->getUserID());
 
-            $us->sel_secret_2fa_c_from_id();
-            $us->sel_rkey_from_id();
-            $us->sel_ckey_from_id();
+            $us->sel_secret2faEnc_by_userID();
+            $us->sel_rKeyEnc_by_userID();
+            $us->sel_cKeyEnc_by_userID();
 
-            $rkey_c = $us->get_rkey_encrypted();
-            $ckey_c = $us->get_ckey_encrypted();
+            $rkey_encrypted = $us->getRecoveryKeyEncrypted();
+            $ckey_encrypted = $us->getCipherKeyEncrypted();
 
-            $rkey = crypto::decrypt($rkey_c, $_SESSION['DKEY']);
+            $rkey = Crypto::decrypt($rkey_encrypted, $_SESSION['DKEY']);
 
-            $ckey = crypto::decrypt($ckey_c, $rkey);
+            $ckey = Crypto::decrypt($ckey_encrypted, $rkey);
 
-            $secret_2fa = crypto::decrypt($us->get_secret_2fa_encrypted(), $rkey);
+            $secret_2fa = Crypto::decrypt($us->getSecret2faEncrypted(), $rkey);
 
-            $tfa = new MyTFA($user->get_email(), $secret_2fa);
+            $tfa = new MyTFA($user->getEmail(), $secret_2fa);
 
-            $qrcode_url = $tfa->get_qrcode_url();
+            $qrcode_url = $tfa->getQrcodeURL();
 
             include __DIR__ . '/../view/profile.php';
         }

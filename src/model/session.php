@@ -20,19 +20,19 @@
         {
             date_default_timezone_set(parent::TZ);
 
-            $this->set_id_session($id_session ? $id_session : parent::DEFAULT_STR);
-            $this->set_ip($ip ? $ip : parent::DEFAULT_STR);
-            $this->set_os($os ? $os : parent::DEFAULT_STR);
-            $this->set_browser($browser ? $browser: parent::DEFAULT_STR);
+            $this->setSessionID($id_session ? $id_session : parent::DEFAULT_STR);
+            $this->setIP($ip ? $ip : parent::DEFAULT_STR);
+            $this->setOS($os ? $os : parent::DEFAULT_STR);
+            $this->setBrowser($browser ? $browser: parent::DEFAULT_STR);
 
-            $this->set_start($start ? $start : parent::DEFAULT_STR);
-            $this->set_end($end ? $end : parent::DEFAULT_STR);
-            $this->set_recent_activity($recent_activity ? $recent_activity : parent::DEFAULT_STR);
+            $this->setDateStart($start ? $start : parent::DEFAULT_STR);
+            $this->setDateEnd($end ? $end : parent::DEFAULT_STR);
+            $this->setRecentActivity($recent_activity ? $recent_activity : parent::DEFAULT_STR);
 
-            $this->set_id_user($id_user ? $id_user : parent::DEFAULT_INT);
+            $this->setUserID($id_user ? $id_user : parent::DEFAULT_INT);
         }
 
-        public function set_id_session(string $id_session): void
+        public function setSessionID(string $id_session): void
         {
             if ($id_session === parent::DEFAULT_STR || strlen($id_session) !== self::ID_SESSION_LEN)
                 $this->id_session = parent::DEFAULT_STR;
@@ -40,42 +40,42 @@
                 $this->id_session = $id_session;
         }
 
-        public function get_id_session(): string
+        public function getSessionID(): string
         {
             return $this->id_session;
         }
 
-        public function set_ip(string $ip): void
+        public function setIP(string $ip): void
         {
             $this->ip = $ip;
         }
 
-        public function get_ip(): string
+        public function getIP(): string
         {
             return $this->ip;
         }
 
-        public function set_os(string $os): void
+        public function setOS(string $os): void
         {
             $this->os = $os;
         }
 
-        public function get_os(): string
+        public function getOS(): string
         {
             return $this->os;
         }
 
-        public function set_browser(string $browser): void
+        public function setBrowser(string $browser): void
         {
             $this->browser = $browser;
         }
 
-        public function get_browser(): string
+        public function getBrowser(): string
         {
             return $this->browser;
         }
 
-        public function set_start($start = false): void
+        public function setDateStart($start = false): void
         {
             if (!$start)
                 $start = MyDatetime::now();
@@ -83,13 +83,13 @@
             $this->start = $start;
         }
 
-        public function get_start()
+        public function getDateStart()
         {
             return $this->start;
         }
 
         // if nothing is passet, date end in equals to now
-        public function set_end($end = false): void
+        public function setDateEnd($end = false): void
         {
             if (!$end)
                 $end = MyDatetime::now();
@@ -97,12 +97,12 @@
             $this->end = $end;
         }
 
-        public function get_end()
+        public function getDateEnd()
         {
             return $this->end;
         }
 
-        public function set_recent_activity($recent_activity = false): void
+        public function setRecentActivity($recent_activity = false): void
         {
             if (!$recent_activity)
                 $recent_activity = MyDatetime::now();
@@ -110,48 +110,48 @@
             $this->recent_activity = $recent_activity;
         }
 
-        public function get_recent_activity()
+        public function getRecentActivity()
         {
             return $this->recent_activity;
         }
 
-        public function set_id_user($id_user)
+        public function setUserID($id_user)
         {
             $this->id_user = $id_user;
         }
 
-        public function get_id_user()
+        public function getUserID()
         {
             return $this->id_user;
         }
 
-        public function to_assoc_array($id_session=false, $ip=false, $os=false, $browser=false, $start=false, $end=false, $recent_activity=false, $id_user=false) : array
+        public function toAssocArray($id_session=false, $ip=false, $os=false, $browser=false, $start=false, $end=false, $recent_activity=false, $id_user=false) : array
         {
             $params = array();
             
             if ($id_session)
-                $params["id_session"] = $this->get_id_session();
+                $params["id_session"] = $this->getSessionID();
 
             if ($ip)
-                $params["ip"] = $this->get_ip();
+                $params["ip"] = $this->getIP();
 
             if ($os)
-                $params["os"] = $this->get_os();
+                $params["os"] = $this->getOS();
 
             if ($browser)
-                $params["browser"] = $this->get_browser();
+                $params["browser"] = $this->getBrowser();
             
             if ($start)
-                $params["start"] = $this->get_start();
+                $params["start"] = $this->getDateStart();
 
             if ($end)
-                $params["end"] = $this->get_end();
+                $params["end"] = $this->getDateEnd();
 
             if ($recent_activity)
-                $params["recent_activity"] = $this->get_recent_activity();
+                $params["recent_activity"] = $this->getRecentActivity();
         
             if ($id_user)
-                $params["id_user"] = $this->get_id_user();
+                $params["id_user"] = $this->getUserID();
 
             return $params;
         }
@@ -163,50 +163,53 @@
             if (session_status() !== PHP_SESSION_ACTIVE) 
                 session_start();
 
-            $id_session = $session->sel_idsession_active_from_iduser_ipclient();
+            $id_session = $session->sel_sessionID_by_userID_clientIP();
 
             if ($id_session === -1)
             {
-                $id_session = $session->generate_uid(self::ID_SESSION_LEN);
+                $id_session = $session->generateUID(self::ID_SESSION_LEN);
 
-                $session->set_id_session($id_session);
-                $session->set_os(client::get_os());
-                $session->set_browser(client::get_browser());
+                $session->setSessionID($id_session);
+                $session->setOS(client::getOS());
+                $session->setBrowser(client::getBrowser());
 
-                $_SESSION['CURRENT_ID_SESSION'] = $session->get_id_session();
+                $_SESSION['CURRENT_ID_SESSION'] = $session->getSessionID();
 
-                $session->set_start();
-                $session->set_recent_activity();
+                $session->setDateStart();
+                $session->setRecentActivity();
 
                 $session->ins();
-
-                return "created";
             }
             else
             {
                 // load session
                 $_SESSION['CURRENT_ID_SESSION'] = $id_session;
 
-                $session->set_id_session($id_session);
-                $session->set_recent_activity();
+                $session->setSessionID($id_session);
+                $session->setRecentActivity();
                 
-                $session->upd_recent_activity_from_idsess();
-
-                return "loaded";
+                $session->upd_recentActivity_by_sessionID();
             }
+
+            $user = new UserModel(id_user: $_SESSION['ID_USER']);
+            $user->selEmailFromID();
+
+            $_SESSION['user_dir'] = FileSysHandler::getUserDir($user->getUserID(), $user->getEmail());
+
+            return true;
         }
 
-        public static function get_sessions_of($id_user, $id_session)
+        public static function getSessionsOf($id_user, $id_session)
         {
             $s = new SessionModel(id_user:$id_user, id_session:$id_session);
-            $sessions = $s->sel_sessions_from_iduser_ordby_idsess();
-            $actual_client_timezone = client::get_timezone();
+            $sessions = $s->sel_sessions_by_userID_sessionID();
+            $actual_client_timezone = Client::getTimezone();
 
             foreach ($sessions as &$session)
             {
-                $ip_info_session = client::get_ip_info_restr($session['ip']);
+                $ip_info_session = Client::getIPInfoLimited($session['ip']);
 
-                $client_date = MyDatetime::get_client_dt($session['recent_activity'], $actual_client_timezone);
+                $client_date = MyDatetime::getClientDateTime($session['recent_activity'], $actual_client_timezone);
                 
                 $session['recent_activity'] = $client_date;
 
@@ -233,34 +236,34 @@
             $qry_1 = "INSERT INTO `sessions` (`id_session`, `ip`, `os`, `browser`, `id_user`) VALUES (:id_session, :ip, :os, :browser, :id_user)";
             $qry_2 = "INSERT INTO session_dates (`start`, `recent_activity`, `id_session`) VALUES (:start, :recent_activity, :id_session)";
 
-            mypdo::connect('insert');
+            MyPDO::connect('insert');
 
             try 
             {
-                mypdo::begin_transaction();
+                MyPDO::beginTransaction();
 
-                $status_qry_1 = mypdo::qry_exec($qry_1, $this->to_assoc_array(id_session:true, ip:true, os:true, browser:true, id_user:true));
-                $status_qry_2 = mypdo::qry_exec($qry_2, $this->to_assoc_array(start:true, recent_activity:true, id_session:true));
+                $status_qry_1 = MyPDO::qryExec($qry_1, $this->toAssocArray(id_session:true, ip:true, os:true, browser:true, id_user:true));
+                $status_qry_2 = MyPDO::qryExec($qry_2, $this->toAssocArray(start:true, recent_activity:true, id_session:true));
 
                 if ($status_qry_1 && $status_qry_2)
                 {
-                    mypdo::commit();
+                    MyPDO::commit();
                     return true;
                 }
                 else
                 {
-                    mypdo::roll_back();
+                    MyPDO::rollBack();
                     return false;
                 }
             }
             catch(Exception $e)
             {
-                mypdo::roll_back();
+                MyPDO::rollBack();
                 return $e->getMessage();
             }
         }
         
-        public function sel_idsession_active_from_iduser_ipclient()
+        public function sel_sessionID_by_UserID_clientIP()
         {
             $qry = (
                 "SELECT id_session
@@ -275,9 +278,9 @@
                 )"
             );
             
-            mypdo::connect('select');
+            MyPDO::connect('select');
 
-            $res = mypdo::qry_exec($qry, $this->to_assoc_array(id_user:true, ip:true));
+            $res = MyPDO::qryExec($qry, $this->toAssocArray(id_user:true, ip:true));
 
             if ($res === false)
                 return false;
@@ -286,12 +289,12 @@
             else
             {
                 $id_session = $res[0]['id_session'];
-                $this->set_id_session($id_session);
-                return $this->get_id_session();
+                $this->setSessionID($id_session);
+                return $this->getSessionID();
             }
         }
 
-        public function sel_count_sess_from_iduser()
+        public function sel_sessionCount_by_userID()
         {
             $qry = (
                 "SELECT COUNT(*) AS COUNT
@@ -299,7 +302,7 @@
                 WHERE id_user = :id_user"
             );
 
-            $res = mypdo::qry_exec($qry, $this->to_assoc_array(id_user:true));
+            $res = MyPDO::qryExec($qry, $this->toAssocArray(id_user:true));
             
             if ($res === false)
                 return false;
@@ -310,7 +313,7 @@
             }
         }
 
-        public function sel_count_sess_from_ipclient_iduser()
+        public function sel_sessionCount_by_clientIP_userID()
         {
             $qry = (
                 "SELECT COUNT(*) AS COUNT
@@ -319,7 +322,7 @@
                 AND id_user = :id_user"
             );
 
-            $res = mypdo::qry_exec($qry, $this->to_assoc_array(ip:true, id_user:true));
+            $res = MyPDO::qryExec($qry, $this->toAssocArray(ip:true, id_user:true));
             
             if ($res === false)
                 return false;
@@ -338,7 +341,7 @@
          *
          * @return array An array containing the result of the query.
         */
-        public function sel_sessions_from_iduser_ordby_idsess() : array
+        public function sel_sessions_by_userID_sessionID() : array
         {
             $qry = 
             (
@@ -358,24 +361,24 @@
                     sessions.id_session"
             );
 
-            mypdo::connect('select');
+            MyPDO::connect('select');
 
-            return mypdo::qry_exec($qry, $this->to_assoc_array(id_session:true, id_user:true));
+            return MyPDO::qryExec($qry, $this->toAssocArray(id_session:true, id_user:true));
         }
 
-        public function upd_recent_activity_from_idsess()
+        public function upd_recentActivity_by_sessionID()
         {
             $qry = "UPDATE session_dates 
             SET recent_activity = :recent_activity
             WHERE id_session = :id_session";
     
-            mypdo::connect('update');
+            MyPDO::connect('update');
 
-            return mypdo::qry_exec($qry, $this->to_assoc_array(id_session:true, recent_activity:true));
+            return MyPDO::qryExec($qry, $this->toAssocArray(id_session:true, recent_activity:true));
         }
 
         // This query expire only sessions of the user :id_user
-        public function expire_from_idsess_iduser()
+        public function expire_by_sessionID_userID()
         {
             $qry = 
             "UPDATE session_dates 
@@ -388,11 +391,11 @@
                 AND id_session = :id_session
             )";
 
-            mypdo::connect('update');
+            MyPDO::connect('update');
 
             try 
             {
-                $status = mypdo::qry_exec($qry, $this->to_assoc_array(id_session:true, end:true, id_user:true));
+                $status = MyPDO::qryExec($qry, $this->toAssocArray(id_session:true, end:true, id_user:true));
                 return $status;
             }
             catch (PDOException $e)
@@ -405,7 +408,7 @@
             }
         }
 
-        public function is_expired_from_idsess() : int|bool
+        public function is_expired_by_sessionID() : int|bool
         {
             $qry =
             "SELECT *
@@ -419,9 +422,9 @@
                 AND end IS NULL
             )";
 
-            mypdo::connect('select');
+            MyPDO::connect('select');
 
-            $res = mypdo::qry_exec($qry, $this->to_assoc_array(id_session:true, id_user:true));
+            $res = MyPDO::qryExec($qry, $this->toAssocArray(id_session:true, id_user:true));
                 
             if ($res === false)
                 return false;

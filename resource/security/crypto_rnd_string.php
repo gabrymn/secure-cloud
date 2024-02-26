@@ -5,7 +5,7 @@
      * It generates cryptographically-strong-random strings
      */
 
-    class CryptoRNDString 
+    class CryptoRNDString extends DataStructure
     {
         private string $alphabet;
         private int $alphabet_len;
@@ -17,24 +17,24 @@
         {
             if ($alphabet === null || strlen($alphabet) < self::MIN_ALPHABET_LEN)
             {
-                $this->set_alphabet
+                $this->setAlphabet
                 (
                     implode(range('a', 'z')) . implode(range('A', 'Z')) . implode(range(0, 9))
                 );
             }
             else
             {
-                $this->set_alphabet($alphabet);
+                $this->setAlphabet($alphabet);
             }
         }
 
-        private function set_alphabet(string $alphabet) : void
+        private function setAlphabet(string $alphabet) : void
         {
             $this->alphabet = $alphabet;
             $this->alphabet_len = strlen($alphabet);
         }
 
-        private function get_alphabet() : string
+        private function getAlphabet() : string
         {
             return $this->alphabet;
         }

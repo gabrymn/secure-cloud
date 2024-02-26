@@ -50,7 +50,7 @@
             }
         }
 
-        public function send_array(array $mail, $html = true)
+        public function sendArray(array $mail, $html = true)
         {
             try {
                 

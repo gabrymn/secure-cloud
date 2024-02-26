@@ -1,24 +1,29 @@
 <?php
 
+    require_once __DIR__ . '/routes_interface.php';
     require_once __DIR__ . '/../src/controller/otp.php';
+    require_once __DIR__ . '/routes_interface.php';
 
-    function get_auth2_routes()
+    abstract class auth2 implements RoutesInterface
     {
-        $router = new Router();
+        public static function getRoutes()
+        {
+            $router = new Router();
 
-        $router->GET('/auth2', [], function() {
-
-            AuthController::check(true, 'OTP_CHECKING');
-            OTPController::render_auth2_page();
-        }); 
+            $router->GET('/auth2', [], function() {
     
-        $router->POST('/auth2', ['otp'], function($args) {
-            
-            AuthController::check(false, 'OTP_CHECKING');
-            OTPController::processOtpChecking($args['otp']);
-        });
-
-        return $router->getRoutes();
+                AuthController::check(true, 'OTP_CHECKING');
+                OTPController::renderAuth2Page();
+            }); 
+        
+            $router->POST('/auth2', ['otp'], function($args) {
+                
+                AuthController::check(false, 'OTP_CHECKING');
+                OTPController::processOTPChecking($args['otp']);
+            });
+    
+            return $router->getRoutes();
+        }
     }
 
 ?>

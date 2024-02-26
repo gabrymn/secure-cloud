@@ -1,19 +1,23 @@
 <?php
 
+    require_once __DIR__ . '/routes_interface.php';
     require_once __DIR__ . '/../src/controller/auth_checker.php';
     require_once __DIR__ . '/../src/controller/storage.php';
 
-    function get_storage_routes()
+    abstract class storage implements RoutesInterface
     {
-        $router = new Router();
+        public static function getRoutes()
+        {
+            $router = new Router();
 
-        $router->GET('/storage', [], function() {
-
-            AuthController::check_protectedarea();
-            StorageController::render_storage_page();
-        }); 
-
-        return $router->getRoutes();
+            $router->GET('/storage', [], function() {
+    
+                AuthController::checkProtectedArea();
+                StorageController::renderStoragePage();
+            }); 
+    
+            return $router->getRoutes();
+        }
     }
 
 ?>

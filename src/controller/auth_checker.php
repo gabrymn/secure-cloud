@@ -7,14 +7,14 @@
     {
         private const REDIRECT_PAGE = '/signin';
 
-        private static function handle_response(bool $redirect)
+        private static function handleResponse(bool $redirect)
         {
             session_destroy();
 
             if ($redirect)
-                http_response::redirect(self::REDIRECT_PAGE);
+                httpResponse::redirect(self::REDIRECT_PAGE);
             else
-                http_response::client_error(401);
+                httpResponse::clientError(401);
         }
 
         public static function check(bool $redirect, ...$session_args_required)
@@ -43,13 +43,13 @@
                             } while ($almost_one_true === false && $i < count($value));
 
                             if ($almost_one_true === false)
-                                self::handle_response($redirect);
+                                self::handleResponse($redirect);
                         }
                         else
                         {
                             if (!isset($_SESSION[$key]) || $_SESSION[$key] !== $value) 
                             {
-                                self::handle_response($redirect);
+                                self::handleResponse($redirect);
                             }
                         }
                     }
@@ -58,13 +58,13 @@
                 {
                     if (!isset($_SESSION[$session_arg])) 
                     {
-                        self::handle_response($redirect);
+                        self::handleResponse($redirect);
                     }
                 }
             }
         }
 
-        public static function check_protectedarea(bool $redirect = true)
+        public static function checkProtectedArea(bool $redirect = true)
         {   
             if (session_status() === PHP_SESSION_NONE) 
                 session_start();
@@ -74,14 +74,14 @@
             $s = new SessionModel
             (
                 id_session: $_SESSION['CURRENT_ID_SESSION'], 
-                id_user: $_SESSION['ID_USER']
+                id_user:    $_SESSION['ID_USER']
             );
             
-            $session_expired = $s->is_expired_from_idsess();
+            $session_expired = $s->is_expired_by_sessionID();
             
             if ($session_expired)
             {
-                self::handle_response($redirect);
+                self::handleResponse($redirect);
             }
         }
     }

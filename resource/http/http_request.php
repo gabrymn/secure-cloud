@@ -1,7 +1,7 @@
 <?php
 
-    class ARequest {
-            
+    class HttpRequest 
+    {
         private $curl;
         private $url;
         private $status;
@@ -46,25 +46,25 @@
             return $this->response;
         }
         
-        public function get_response(){
+        public function getResponse(){
             if ($this->status)
                 return $this->response;
             else
                 return 0;
         }
         
-        public function get_url(){
+        public function getURL(){
             return $this->url;
         }
 
-        public function get_status(){
+        public function getStatus(){
             return $this->status;
         }
     }
 
 
     // classe statica per richieste veloci
-    class request {
+    class HttpRequestStatic {
 
         // Ritorna JSON string
         public static function GET(string $url, $ct = 'Content-Type: application/json'){

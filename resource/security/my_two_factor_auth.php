@@ -19,57 +19,57 @@
             self::$app_name = $_ENV['APP_NAME'];
 
             if ($secret === false)
-                $this->set_secret(self::createSecret());
+                $this->setSecret(self::createSecret());
             else
-                $this->set_secret($secret);
+                $this->setSecret($secret);
 
-            $this->set_email($email);
+            $this->setEmail($email);
         }
 
-        public static function get_random_secret() : string
+        public static function getRandomSecret() : string
         {
             return (new parent())->createSecret();
         }
 
-        public function set_email($email) : void
+        public function setEmail($email) : void
         {
             $this->email = $email;
         }
 
-        public function get_email() : string|null
+        public function getEmail() : string|null
         {   
             return $this->email;
         }
 
-        public function set_secret(string $secret) : void
+        public function setSecret(string $secret) : void
         {
             $this->secret = $secret;
         }
 
-        public function get_secret() : string
+        public function getSecret() : string
         {
             return $this->secret;
         }
                 
-        public function get_code() : string
+        public function getCodeX() : string
         {
-            return $this->getCode($this->get_secret());
+            return $this->getCode($this->getSecret());
         }
         
-        public function get_qrcode_url() : string
+        public function getQrcodeURL() : string
         {
             $label = "";
             $label .= self::$app_name;
 
-            if ($this->get_email() !== null)
-                $label .= (": " . $this->get_email());
+            if ($this->getEmail() !== null)
+                $label .= (": " . $this->getEmail());
 
-            return $this->getQRCodeImageAsDataUri($label, $this->get_secret());
+            return $this->getQRCodeImageAsDataUri($label, $this->getSecret());
         }
 
         public function codeIsValid($input_code) : bool
         {
-            return $this->verifyCode($this->get_secret(), $input_code);
+            return $this->verifyCode($this->getSecret(), $input_code);
         }
     }
 ?>

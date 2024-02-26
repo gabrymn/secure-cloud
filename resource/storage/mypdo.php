@@ -1,6 +1,6 @@
 <?php
 
-    class mypdo
+    class MyPDO
     {
         private static string|null $operation_type = self::OPERATION_TYPES[0];
         private static PDO|null $conn = null;
@@ -13,13 +13,13 @@
             if (!in_array($operation_type, self::OPERATION_TYPES))
                 return false;
 
-            self::set_optype($operation_type);
+            self::setOperationType($operation_type);
             
             // already connected
             if (self::$conn !== null)
                 return true;
 
-            $credentials = self::get_credentials($user);
+            $credentials = self::getCredentials($user);
 
             try 
             {
@@ -31,7 +31,7 @@
                     $options
                 );
 
-                self::set_optype($operation_type);
+                self::setOperationType($operation_type);
                 self::$conn->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
             }
             catch (PDOException $e) 
@@ -42,17 +42,17 @@
             return true;
         }
 
-        private static function set_optype($operation_type) : void
+        private static function setOperationType($operation_type) : void
         {
             self::$operation_type = $operation_type;
         }
 
-        private static function get_optype() : string|null
+        private static function getOperationType() : string|null
         {
             return self::$operation_type;
         }
 
-        public static function qry_exec(string $qry, array $params = null)
+        public static function qryExec(string $qry, array $params = null)
         {
             self::prep($qry);
 
@@ -63,7 +63,7 @@
 
             $response = null;
 
-            if (self::get_optype() !== 'select')
+            if (self::getOperationType() !== 'select')
                 $response = $qry_status;
             else
                 $response =  self::$stmt->fetchAll(PDO::FETCH_ASSOC);
@@ -95,7 +95,7 @@
             }
         }
 
-        private static function get_credentials($user) : array|null
+        private static function getCredentials($user) : array|null
         {
             $credentials =
             [
@@ -157,7 +157,7 @@
             return $credentials;
         }
 
-        public static function begin_transaction()
+        public static function beginTransaction()
         {
             if (self::$conn === null)
                 return false;
@@ -173,7 +173,7 @@
                 return self::$conn->commit();
         }
 
-        public static function roll_back()
+        public static function rollBack()
         {
             if (self::$conn === null)
                 return false;

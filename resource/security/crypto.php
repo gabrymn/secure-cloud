@@ -1,6 +1,6 @@
 <?php
 
-    class crypto
+    class Crypto extends DataStructure
     {
         private const FILE_ENCRYPTION_BLOCKS = 10000;
         private const AES_256_GCM_IV_LEN = 16;

@@ -14,7 +14,7 @@
 
     class CloudDriveController
     {
-        public static function render_clouddrive_page()
+        public static function renderClouddrivePage()
         {
             //$file_names = FileController::get_file_names_of($_SESSION['ID_USER']);
             
@@ -23,24 +23,24 @@
             include __DIR__ . '/../../view/clouddrive.php';
         }
 
-        public static function render_file_view()
+        public static function renderFilePreview()
         {
             
         }
 
-        public static function get_file_names_of($id_user)
+        public static function getFileNamesOf($id_user)
         {
             $key = "KEY_HERE";
 
-            $file_names = FileModel::sel_file_names_from_id_user($id_user);
+            $file_names = FileModel::selFileNamesFromUserID($id_user);
 
             for($i=0; $i<count($file_names); $i++)
             {
-                $file_name = crypto::decrypt($file_names[$i], $key);
+                $file_name = Crypto::decrypt($file_names[$i], $key);
 
                 if (in_array($file_name, $file_names))
                 {
-                    FileSysHandler::handle_filename_exists($file_name);
+                    FileSysHandler::handleFilenameExists($file_name);
                 }
 
                 $file_names[$i] = $file_name;
@@ -49,10 +49,10 @@
             return $file_names;
         }
 
-        public static function handle_download_of($id_file)
+        public static function handleDownloadOf($id_file)
         {
             $file_path = __DIR__ . "/../../../storage/9cc95054e5baf13ea974cc30e58e36b6/secure-cloud-main (1).zip"; // from id_file get file_path
-            http_response::download($file_path);
+            httpResponse::download($file_path);
         }
     }
 

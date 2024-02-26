@@ -4,7 +4,7 @@
 
     class TestController
     {
-        public static function process_test()
+        public static function processTest()
         {
         }
     }

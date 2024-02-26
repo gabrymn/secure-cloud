@@ -14,24 +14,24 @@
     
     class SignupController
     {
-        public static function render_signup_page()
+        public static function renderSignupPage()
         {
             $navbar = Navbar::getPublic('signup');
             include __DIR__ . '/../view/signup.php';
         }
 
-        public static function render_signup_success_page()
+        public static function renderSignupSuccessPage()
         {
             include __DIR__ . '/../view/static/signup_success.php';
         }
 
-        public static function process_signup($email, $pwd, $name, $surname)
+        public static function processSignup($email, $pwd, $name, $surname)
         {
             if (!filter_var($email, FILTER_VALIDATE_EMAIL))
-                http_response::client_error(400, "Invalid email format");
+                httpResponse::clientError(400, "Invalid email format");
 
             if (strlen($pwd) < 1)
-                http_response::client_error(400, "Password too short");
+                httpResponse::clientError(400, "Password too short");
 
                 
 
@@ -39,26 +39,26 @@
 
             $user = new UserModel(email:$email, name:$name, surname:$surname);
 
-            $email_is_taken = $user->email_is_taken();
+            $email_is_taken = $user->emailIsTaken();
 
             if ($email_is_taken === 1)
             {
-                http_response::client_error(400, "Email already taken");
+                httpResponse::clientError(400, "Email already taken");
             }
             else if ($email_is_taken === 0)
             {
                 // email is available
             }
             else
-                http_response::server_error();
+                httpResponse::serverError();
 
-            mypdo::connect('insert');
-            mypdo::begin_transaction();
+            MyPDO::connect('insert');
+            MyPDO::beginTransaction();
             
             if (!$user->ins())
             {
-                mypdo::roll_back();
-                http_response::server_error(500);
+                MyPDO::rollBack();
+                httpResponse::serverError(500);
             }
             
             // ----------- END User CREATION -------------
@@ -67,25 +67,25 @@
             
             // ----------- BEGIN User-Security CREATION -------------
 
-            $user->sel_id_from_email();
+            $user->selIDFromEmail();
 
-            $user_keys = UserKeysHandler::get_instance_from_pwd($pwd);
+            $user_keys = UserKeysHandler::getInstanceFromPassword($pwd);
             
             $user_security_data = new UserSecurityModel
             (
-                pwd_hash:               $user_keys->get_pwd_hashed(),
-                rkey_hash:              $user_keys->get_rkey_hashed(),
-                rkey_encrypted:         $user_keys->get_rkey_encrypted(),
-                ckey_encrypted:         $user_keys->get_ckey_encrypted(),
-                secret_2fa_encrypted:   $user_keys->get_secret_2fa_encrypted(),
-                dkey_salt:              $user_keys->get_dkey_salt(),
-                id_user:                $user->get_id_user()
+                password_hash:         $user_keys->getPasswordHashed(),
+                recoverykey_hash:      $user_keys->getRecoveryKeyHashed(),
+                recoverykey_encrypted: $user_keys->getRecoveryKeyEncrypted(),
+                cipherkey_encrypted:   $user_keys->getCipherKeyEncrypted(),
+                secret2fa_encrypted:   $user_keys->getSecret2FA_encrypted(),
+                masterkey_salt:        $user_keys->getMasterKeySalt(),
+                id_user:               $user->getUserID()
             );
 
             if (!$user_security_data->ins())
             {
-                mypdo::roll_back();
-                http_response::server_error();
+                MyPDO::rollBack();
+                httpResponse::serverError();
             }
 
             // ----------- END User-Security CREATION -------------
@@ -99,17 +99,17 @@
 
             if ($email_sent === false)
             {
-                mypdo::roll_back();
-                http_response::client_error(400, "There is an issue with the provided email address, it may not exist.");
+                MyPDO::rollBack();
+                httpResponse::clientError(400, "There is an issue with the provided email address, it may not exist.");
             }
             
             // ----------- END Email-Verify CREATION -------------
 
-            mypdo::commit();
+            MyPDO::commit();
 
-            FileSysHandler::mk_user_dir($user->get_id_user(), $user->get_email());
+            FileSysHandler::makeUserDir($user->getUserID(), $user->getEmail());
 
-            http_response::successful
+            httpResponse::successful
             (
                 201, 
                 false, 

@@ -5,40 +5,55 @@
     class EmailVerifyModel extends Model
     {
         private string $token_hash;
+        private string $token_plain_text;
         private int $id_user;
         private $expires;
         private string $email;
 
+
         public const PLAIN_TEXT_TOKEN_LEN = 100;
         private const EXP_MINUTES = 30;
+        public const HASH_ALGO = "sha256";
 
-        public function __construct($token_hash = null, $id_user = null, $expires = null, $email = null)
+        public function __construct($token_hash = null, $token_plain_text = null, $id_user = null, $expires = null, $email = null)
         {
             date_default_timezone_set(self::TZ);
-            self::set_token_hash($token_hash ? $token_hash : parent::DEFAULT_STR);
-            self::set_expires($expires ? $expires : $this->set_expires());
-            self::set_id_user($id_user ? $id_user : parent::DEFAULT_INT);
-            self::set_email($email ? $email : parent::DEFAULT_STR);
+            
+            if ($token_plain_text !== null)
+                self::setTokenPlainText($token_plain_text);
+            else
+            {
+                if ($token_hash === null)
+                    self::setTokenPlainTextRandom();
+                else
+                {
+                    self::setTokenPlainText(self::DEFAULT_STR);
+                    self::setTokenHash($token_hash);
+                }
+            }
+
+            ($token_plain_text ? $token_plain_text : parent::DEFAULT_STR);
+            self::setTokenHash($token_hash ? $token_hash : parent::DEFAULT_STR);
+
+            self::setExpires($expires ? $expires : $this->setExpiresAuto());
+            self::setUserID($id_user ? $id_user : parent::DEFAULT_INT);
+            self::setEmail($email ? $email : parent::DEFAULT_STR);
+
+            $this->token_plain_text = parent::DEFAULT_STR;
         }
 
-        public static function generate_token() : string
-        {
-            $ev = new EmailVerifyModel;
-            return $ev->generate_uid(self::PLAIN_TEXT_TOKEN_LEN);
-        }
-
-        public function get_mail_header() : array
+        public function getMailHeader() : array
         {
             return
             [
-                "dest" => $this->get_email(),
+                "dest" => $this->getEmail(),
                 "obj" => $_ENV['APP_NAME'] . ': verify your email',
             ];
         }
 
-        public function get_mail_body($token_plain_text) : array
+        public function getMailBody() : array
         {
-            $url = $_ENV['APP_URL'] . '/signin?token=' . $token_plain_text;
+            $url = $_ENV['APP_URL'] . '/signin?token=' . $this->token_plain_text;
 
             return 
             [
@@ -46,72 +61,92 @@
             ];
         }
 
-        public function set_email($email)
+        public function setEmail($email)
         {
             $this->email = $email;
         }
 
-        public function get_email()
+        public function getEmail()
         {
             return $this->email;
         }
 
-        public function get_token_hash()
+        public function getTokenHash()
         {
             return $this->token_hash;
         }
 
-        public function get_id_user()
+        public function getUserID()
         {
             return $this->id_user;
         }
 
-        public function get_expires()
+        public function getExpires()
         {
             return $this->expires;
         }
 
-        public function set_token_hash($token_hash)
+        public function setTokenPlainText($token_plain_text)
+        {
+            $this->token_plain_text = $token_plain_text;
+
+            if ($this->token_plain_text !== parent::DEFAULT_STR)
+            {
+                $token_hash = hash(self::HASH_ALGO, $this->token_plain_text);
+                $this->setTokenHash($token_hash);
+            }
+        }
+
+        public function setTokenPlainTextRandom()
+        {
+            $token_plain_text = $this->generateUID(self::PLAIN_TEXT_TOKEN_LEN);
+            $this->setTokenPlainText($token_plain_text);
+        }
+
+        public function setTokenHash($token_hash)
         {
             $this->token_hash = $token_hash;
         }
 
-        public function set_id_user($id_user)
+        public function setUserID($id_user)
         {
             $this->id_user = $id_user;
         }
 
-        public function set_expires($expires = false)
+        public function setExpires(string $expires)
         {
-            if ($expires === false)
-                $expires = date(parent::DATE_FORMAT, strtotime("+" . strval(self::EXP_MINUTES) . " minutes", time()));
-            
             $this->expires = $expires;
         }
 
-        public function check_expires() : bool
+        public function setExpiresAuto()
         {
-            $expires = new DateTime(self::get_expires());
+            $expires = date(parent::DATE_FORMAT, strtotime("+" . strval(self::EXP_MINUTES) . " minutes", time()));
+            $this->expires = $expires;
+        }
+
+        public function checkExpires() : bool
+        {
+            $expires = new DateTime(self::getExpires());
             $now = new DateTime(date(parent::DATE_FORMAT));
 
             return $expires < $now;
         }
 
-        public function to_assoc_array($token_hash = false, $expires = false, $email = false, $id_user = false)
+        public function toAssocArray($token_hash = false, $expires = false, $email = false, $id_user = false)
         {
             $params = array();
 
             if ($token_hash)
-                $params['token_hash'] =  $this->get_token_hash();
+                $params['token_hash'] =  $this->getTokenHash();
 
             if ($expires)
-                $params['expires'] =  $this->get_expires();
+                $params['expires'] =  $this->getExpires();
 
             if ($email)
-                $params['email'] =  $this->get_email();
+                $params['email'] =  $this->getEmail();
 
             if ($id_user)
-                $params['id_user'] =  $this->get_id_user();
+                $params['id_user'] =  $this->getUserID();
 
             return $params;
         }
@@ -123,22 +158,22 @@
         {
             $qry = "INSERT INTO email_verify (token_hash, expires, id_user) VALUES (:token_hash, :expires, :id_user)";
 
-            mypdo::connect('insert');
+            MyPDO::connect('insert');
 
-            return mypdo::qry_exec
+            return MyPDO::qryExec
             (
                 $qry, 
-                $this->to_assoc_array(token_hash:true, expires:true, email:$email_insert, id_user:true)
+                $this->toAssocArray(token_hash:true, expires:true, email:$email_insert, id_user:true)
             );
         }
 
-        public function sel_id_user_from_token_hash()
+        public function sel_userID_by_tokenHash()
         {
             $qry = "SELECT id_user FROM email_verify WHERE token_hash = :token_hash";
 
-            mypdo::connect('select');
+            MyPDO::connect('select');
 
-            $res = mypdo::qry_exec($qry, $this->to_assoc_array(token_hash:true));
+            $res = MyPDO::qryExec($qry, $this->toAssocArray(token_hash:true));
 
             if ($res === false)
                 return false;
@@ -147,18 +182,18 @@
             else
             {
                 $id_user = intval($res[0]['id_user']);
-                $this->set_id_user($id_user);
-                return $this->get_id_user();
+                $this->setUserID($id_user);
+                return $this->getUserID();
             }
         }
 
-        public function del_from_token_hash()
+        public function del_by_tokenHash()
         {
             $qry = "DELETE FROM email_verify WHERE token_hash = :token_hash OR id_user = :id_user";
 
-            mypdo::connect('delete');
+            MyPDO::connect('delete');
 
-            return mypdo::qry_exec($qry, $this->to_assoc_array(token_hash:true, id_user:true));
+            return MyPDO::qryExec($qry, $this->toAssocArray(token_hash:true, id_user:true));
         }
     }
 

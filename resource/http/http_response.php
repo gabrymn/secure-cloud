@@ -1,6 +1,6 @@
 <?php
 
-    class http_response 
+    class HttpResponse
     {
         private const DOWNLOAD_CHUNK_SIZE = 1000000; // 1MB
 
@@ -29,15 +29,15 @@
             501 => "Not Implemented"
         ];
 
-        public static function client_error(int $status_code = 400, $status_msg = false, array $array = array())
+        public static function clientError(int $status_code = 400, $status_msg = false, array $array = array())
         {
-            if (!self::status_code_valid($status_code, 400)) 
-                http_response::server_error(500);
+            if (!self::statusCodeValid($status_code, 400)) 
+                self::clientError(400);
 
             http_response_code($status_code);
 
             if ($status_msg === false)
-                $status_msg = self::get_status_msg($status_code);
+                $status_msg = self::getStatusMsg($status_code);
 
             if (isset($array['redirect']))
                 $array['redirect'] = $_ENV['APP_URL'] . $array['redirect'];
@@ -60,15 +60,15 @@
             exit;
         }
 
-        public static function server_error(int $status_code = 500, $status_msg = false, array $array = array())
+        public static function serverError(int $status_code = 500, $status_msg = false, array $array = array())
         {
-            if (!self::status_code_valid($status_code, 500)) 
-                http_response::server_error(500);
+            if (!self::statusCodeValid($status_code, 500)) 
+                self::serverError(500);
 
             http_response_code($status_code);
 
             if ($status_msg === false)
-                $status_msg = self::get_status_msg($status_code);
+                $status_msg = self::getStatusMsg($status_code);
 
             $json = json_encode(
                 array_merge(
@@ -90,13 +90,13 @@
 
         public static function successful(int $status_code = 200, $status_msg = false, array $array = array())
         {
-            if (!self::status_code_valid($status_code, 200)) 
-                http_response::server_error(500);
+            if (!self::statusCodeValid($status_code, 200)) 
+                HttpResponse::serverError(500);
             
             http_response_code($status_code);
 
             if ($status_msg === false)
-                $status_msg = self::get_status_msg($status_code);
+                $status_msg = self::getStatusMsg($status_code);
 
             if (isset($array['redirect']))
                 $array['redirect'] = $_ENV['APP_URL'] . $array['redirect'];
@@ -129,7 +129,7 @@
         public static function download($file_path)
         {
             if (!file_exists($file_path))
-                http_response::client_error(404, "File not found");
+                self::clientError(404, "File not found");
 
             header('Content-Type: ' . self::CTS['OCTET_STREAM']);
             header("Content-Transfer-Encoding: Binary");
@@ -151,13 +151,13 @@
             fclose($file);
         }
     
-        private static function status_code_valid(int $status_code, int $id)
+        private static function statusCodeValid(int $status_code, int $id)
         {
             // for example 404 is ok bcs is between 400 ($id) and 499
             return ($status_code >= $id && $status_code <= $id + 99);
         }
 
-        private static function get_status_msg(int $status_code)
+        private static function getStatusMsg(int $status_code)
         {
             if (@self::HTTP_RESPONSE_STATUS_CODES[$status_code] === null)
                 return "Status Message Not Available";

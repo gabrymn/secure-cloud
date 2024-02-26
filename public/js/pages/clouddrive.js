@@ -12,10 +12,10 @@ $("#ID_FILE_UPLOADER").on('change', async (e) => {
 
     const session_initialized = await uploader.initUploadSession();
     
-    if (session_initialized === false)
-        return;
-
-    await uploader.upload();
+    if (session_initialized)    
+    {
+        uploader.upload();
+    }
 })
 
 

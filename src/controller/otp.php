@@ -12,46 +12,46 @@
     
     class OTPController
     {
-        public static function render_auth2_page()
+        public static function renderAuth2Page()
         {
             $navbar = Navbar::getPublic();
             include __DIR__ . '/../view/auth2.php';
         }
 
-        private static function check_otp_format($otp)
+        private static function checkOTPFormat($otp)
         {   
             if (!preg_match('/^\d{6}$/', $otp) === 1)
-                http_response::client_error(400, "Invalid OTP format"); 
+                httpResponse::clientError(400, "Invalid OTP format"); 
         }
 
-        public static function processOtpChecking($otp)
+        public static function processOTPChecking($otp)
         {
-            self::check_otp_format($otp);
+            self::checkOTPFormat($otp);
 
             $user = new UserModel(id_user: $_SESSION['ID_USER']);
-            $user->set_email($user->sel_email_from_id());
+            $user->setEmail($user->selEmailFromID());
 
-            $us = new UserSecurityModel(id_user:$user->get_id_user());
-            $us->sel_rkey_from_id();
-            $us->sel_secret_2fa_c_from_id();
+            $us = new UserSecurityModel(id_user:$user->getUserID());
+            $us->sel_rKeyEnc_by_userID();
+            $us->sel_secret2faEnc_by_userID();
             
-            $rkey = crypto::decrypt($us->get_rkey_encrypted(), $_SESSION['DKEY']);
+            $rkey = Crypto::decrypt($us->getRecoveryKeyEncrypted(), $_SESSION['MASTER_KEY']);
 
-            $secret_2fa = crypto::decrypt($us->get_secret_2fa_encrypted(), $rkey);
+            $secret_2fa = Crypto::decrypt($us->getSecret2faEncrypted(), $rkey);
 
-            $tfa = new MyTFA(email: $user->get_email(), secret: $secret_2fa);
+            $tfa = new MyTFA(email: $user->getEmail(), secret: $secret_2fa);
 
             if ($tfa->codeIsValid($otp) === false)
-                http_response::client_error(400, "OTP code is wrong");
+                httpResponse::clientError(400, "OTP code is wrong");
             
             $_SESSION['AUTH_2FA'] = true;
             $_SESSION['LOGGED'] = true;
 
             unset($_SESSION['OTP_CHECKING']);
 
-            SessionModel::create_or_load(id_user: $user->get_id_user(), ip: client::get_ip());
+            SessionModel::create_or_load(id_user: $user->getUserID(), ip: Client::getIP());
             
-            http_response::successful
+            httpResponse::successful
             (
                 200, 
                 false, 

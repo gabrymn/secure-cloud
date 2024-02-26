@@ -6,7 +6,7 @@
 
     class EmailVerifyController
     {
-        public static function render_verify_page()
+        public static function renderVerifyPage()
         {
             $title = "";
             $subtitle1 = "";
@@ -41,7 +41,7 @@
                 {
                     unset($_SESSION['VERIFY_PAGE_STATUS']);
                     session_destroy();
-                    http_response::redirect('/signin');
+                    httpResponse::redirect('/signin');
 
                     break;
                 }
@@ -51,70 +51,67 @@
             include __DIR__ . '/../view/verify.php';
         }
 
-        public static function send_email_verify_from_signin()
+        public static function sendEmailVerifyFromSignin()
         {
             $email = $_SESSION['EMAIL'];
 
-            if (self::send_email_verify($email))
+            if (self::sendEmailVerify($email))
             {
                 $_SESSION['VERIFY_PAGE_STATUS'] = 'VERIFY_EMAIL_SENT';
                 unset($_SESSION['EMAIL']);
                 
-                http_response::redirect('/verify');
+                httpResponse::redirect('/verify');
             }
             else
             {
-                http_response::server_error(500);
+                httpResponse::serverError(500);
             }
         }
 
-        public static function send_email_verify($email)
+        public static function sendEmailVerify($email)
         {
             $user = new UserModel(email: $email);
-            $user->sel_id_from_email();
-
-            $ev_token = EmailVerifyModel::generate_token();
+            $user->selIDFromEmail();
 
             $ev = new EmailVerifyModel
             (
-                token_hash: hash("sha256", $ev_token), 
-                id_user: $user->get_id_user()
+                id_user: $user->getUserID()
             );
 
-            mypdo::begin_transaction();
+            MyPDO::beginTransaction();
 
             if (!$ev->ins())
             {
-                mypdo::roll_back();
+                MyPDO::rollBack();
                 return false;
             }
 
-            $mail_header = $ev->get_mail_header();
-            $mail_body = $ev->get_mail_body($ev_token);
+            $mail_header = $ev->getMailHeader();
+            $mail_body = $ev->getMailBody();
 
             $mymail = new MyMail();
 
-            if (!$mymail->send_array(array_merge($mail_header, $mail_body)))
+            if (!$mymail->sendArray(array_merge($mail_header, $mail_body)))
             {
-                mypdo::roll_back();
+                MyPDO::rollBack();
                 return false;
             }
 
-            mypdo::commit();
+            MyPDO::commit();
             return true;
         }
 
-        public static function check_email_verify_token($token)
+        public static function checkEmailVerifyToken($token)
         {
             $success_msg = "";
             $error_msg = "";
     
             $ev = new EmailVerifyModel
             (
-                token_hash: hash("sha256", $token)
+                token_plain_text: $token
             );
     
-            switch ($ev->sel_id_user_from_token_hash())
+            switch ($ev->sel_userID_by_tokenHash())
             {
                 case false:
                 {
@@ -133,15 +130,15 @@
                 default:
                 {
                     if (session_status() !== PHP_SESSION_ACTIVE)
-                    session_start();
+                        session_start();
     
                     if (isset($_SESSION['VERIFING_EMAIL']))
                         unset($_SESSION['VERIFING_EMAIL']);
         
-                    $user = new UserModel(id_user: $ev->get_id_user());
+                    $user = new UserModel(id_user: $ev->getUserID());
 
-                    $user->upd_user_to_verified();
-                    $ev->del_from_token_hash();
+                    $user->updUserToVerified();
+                    $ev->del_by_tokenHash();
                     
                     $success_msg = "Email verified, sign in";
                     break;

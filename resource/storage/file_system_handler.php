@@ -7,12 +7,12 @@
         public const UPLOADS_DIRNAME =  '.uploads_buffer';
         public const DOWNLOADS_DIRNAME =  '.downloads_buffer';
 
-        public static function get_user_dir($id_user, $email_user)
+        public static function getUserDir($id_user, $email_user)
         {
             return md5($id_user . $email_user);
         }
 
-        public static function mk_user_dir($id_user, $email_user)
+        public static function makeUserDir($id_user, $email_user)
         {
             if (!is_dir(self::ROOT_STORAGE_DIR))
                 mkdir(self::ROOT_STORAGE_DIR);
@@ -32,10 +32,10 @@
             );
         }
 
-        public static function count_files_of($dir)
+        public static function countFilesOf($dir)
         {
             $dir .= "/";            
-            $fileCount = 0;
+            $file_count = 0;
         
             if (is_dir($dir)) 
             {
@@ -43,16 +43,16 @@
         
                 foreach ($files as $file) 
                 {
-                    $filePath = $dir . $file;
+                    $file_path = $dir . $file;
                     
                     // Escludi le directory e i collegamenti simbolici
-                    if (is_file($filePath)) 
+                    if (is_file($file_path)) 
                     {
-                        $fileCount++;
+                        $file_count++;
                     }
                 }
         
-                return $fileCount;
+                return $file_count;
             } 
             else 
             {
@@ -60,7 +60,7 @@
             }
         }
 
-        public static function rm_dir($dir) 
+        public static function deleteDir($dir) 
         {
             if (!is_dir($dir)) {
                 // Non è una directory, quindi non c'è nulla da eliminare
@@ -82,7 +82,7 @@
         
                     // Se è una directory, richiama la funzione ricorsivamente
                     if (is_dir($entry_path)) {
-                        self::rm_dir($entry_path);
+                        self::deleteDir($entry_path);
                     } else {
                         // Se è un file, elimina il file
                         unlink($entry_path);
@@ -97,7 +97,7 @@
             rmdir($dir);
         }
 
-        public static function handle_filename_exists(string &$filename)
+        public static function handleFilenameExists(string &$filename)
         {
             $ext = pathinfo($filename, PATHINFO_EXTENSION);
             $name = pathinfo($filename, PATHINFO_FILENAME);

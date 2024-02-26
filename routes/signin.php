@@ -1,34 +1,38 @@
-<?php
+<?php   
 
+    require_once __DIR__ . '/routes_interface.php';
     require_once __DIR__ . '/../resource/router.php';
     require_once __DIR__ . '/../src/controller/signin.php';
     require_once __DIR__ . '/../src/controller/email_verify.php';
 
-    function get_signin_routes() : array
+    abstract class signin implements RoutesInterface
     {
-        $router_signin = new Router();
+        public static function getRoutes()
+        {
+            $router_signin = new Router();
 
-        $router_signin->GET('/signin', [], function() {
+            $router_signin->GET('/signin', [], function() {
 
-            SigninController::render_signin_page();
-        });
+                SigninController::renderSigninPage();
+            });
 
-        $router_signin->POST('/signin', ['email', 'pwd'], function($args) {
+            $router_signin->POST('/signin', ['email', 'pwd'], function($args) {
+                
+                SigninController::processSignin($args['email'], $args['pwd']);
+            });
             
-            SigninController::process_signin($args['email'], $args['pwd']);
-        });
+            $router_signin->GET('/signin', ['token'], function($args) {
+
+                $response = EmailVerifyController::checkEmailVerifyToken($args['token']);
+                
+                $success_msg = $response['success_msg'];
+                $error_msg = $response['error_msg'];
         
-        $router_signin->GET('/signin', ['token'], function($args) {
+                SigninController::renderSigninPage($success_msg, $error_msg);
+            });
 
-            $response = EmailVerifyController::check_email_verify_token($args['token']);
-            
-            $success_msg = $response['success_msg'];
-            $error_msg = $response['error_msg'];
-    
-            SigninController::render_signin_page($success_msg, $error_msg);
-        });
-
-        return $router_signin->getRoutes();
+            return $router_signin->getRoutes();
+        }
     }
 
 

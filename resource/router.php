@@ -3,7 +3,7 @@
     class Router 
     {
         private array $routes;
-        private $notFoundCallback;
+        private $notfound_callback;
 
         private ?array $get_array;
         private ?array $post_array;
@@ -71,14 +71,14 @@
 
         public function setNotFoundCallback($notFoundCallback)
         {
-            $this->notFoundCallback = $notFoundCallback;
+            $this->notfound_callback = $notFoundCallback;
         }
 
         public function handleRequest(string $method, string $path)
         {
             $parsed_path = parse_url($path, PHP_URL_PATH);
 
-            $method_array = $this->get_method_array($method);
+            $method_array = $this->getMethodArray($method);
 
             $request_arg_keys = array_keys($method_array);
 
@@ -88,9 +88,9 @@
 
                 if ($res['status'] && $route['method'] === $method && array_diff($request_arg_keys, $route['args']) === [])
                 {
-                    $this->sanitaize_user_inputs($method_array);
+                    $this->sanitaizeUserInputs($method_array);
                     
-                    $args = $this->get_output_args($method_array);
+                    $args = $this->getOutputArgs($method_array);
 
                     call_user_func($route['callback'], $args);
 
@@ -98,7 +98,7 @@
                 }
             }
 
-            call_user_func($this->notFoundCallback);
+            call_user_func($this->notfound_callback);
         }
 
         private function matchPath(string $routePath, string $requestPath) : array 
@@ -108,13 +108,13 @@
             return array('status' => $status, 'matches' => $matches);
         }
 
-        private function sanitaize_user_inputs(array &$array)
+        private function sanitaizeUserInputs(array &$array)
         {
             foreach ($array as $key => $val)
                 $array[$key] = htmlspecialchars($val, ENT_QUOTES, 'UTF-8');
         }
 
-        private function get_output_args($method_array)
+        private function getOutputArgs($method_array)
         {
             if ($this->files_array === array()) 
                 return $method_array;
@@ -124,7 +124,7 @@
             return array_merge($method_array, $this->files_array); 
         }
 
-        private function get_method_array($method) : array
+        private function getMethodArray($method) : array
         {
             switch ($method)
             {
@@ -156,33 +156,5 @@
             }
         }
     }
-
-    /*      public static function encryptFile($source, $dest, $key)
-        {
-            $cipher = 'aes-256-gcm';
-            $ivLength = 16;
-            $iv = openssl_random_pseudo_bytes($ivLength);
-
-            $plaintext = file_get_contents($source);
-            $ciphertext = openssl_encrypt($plaintext, $cipher, $key, OPENSSL_RAW_DATA, $iv, $tag);
-
-            // Scrivi l'IV e il tag nel file di destinazione
-            file_put_contents($dest, $iv . $tag . $ciphertext);
-        }
-
-        public static function decryptFile($source, $dest, $key)
-        {
-            $cipher = 'aes-256-gcm';
-            $ivLength = 16;
-
-            $contents = file_get_contents($source);
-            $iv = substr($contents, 0, $ivLength);
-            $tag = substr($contents, $ivLength, 16);
-            $ciphertext = substr($contents, $ivLength * 2);
-
-            // Decifra il contenuto e scrivi nel file di destinazione
-            $plaintext = openssl_decrypt($ciphertext, $cipher, $key, OPENSSL_RAW_DATA, $iv, $tag);
-            file_put_contents($dest, $plaintext);
-        }*/
 
 ?>
