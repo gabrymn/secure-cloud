@@ -81,7 +81,7 @@ export default class FileUploader {
         return chunks;
     }
 
-    uploadChunks(filename, filetype, chunks)
+    uploadChunks(filename, mimetype, chunks)
     {
         chunks.forEach((chunk, index) => {
 
@@ -90,7 +90,7 @@ export default class FileUploader {
             formData.append('file', chunk);
             formData.append('upload_session_id', this.getUploadSessionID());
             formData.append('filename', filename);
-            formData.append('filetype', filetype);
+            formData.append('mimetype', mimetype);
             formData.append('chunk_index', index);
             formData.append('chunks_len', chunks.length);
 

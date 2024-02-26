@@ -6,10 +6,11 @@
         public const DATA_DIRNAME =  'data';
         public const UPLOADS_DIRNAME =  '.uploads_buffer';
         public const DOWNLOADS_DIRNAME =  '.downloads_buffer';
+        private const HASH_ALGO = "sha256";
 
         public static function getUserDir($id_user, $email_user)
         {
-            return md5($id_user . $email_user);
+            return hash(self::HASH_ALGO, ($id_user . $email_user));
         }
 
         public static function makeUserDir($id_user, $email_user)
@@ -17,7 +18,7 @@
             if (!is_dir(self::ROOT_STORAGE_DIR))
                 mkdir(self::ROOT_STORAGE_DIR);
 
-            $user_dir_root = self::ROOT_STORAGE_DIR . '/' . md5($id_user . $email_user);
+            $user_dir_root = self::ROOT_STORAGE_DIR . '/' . self::getUserDir($id_user, $email_user);
 
             $user_dir_data = $user_dir_root . '/' . self::DATA_DIRNAME;
             $user_dir_uploads = $user_dir_root . '/' . self::UPLOADS_DIRNAME;

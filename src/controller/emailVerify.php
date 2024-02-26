@@ -137,7 +137,7 @@
         
                     $user = new UserModel(id_user: $ev->getUserID());
 
-                    $user->updUserToVerified();
+                    $user->upd_user_to_verified();
                     $ev->del_by_tokenHash();
                     
                     $success_msg = "Email verified, sign in";

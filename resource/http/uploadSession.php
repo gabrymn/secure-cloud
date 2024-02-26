@@ -102,7 +102,7 @@
         {
             $final_dir = self::STORAGE_ROOT_DIR . '/';
             $final_dir .= $_SESSION['USER_DIR'] . '/';
-            $final_dir .= FileSysHandler::DATA_DIRNAME . '/';
+            $final_dir .= FileSysHandler::DATA_DIRNAME;
 
             return  $final_dir;
         }
@@ -129,47 +129,6 @@
             (
                 FileSysHandler::countFilesOf($chunk_dir) === intval($chunks_len)
             );
-        }
-
-        public static function storeChunk($filename, $filename_php, $chunk_index)
-        {
-            $chunk_dir = self::getChunkDir($filename);
-
-            if (!is_dir($chunk_dir)) 
-                mkdir($chunk_dir);
-
-            $chunk_filename = $chunk_dir . '/part.' . $chunk_index;
-            
-            move_uploaded_file
-            (
-                $filename_php, 
-                $chunk_filename
-            );
-        }
-
-        public static function concatChunks($filename)
-        {   
-            $chunk_dir = self::getChunkDir($filename);
-
-            $file_chunks = $chunk_dir . "/part.*";
-            $file_chunks = glob($file_chunks);   // Array (part.1, part.2, ..., part.n)
-            
-            sort($file_chunks, SORT_NATURAL);
-            
-            $final_dir = self::getFinalDir();
-
-            $final_file = fopen($final_dir . "/" . $filename, 'w');
-
-            foreach ($file_chunks as $file_chunk) 
-            {
-                $file_chunk_ctx = file_get_contents($file_chunk);
-                fwrite($final_file, $file_chunk_ctx);
-                unlink($file_chunk);  
-            }
-
-            fclose($final_file);
-
-            FileSysHandler::deleteDir($chunk_dir);   // storage/[USER_DIR]/.uploads_buffer/[SESSION_UPLOADS_ID]/[FILENAME]/
         }
     }
 

@@ -33,7 +33,7 @@
         {
             if (!self::statusCodeValid($status_code, 400)) 
                 self::clientError(400);
-
+            
             http_response_code($status_code);
 
             if ($status_msg === false)

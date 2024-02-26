@@ -6,19 +6,23 @@
     class FileModel extends Model
     {
         private string $id_file;
-        private string $full_path;
+        private string $fullpath_encrypted;
         private int $size;
-        private string $mime_type;
+        private string $mimetype;
         private int $id_user;
 
         public const ID_FILE_LEN = 20;
 
-        public function __construct(?string $id_file = null, ?string $full_path = null, ?int $size = null, ?string $mime_type = null, ?int $id_user = null) 
+        public function __construct(string $id_file = null, ?string $fullpath_encrypted = null, ?int $size = null, ?string $mimetype = null, ?int $id_user = null) 
         {
-            $this->setFileID($id_file ? $id_file : parent::DEFAULT_STR);
-            $this->setFullPath($full_path ? $full_path : parent::DEFAULT_STR);
+            if ($id_file === null)
+                $this->setFileIDRandom();
+            else
+                $this->setFileID(parent::DEFAULT_STR);
+
+            $this->setFullPathEncrypted($fullpath_encrypted ? $fullpath_encrypted : parent::DEFAULT_STR);
             $this->setSize($size ? $size : parent::DEFAULT_INT);
-            $this->setMimeType($mime_type ? $mime_type : parent::DEFAULT_STR);
+            $this->setMimeType($mimetype ? $mimetype : parent::DEFAULT_STR);
             $this->setUserID($id_user ? $id_user : parent::DEFAULT_INT);
         }
 
@@ -30,19 +34,25 @@
                 $this->id_file = $id_file;
         }
 
+        public function setFileIDRandom()
+        {
+            $id_file = $this->generateUID(self::ID_FILE_LEN);
+            $this->setFileID($id_file);
+        }
+
         public function getFileID() : string
         {
             return $this->id_file;
         }
 
-        public function setFullPath(string $full_path) : void
+        public function setFullPathEncrypted(string $fullpath_encrypted) : void
         {
-            $this->full_path = $full_path;
+            $this->fullpath_encrypted = $fullpath_encrypted;
         }
 
-        public function getFullPath() : string
+        public function getFullPathEncrypted() : string
         {
-            return $this->full_path;
+            return $this->fullpath_encrypted;
         }
 
         public function setSize(int $size) : void
@@ -55,14 +65,14 @@
             return $this->size;
         }
 
-        public function setMimeType(string $mime_type) : void
+        public function setMimeType(string $mimetype) : void
         {
-            $this->mime_type = $mime_type;
+            $this->mimetype = $mimetype;
         }
 
         public function getMimeType() : string
         {
-            return $this->mime_type;
+            return $this->mimetype;
         }
 
         public function setUserID(int $id_user) : void
@@ -75,21 +85,21 @@
             return $this->id_user;
         }
 
-        public function toAssocArray($id_file = false, $full_path = false, $size = false, $mime_type = false, $id_user = false)
+        public function toAssocArray($id_file = false, $fullpath_encrypted = false, $size = false, $mimetype = false, $id_user = false)
         {
             $params = array();
 
             if ($id_file)
                 $params['id_file'] =  $this->getFileID();
 
-            if ($full_path)
-                $params['full_path'] =  $this->getFullPath();
+            if ($fullpath_encrypted)
+                $params['fullpath_encrypted'] =  $this->getFullPathEncrypted();
 
             if ($size)
                 $params['size'] =  $this->getSize();
 
-            if ($mime_type)
-                $params['mime_type'] = $this->getMimeType();
+            if ($mimetype)
+                $params['mimetype'] = $this->getMimeType();
 
             if ($id_user)
                 $params['id_user'] =  $this->getUserID();
@@ -99,18 +109,18 @@
 
         public function ins()
         {
-            $qry = "INSERT INTO `files` (`id_file`, `full_path`, `size`, `mime_type`, `id_user`) VALUES (:id_file, :full_path, :size, :mime_type, :id_user)";
+            $qry = "INSERT INTO `files` (`id_file`, `fullpath_encrypted`, `size`, `mimetype`, `id_user`) VALUES (:id_file, :fullpath_encrypted, :size, :mimetype, :id_user)";
 
             MyPDO::connect('insert');
 
-            return MyPDO::qryExec($qry, $this->toAssocArray(id_file:true, full_path:true, size:true, mime_type:true, id_user:true));
+            return MyPDO::qryExec($qry, $this->toAssocArray(id_file:true, fullpath_encrypted:true, size:true, mimetype:true, id_user:true));
         }
 
         public static function selFileNamesFromUserID($id_user)
         {
             $file = new FileModel(id_user: $id_user);
 
-            $qry = "SELECT full_path FROM files WHERE id_user = :id_user";
+            $qry = "SELECT fullpath_encrypted FROM files WHERE id_user = :id_user";
 
             MyPDO::connect('select');
 
@@ -120,7 +130,7 @@
                 return false;
             else
             {
-                return array_column($res, 'full_path');
+                return array_column($res, 'fullpath_encrypted');
             }
         }
     }

@@ -223,7 +223,7 @@
             }
         }
 
-        public function updUserToVerified()
+        public function upd_user_to_verified()
         {
             $qry = "UPDATE users SET verified = 1 WHERE id_user = :id_user";
             MyPDO::connect('update');

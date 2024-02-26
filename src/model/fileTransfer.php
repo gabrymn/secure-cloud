@@ -9,23 +9,29 @@
         private string $transfer_type;
         private string $id_file;
 
+        public const TTYPE_UPLOAD = "upload";
+        public const TTYPE_DOWNLOAD = "download";
+
         public function __construct($transfer_date = null, string $transfer_type = null, string $id_file = null) 
         {
-            $this->setTransferDate($transfer_date ? $transfer_date : parent::DEFAULT_STR);
+            if ($transfer_date === null)
+                $this->setTransferDateNow();
+            else
+                $this->setTransferDate($transfer_date);
+
             $this->setTransferType($transfer_type ? $transfer_type : parent::DEFAULT_STR);
             $this->setFileID($id_file ? $id_file : parent::DEFAULT_STR);
         }
 
-        public function setTransferDate($transfer_date = null) : void
+        public function setTransferDate($transfer_date) : void
         {
-            if ($transfer_date === parent::DEFAULT_STR || $transfer_date === null)
-            {
-                $this->transfer_date = MyDatetime::now();
-            }
-            else
-            {
-                $this->transfer_date = $transfer_date;
-            }
+            $this->transfer_date = $transfer_date;
+        }
+
+        public function setTransferDateNow()
+        {
+            $transfer_date = MyDatetime::now();
+            $this->setTransferDate($transfer_date);
         }
 
         public function getTransferDate()
@@ -36,7 +42,7 @@
         public function setTransferType(string $transfer_type) : void
         {
             $transfer_type = strtolower($transfer_type);
-            $this->transfer_type = in_array($transfer_type, ['upload', 'download']) ? $transfer_type : self::DEFAULT_STR;
+            $this->transfer_type = in_array($transfer_type, [self::TTYPE_UPLOAD, self::TTYPE_DOWNLOAD]) ? $transfer_type : self::DEFAULT_STR;
         }
 
         public function getTransferType() : string

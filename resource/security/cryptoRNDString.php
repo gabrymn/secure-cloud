@@ -1,5 +1,8 @@
 <?php
 
+
+    require_once __DIR__ . '/../dataStructure.php';
+
     /**
      * Class CryptoRNDString
      * It generates cryptographically-strong-random strings
