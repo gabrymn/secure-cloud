@@ -3,10 +3,11 @@
     require_once __DIR__ . '/root.php';
     require_once __DIR__ . '/test.php';
     require_once __DIR__ . '/signin.php';
+    require_once __DIR__ . '/signout.php';
     require_once __DIR__ . '/signup.php';
     require_once __DIR__ . '/auth2.php';
     require_once __DIR__ . '/recover.php';
-    require_once __DIR__ . '/email_verify.php';
+    require_once __DIR__ . '/verify.php';
     require_once __DIR__ . '/clouddrive.php';
     require_once __DIR__ . '/transfers.php';
     require_once __DIR__ . '/sessions.php';

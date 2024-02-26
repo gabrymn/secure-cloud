@@ -1,7 +1,7 @@
 <?php
 
-    require_once __DIR__ . '/../security/crypto_rnd_string.php';
-    require_once __DIR__ . '/../storage/file_system_handler.php';
+    require_once __DIR__ . '/../security/cryptoRNDString.php';
+    require_once __DIR__ . '/../storage/fileSysHandler.php';
 
     class UploadSession extends DataStructure
     {
@@ -78,7 +78,7 @@
         public static function createSessionDir()
         {
             $upload_session_dir = self::STORAGE_ROOT_DIR . '/';
-            $upload_session_dir .= $_SESSION['user_dir'] . '/';
+            $upload_session_dir .= $_SESSION['USER_DIR'] . '/';
             $upload_session_dir .= FileSysHandler::UPLOADS_DIRNAME . '/';
             $upload_session_dir .= self::getID();
 
@@ -101,7 +101,7 @@
         public static function getFinalDir()
         {
             $final_dir = self::STORAGE_ROOT_DIR . '/';
-            $final_dir .= $_SESSION['user_dir'] . '/';
+            $final_dir .= $_SESSION['USER_DIR'] . '/';
             $final_dir .= FileSysHandler::DATA_DIRNAME . '/';
 
             return  $final_dir;

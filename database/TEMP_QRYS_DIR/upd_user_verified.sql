@@ -1,1 +1,0 @@
-UPDATE users SET verified = 1 WHERE id = ?

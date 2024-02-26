@@ -1,1 +1,0 @@
-SELECT id FROM `secure_cloud`.`users` WHERE email = ?

@@ -1,6 +1,7 @@
 <?php
 
-    require_once __DIR__ . '/routes_interface.php';
+    require_once __DIR__ . '/routesInterface.php';
+    require_once __DIR__ . '/../src/controller/staticPages.php';
 
     abstract class root implements RoutesInterface
     {
@@ -10,7 +11,7 @@
 
             $router->GET('/', [], function () {
         
-                StaticPagesController::render_page('home');
+                StaticPagesController::renderPage('home');
             });
 
             return $router->getRoutes();

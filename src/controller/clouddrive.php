@@ -1,16 +1,16 @@
 <?php
 
-    require_once __DIR__ . '/../../model/user_security.php';
-    require_once __DIR__ . '/../../model/user.php';
-    require_once __DIR__ . '/../../model/file.php';
-    require_once __DIR__ . '/../../model/file_transfer.php';
-    require_once __DIR__ . '/../../../resource/security/crypto.php';
-    require_once __DIR__ . '/../../../resource/http/http_response.php';
-    require_once __DIR__ . '/../../../resource/storage/file_system_handler.php';
-    require_once __DIR__ . '/../../../resource/security/crypto_rnd_string.php';
-    require_once __DIR__ . '/../../../resource/security/user_keys_handler.php';
-    require_once __DIR__ . '/../../../resource/mydatetime.php';
-    require_once __DIR__ . '/../../view/assets/navbar.php';
+    require_once __DIR__ . '/../model/userSecurity.php';
+    require_once __DIR__ . '/../model/user.php';
+    require_once __DIR__ . '/../model/file.php';
+    require_once __DIR__ . '/../model/fileTransfer.php';
+    require_once __DIR__ . '/../../resource/security/crypto.php';
+    require_once __DIR__ . '/../../resource/http/httpResponse.php';
+    require_once __DIR__ . '/../../resource/storage/fileSysHandler.php';
+    require_once __DIR__ . '/../../resource/security/cryptoRNDString.php';
+    require_once __DIR__ . '/../../resource/security/userKeysHandler.php';
+    require_once __DIR__ . '/../../resource/myDateTime.php';
+    require_once __DIR__ . '/../view/assets/navbar.php';
 
     class CloudDriveController
     {
@@ -20,7 +20,7 @@
             
             $navbar = Navbar::getPrivate('clouddrive');
 
-            include __DIR__ . '/../../view/clouddrive.php';
+            include __DIR__ . '/../view/clouddrive.php';
         }
 
         public static function renderFilePreview()

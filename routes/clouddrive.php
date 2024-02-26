@@ -1,9 +1,9 @@
 <?php
 
-    require_once __DIR__ . '/routes_interface.php';
-    require_once __DIR__ . '/../src/controller/auth_checker.php';
-    require_once __DIR__ . '/../src/controller/cloud/clouddrive.php';
-    require_once __DIR__ . '/../src/controller/cloud/file_uploader.php';
+    require_once __DIR__ . '/routesInterface.php';
+    require_once __DIR__ . '/../src/controller/auth.php';
+    require_once __DIR__ . '/../src/controller/clouddrive.php';
+    require_once __DIR__ . '/../src/controller/fileUploader.php';
 
     abstract class clouddrive implements RoutesInterface
     {
@@ -13,26 +13,26 @@
 
             $router->GET('/clouddrive', [], function() {
     
-                AuthController::check_protectedarea();
-                CloudDriveController::render_clouddrive_page();
+                AuthController::checkProtectedArea();
+                CloudDriveController::renderClouddrivePage();
             }); 
     
             $router->POST('/clouddrive/upload/initialize', ['upload_space_required'], function($args) {
                 
-                AuthController::check_protectedarea(redirect: false);
+                AuthController::checkProtectedArea(redirect: false);
                 FileUploaderController::initializeUploadSession($args);
             }); 
             
             $router->POST('/clouddrive/upload', ['file', 'upload_session_id', 'filename', 'filetype', 'chunk_index', 'chunks_len'], function($args) {
                     
-                AuthController::check_protectedarea(redirect: false);
+                AuthController::checkProtectedArea(redirect: false);
                 FileUploaderController::handleUploadStreaming($args);
             }); 
     
             $router->GET('/clouddrive/download', ['id_file'], function($args) {
                 
-                AuthController::check_protectedarea(redirect: false);
-                CloudDriveController::handle_download_of($args['id_file']);
+                AuthController::checkProtectedArea(redirect: false);
+                CloudDriveController::handleDownloadOf($args['id_file']);
             }); 
     
             return $router->getRoutes();

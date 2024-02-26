@@ -1,1 +1,0 @@
-SELECT verified FROM users WHERE id = ?

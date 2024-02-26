@@ -1,13 +1,13 @@
 <?php
 
 
-    require_once __DIR__ . '/../../resource/http/http_response.php';
+    require_once __DIR__ . '/../../resource/http/httpResponse.php';
     require_once __DIR__ . '/../../resource/security/crypto.php';
-    require_once __DIR__ . '/../../resource/storage/mypdo.php';
-    require_once __DIR__ . '/../../resource/mydatetime.php';
+    require_once __DIR__ . '/../../resource/storage/myPDO.php';
+    require_once __DIR__ . '/../../resource/myDateTime.php';
     require_once __DIR__ . '/../../resource/http/client.php';
     require_once __DIR__ . '/../model/user.php';
-    require_once __DIR__ . '/../model/email_verify.php';
+    require_once __DIR__ . '/../model/emailVerify.php';
     require_once __DIR__ . '/../model/session.php';
     require_once __DIR__ . '/../view/assets/navbar.php';
     
@@ -72,7 +72,7 @@
             {
                 $_SESSION['VERIFY_PAGE_STATUS'] = 'SIGNIN_WITH_EMAIL_NOT_VERIFIED';
                 $_SESSION['EMAIL'] = $user->getEmail();
-
+                
                 httpResponse::clientError
                 (
                     400, 
@@ -131,18 +131,10 @@
 
             // No 2FA, login ok
 
-            $_SESSION['LOGGED'] = true;
-
-
             // ------------ END 2FA PROCESS -----------
 
 
-
-
-
-            // check if there is an active session with the client IP
-
-            SessionModel::create_or_load(Client::getIP(), $user->getUserID());
+            SessionController::initSession(Client::getIP(), $user->getUserID());
 
             httpResponse::successful
             (

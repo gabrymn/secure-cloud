@@ -1,9 +1,9 @@
 <?php
 
     require_once __DIR__ . '/../view/assets/navbar.php';
-    require_once __DIR__ . '/../model/user_security.php';
-    require_once __DIR__ . '/../../resource/http/http_response.php';
-    require_once __DIR__ . '/../../resource/security/user_keys_handler.php';
+    require_once __DIR__ . '/../model/userSecurity.php';
+    require_once __DIR__ . '/../../resource/http/httpResponse.php';
+    require_once __DIR__ . '/../../resource/security/userKeysHandler.php';
 
     class AccountRecoveryController
     {
@@ -46,7 +46,7 @@
                 HttpResponse::clientError(400, "Invalid password format");
 
             $ukh = UserKeysHandler::getInstanceFromPassword($password);
-            $ukh->setRecoveryKey($_SESSION['RKEY']);
+            $ukh->setRecoveryKey($_SESSION['RECOVERY_KEY']);
 
             $us = new UserSecurityModel
             (

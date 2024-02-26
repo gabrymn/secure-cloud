@@ -3,7 +3,7 @@
     require_once __DIR__ . '/../view/assets/navbar.php';
     require_once __DIR__ . '/../model/user.php';
     require_once __DIR__ . '/../../resource/security/crypto.php';
-    require_once __DIR__ . '/../../resource/security/my_two_factor_auth.php';
+    require_once __DIR__ . '/../../resource/security/myTFA.php';
     
     class ProfileController
     {
@@ -23,7 +23,7 @@
             $rkey_encrypted = $us->getRecoveryKeyEncrypted();
             $ckey_encrypted = $us->getCipherKeyEncrypted();
 
-            $rkey = Crypto::decrypt($rkey_encrypted, $_SESSION['DKEY']);
+            $rkey = Crypto::decrypt($rkey_encrypted, $_SESSION['MASTER_KEY']);
 
             $ckey = Crypto::decrypt($ckey_encrypted, $rkey);
 

@@ -1,16 +1,16 @@
 <?php
 
-    require_once __DIR__ . '/../../resource/http/http_response.php';
-    require_once __DIR__ . '/../../resource/storage/file_system_handler.php';
-    require_once __DIR__ . '/../../resource/security/crypto_rnd_string.php';
-    require_once __DIR__ . '/../../resource/storage/mypdo.php';
-    require_once __DIR__ . '/../../resource/mymail.php';
-    require_once __DIR__ . '/../../resource/security/my_two_factor_auth.php';
-    require_once __DIR__ . '/../../resource/security/user_keys_handler.php';
+    require_once __DIR__ . '/../../resource/http/httpResponse.php';
+    require_once __DIR__ . '/../../resource/storage/fileSysHandler.php';
+    require_once __DIR__ . '/../../resource/security/cryptoRNDString.php';
+    require_once __DIR__ . '/../../resource/storage/myPDO.php';
+    require_once __DIR__ . '/../../resource/myMail.php';
+    require_once __DIR__ . '/../../resource/security/myTFA.php';
+    require_once __DIR__ . '/../../resource/security/userKeysHandler.php';
     require_once __DIR__ . '/../view/assets/navbar.php';
     require_once __DIR__ . '/../model/user.php';
-    require_once __DIR__ . '/../model/email_verify.php';
-    require_once __DIR__ . '/../model/user_security.php';
+    require_once __DIR__ . '/../model/emailVerify.php';
+    require_once __DIR__ . '/../model/userSecurity.php';
     
     class SignupController
     {

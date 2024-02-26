@@ -1,6 +1,6 @@
 <?php
 
-    require_once __DIR__ .  '/../../resource/http/http_response.php';
+    require_once __DIR__ .  '/../../resource/http/httpResponse.php';
     require_once __DIR__ . '/../view/assets/navbar.php';
     require_once __DIR__ . '/../model/session.php';
 
@@ -14,9 +14,45 @@
             include __DIR__ . '/../view/sessions.php';
         }
 
-        public static function initSession()
+        public static function initSession($ip_client, $id_user)
         {
-            
+            $_SESSION['LOGGED'] = true;
+
+            $session = new SessionModel(ip: $ip_client, id_user: $id_user);
+
+            $id_session = $session->sel_sessionID_by_userID_clientIP();
+
+            if ($id_session === -1)
+            {
+                // create session
+                $session->setSessionIDRandom();
+                $session->setOS(client::getOS());
+                $session->setBrowser(client::getBrowser());
+
+                $_SESSION['CURRENT_ID_SESSION'] = $session->getSessionID();
+
+                $session->setDateStart();
+                $session->setRecentActivity();
+
+                $session->ins();
+            }
+            else
+            {
+                // load session
+                $_SESSION['CURRENT_ID_SESSION'] = $id_session;
+
+                $session->setSessionID($id_session);
+                $session->setRecentActivity();
+                
+                $session->upd_recentActivity_by_sessionID();
+            }
+
+            $user = new UserModel(id_user: $_SESSION['ID_USER']);
+            $user->selEmailFromID();
+
+            $_SESSION['USER_DIR'] = FileSysHandler::getUserDir($user->getUserID(), $user->getEmail());
+
+            return true;
         }
 
         public static function expireSession($id_session)

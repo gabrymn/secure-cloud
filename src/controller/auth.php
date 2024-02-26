@@ -1,6 +1,6 @@
 <?php
 
-    require_once __DIR__ . '/../../resource/http/http_response.php';
+    require_once __DIR__ . '/../../resource/http/httpResponse.php';
     require_once __DIR__ . '/../model/session.php';
     
     class AuthController

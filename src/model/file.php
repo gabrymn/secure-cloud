@@ -1,6 +1,6 @@
 <?php
 
-    require_once __DIR__ . '/../../resource/storage/MyPDO.php';
+    require_once __DIR__ . '/../../resource/storage/myPDO.php';
     require_once __DIR__ . '/model.php';
 
     class FileModel extends Model

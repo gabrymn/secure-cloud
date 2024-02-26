@@ -21,6 +21,7 @@
             date_default_timezone_set(parent::TZ);
 
             $this->setSessionID($id_session ? $id_session : parent::DEFAULT_STR);
+            
             $this->setIP($ip ? $ip : parent::DEFAULT_STR);
             $this->setOS($os ? $os : parent::DEFAULT_STR);
             $this->setBrowser($browser ? $browser: parent::DEFAULT_STR);
@@ -38,6 +39,12 @@
                 $this->id_session = parent::DEFAULT_STR;
             else
                 $this->id_session = $id_session;
+        }
+
+        public function setSessionIDRandom(): void
+        {
+            $id_session = $this->generateUID(self::ID_SESSION_LEN);
+            $this->setSessionID($id_session);
         }
 
         public function getSessionID(): string
@@ -154,49 +161,6 @@
                 $params["id_user"] = $this->getUserID();
 
             return $params;
-        }
-
-        public static function create_or_load($ip, $id_user)
-        {   
-            $session = new SessionModel(ip:$ip, id_user:$id_user);
-
-            if (session_status() !== PHP_SESSION_ACTIVE) 
-                session_start();
-
-            $id_session = $session->sel_sessionID_by_userID_clientIP();
-
-            if ($id_session === -1)
-            {
-                $id_session = $session->generateUID(self::ID_SESSION_LEN);
-
-                $session->setSessionID($id_session);
-                $session->setOS(client::getOS());
-                $session->setBrowser(client::getBrowser());
-
-                $_SESSION['CURRENT_ID_SESSION'] = $session->getSessionID();
-
-                $session->setDateStart();
-                $session->setRecentActivity();
-
-                $session->ins();
-            }
-            else
-            {
-                // load session
-                $_SESSION['CURRENT_ID_SESSION'] = $id_session;
-
-                $session->setSessionID($id_session);
-                $session->setRecentActivity();
-                
-                $session->upd_recentActivity_by_sessionID();
-            }
-
-            $user = new UserModel(id_user: $_SESSION['ID_USER']);
-            $user->selEmailFromID();
-
-            $_SESSION['user_dir'] = FileSysHandler::getUserDir($user->getUserID(), $user->getEmail());
-
-            return true;
         }
 
         public static function getSessionsOf($id_user, $id_session)

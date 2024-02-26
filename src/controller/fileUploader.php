@@ -1,8 +1,8 @@
 <?php
 
-    require_once __DIR__ . '/../../../resource/http/http_response.php';
-    require_once __DIR__ . '/../../../resource/http/upload_session.php';
-    require_once __DIR__ . '/../../model/user.php';
+    require_once __DIR__ . '/../../resource/http/httpResponse.php';
+    require_once __DIR__ . '/../../resource/http/uploadSession.php';
+    require_once __DIR__ . '/../model/user.php';
 
     class FileUploaderController
     {

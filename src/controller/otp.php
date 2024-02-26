@@ -1,13 +1,13 @@
 <?php
 
-    require_once __DIR__ . '/../../resource/http/http_response.php';
-    require_once __DIR__ . '/../../resource/security/my_two_factor_auth.php';
-    require_once __DIR__ . '/../../resource/storage/mypdo.php';
+    require_once __DIR__ . '/../../resource/http/httpResponse.php';
+    require_once __DIR__ . '/../../resource/security/myTFA.php';
+    require_once __DIR__ . '/../../resource/storage/myPDO.php';
     require_once __DIR__ . '/../../resource/security/crypto.php';
     require_once __DIR__ . '/../../resource/http/client.php';
     require_once __DIR__ . '/../model/session.php';
     require_once __DIR__ . '/../model/user.php';
-    require_once __DIR__ . '/../model/user_security.php';
+    require_once __DIR__ . '/../model/userSecurity.php';
     require_once __DIR__ . '/../view/assets/navbar.php';
     
     class OTPController
@@ -45,12 +45,10 @@
                 httpResponse::clientError(400, "OTP code is wrong");
             
             $_SESSION['AUTH_2FA'] = true;
-            $_SESSION['LOGGED'] = true;
-
             unset($_SESSION['OTP_CHECKING']);
 
-            SessionModel::create_or_load(id_user: $user->getUserID(), ip: Client::getIP());
-            
+            SessionController::initSession(Client::getIP(), $user->getUserID());
+
             httpResponse::successful
             (
                 200, 
