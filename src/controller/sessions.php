@@ -48,7 +48,7 @@
             }
 
             $user = new UserModel(id_user: $_SESSION['ID_USER']);
-            $user->selEmailFromID();
+            $user->selEmailByID();
 
             $_SESSION['USER_DIR'] = FileSysHandler::getUserDir($user->getUserID(), $user->getEmail());
 

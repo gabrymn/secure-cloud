@@ -18,15 +18,12 @@
             if (!filter_var($email, FILTER_VALIDATE_EMAIL))
                 HttpResponse::clientError(400, "Invalid email format");
 
-            $user = new UserModel(email:$email);
-            $user->selIDFromEmail($user->getEmail());
+            $user = new UserModel(email: $email);
+            $user->selIDByEmail($user->getEmail());
             
-            $us = new UserSecurityModel();
+            $us = new UserSecurityModel(id_user: $user->getUserID());
             
-            $us->sel_rKeyHash_by_email
-            (
-                $user->toAssocArray(email:true)
-            );
+            $us->sel_rKeyHash_by_userID();
 
             if (!password_verify($recovery_key, $us->getRecoveryKeyHash()))
                 HttpResponse::clientError(400, "The provided recovery key is incorrect. Please double-check the key and try again.");

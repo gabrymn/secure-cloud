@@ -31,7 +31,7 @@
             $user = new UserModel(email:$email);
 
             // There's no email in db that is equals to $user->get_email()
-            if ($user->selIDFromEmail() === -1)
+            if ($user->selIDByEmail() === -1)
                 httpResponse::clientError(400, "That email doesn't exists in our system");
 
             // ------------ END User PROCESS -----------
@@ -59,7 +59,7 @@
 
             session_start();
 
-            $id_user = $user->selVerifiedFromID();
+            $id_user = $user->selVerifiedByID();
 
             if ($id_user === false || $id_user === null)
             {

@@ -67,7 +67,7 @@
             
             // ----------- BEGIN User-Security CREATION -------------
 
-            $user->selIDFromEmail();
+            $user->selIDByEmail();
 
             $user_keys = UserKeysHandler::getInstanceFromPassword($pwd);
             

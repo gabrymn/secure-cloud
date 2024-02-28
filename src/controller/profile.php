@@ -12,7 +12,7 @@
             $navbar = Navbar::getPrivate('profile');
             
             $user = new UserModel(id_user: $_SESSION['ID_USER']);
-            $user->selEmailFromID();
+            $user->selEmailByID();
 
             $us = new UserSecurityModel(id_user: $user->getUserID());
 

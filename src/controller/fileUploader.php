@@ -14,6 +14,15 @@
     {
         private const ROOT_STORAGE_DIR = __DIR__ . '/../../storage';
 
+
+        /**
+         * Initialize an upload session for a user with the specified upload space requirements.
+         *
+         * @param array $args - An associative array containing the following parameters:
+         *   - 'upload_space_required' (int): The amount of storage space required for the upload session.
+         *
+         * @return void
+         */
         public static function initializeUploadSession($args)
         {
             $user = new UserModel(id_user: $_SESSION['ID_USER']);
@@ -36,6 +45,23 @@
             );
         }
 
+
+        /**
+         * Handles the streaming upload of a file chunk, processes and stores the chunk,
+         * and manages the completion of the overall file upload process.
+         *
+         * @param array $args - An associative array containing the following parameters:
+         *   - 'upload_session_id' (string): The unique identifier for the upload session.
+         *   - 'filename' (string): The original filename of the uploaded file.
+         *   - 'file' (array): An array containing information about the uploaded chunk:
+         *      - 'tmp_name' (string): The temporary filename of the uploaded chunk.
+         *      - 'size' (int): The size of the file chunk.
+         *   - 'chunk_index' (int): The index of the current file chunk uploaded.
+         *   - 'chunks_len' (int): The total number of chunks expected for the file.
+         *   - 'mimetype' (string): The MIME type of file.
+         *
+         * @return void
+         */
         public static function handleUploadStreaming($args)
         {   
             $id_is_valid = UploadSession::checkID($args['upload_session_id']);
@@ -52,10 +78,10 @@
 
             self::storeChunk
             (
-                $args['filename'], 
-                $args['file']['tmp_name'], 
-                $args['chunk_index'],
-                $args['file']['size']
+                filename:     $args['filename'], 
+                filename_php: $args['file']['tmp_name'], 
+                chunk_index:  $args['chunk_index'],
+                chunk_size:   $args['file']['size']
             );
 
             $response_msg = "Chunk uploaded";
@@ -83,7 +109,17 @@
             httpResponse::successful(200, $response_msg);
         }
 
-        private static function storeFileMetaData($filename, $filename_encrypted, $mimetype)
+
+        /**
+         * Store file metadata in the database after an upload operation.
+         *
+         * @param string $filename - The original filename.
+         * @param string $filename_encrypted - The encrypted version of the filename.
+         * @param string $mimetype - The MIME type of the file.
+         *
+         * @return bool
+         */
+        private static function storeFileMetaData($filename, $filename_encrypted, $mimetype) : bool
         {
             $final_dir = UploadSession::getFinalDir();
 
@@ -108,12 +144,28 @@
             mypdo::beginTransaction();
 
             if ($file->ins()===true && $file_transfer->ins()===true)
+            {
                 mypdo::commit();
+                return true;
+            }
             else
+            {
                 mypdo::rollBack();
+                return false;
+            }
         }
 
-        private static function processFileEncryption($filename, &$filename_encrypted)
+
+
+        /**
+         * Process file encryption for a given filename using AES-256-GCM algorithm.
+         *
+         * @param string $filename - The original filename of the file to be encrypted.
+         * @param string &$filename_encrypted - Reference variable to store the encrypted filename.
+         *
+         * @return bool
+         */
+        private static function processFileEncryption($filename, &$filename_encrypted) : bool
         {
             $final_dir = UploadSession::getFinalDir();
 
@@ -127,9 +179,22 @@
                 dest:   $final_dir . '/' . $filename_encrypted, 
                 key:    $cipherkey
             );
+
+            return true;
         }
 
-        public static function storeChunk($filename, $filename_php, $chunk_index, $chunk_size)
+
+        /**
+         * Store an uploaded file chunk in the designated directory.
+         *
+         * @param string $filename - The original filename of the uploaded file.
+         * @param string $filename_php - The temporary filename of the uploaded file on the server.
+         * @param int $chunk_index - The index of the current file chunk.
+         * @param int $chunk_size - The size of the file chunk.
+         *
+         * @return bool
+         */
+        public static function storeChunk($filename, $filename_php, $chunk_index, $chunk_size) : bool
         {
             $chunk_dir = UploadSession::getChunkDir($filename);
 
@@ -145,9 +210,19 @@
             );
 
             UploadSession::increaseUsedSpace($chunk_size);
+
+            return true;
         }
 
-        public static function concatChunks($filename)
+
+        /**
+         * Concatenate and assemble file chunks into the final uploaded file.
+         *
+         * @param string $filename - The original filename of the uploaded file.
+         *
+         * @return bool
+         */
+        public static function concatChunks($filename) : bool
         {   
             $chunk_dir = UploadSession::getChunkDir($filename);
 
@@ -170,6 +245,8 @@
             fclose($final_file);
 
             FileSysHandler::deleteDir($chunk_dir);   // storage/[USER_DIR]/.uploads_buffer/[SESSION_UPLOADS_ID]/[FILENAME]/
+
+            return true;
         }
     }
 

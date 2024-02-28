@@ -127,7 +127,7 @@
             return MyPDO::qryExec($qry, $this->toAssocArray(email:true,name:true,surname:true));
         }
 
-        public function selIDFromEmail()
+        public function selIDByEmail()
         {
             $qry = "SELECT id_user FROM users WHERE email = :email";
 
@@ -159,7 +159,7 @@
          */
         public function emailIsTaken() : int|bool
         {
-            $id_user = $this->selIDFromEmail();
+            $id_user = $this->selIDByEmail();
             
             if ($id_user === false)
                 return false;
@@ -187,7 +187,7 @@
             }
         }
 
-        public function selVerifiedFromID() : int|bool
+        public function selVerifiedByID() : int|bool
         {
             $qry = "SELECT verified FROM users WHERE id_user = :id_user";
 
@@ -205,7 +205,7 @@
             }
         }
 
-        public function selEmailFromID()
+        public function selEmailByID()
         {
             $qry = "SELECT email FROM users WHERE id_user = :id_user";
 
@@ -223,7 +223,7 @@
             }
         }
 
-        public function upd_user_to_verified()
+        public function updUserToVerified()
         {
             $qry = "UPDATE users SET verified = 1 WHERE id_user = :id_user";
             MyPDO::connect('update');

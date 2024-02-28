@@ -246,16 +246,16 @@
             }
         }
 
-        public function sel_rKeyHash_by_email(array $assoc_array)
+        public function sel_rKeyHash_by_userID()
         {
             $qry = 
             "SELECT recoverykey_hash 
             FROM user_security 
-            WHERE id_user = (SELECT id_user FROM users WHERE email = :email)";
+            WHERE id_user = :id_user";
             
             MyPDO::connect('select');
 
-            $res = MyPDO::qryExec($qry, $assoc_array);
+            $res = MyPDO::qryExec($qry, $this->toAssocArray(id_user: true));
 
             if ($res === false)
                 return false;

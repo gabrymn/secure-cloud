@@ -29,7 +29,7 @@
             self::checkOTPFormat($otp);
 
             $user = new UserModel(id_user: $_SESSION['ID_USER']);
-            $user->setEmail($user->selEmailFromID());
+            $user->setEmail($user->selEmailByID());
 
             $us = new UserSecurityModel(id_user:$user->getUserID());
             $us->sel_rKeyEnc_by_userID();

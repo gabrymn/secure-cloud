@@ -6,10 +6,10 @@
     class UploadSession extends DataStructure
     {
         private const UPLOAD_SESSION_ID_LEN = 32;
-        public const UPLOAD_CHUNK_SIZE = 1000000;
+        public const UPLOAD_CHUNK_SIZE = 1000000; // 1 MB
         private const STORAGE_ROOT_DIR = __DIR__ . '/../../storage';
 
-        public static string $upload_session_id = "";
+        private static string $upload_session_id = "";
 
         public static function initialize($space_required)
         {
