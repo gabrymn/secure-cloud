@@ -39,7 +39,7 @@
 
             $user = new UserModel(email:$email, name:$name, surname:$surname);
 
-            $email_is_taken = $user->emailIsTaken();
+            $email_is_taken = $user->email_is_taken();
 
             if ($email_is_taken === 1)
             {
@@ -67,7 +67,7 @@
             
             // ----------- BEGIN User-Security CREATION -------------
 
-            $user->selIDByEmail();
+            $user->sel_userID_by_email();
 
             $user_keys = UserKeysHandler::getInstanceFromPassword($pwd);
             

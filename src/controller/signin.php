@@ -31,7 +31,7 @@
             $user = new UserModel(email:$email);
 
             // There's no email in db that is equals to $user->get_email()
-            if ($user->selIDByEmail() === -1)
+            if ($user->sel_userID_by_email() === -1)
                 httpResponse::clientError(400, "That email doesn't exists in our system");
 
             // ------------ END User PROCESS -----------
@@ -59,7 +59,7 @@
 
             session_start();
 
-            $id_user = $user->selVerifiedByID();
+            $id_user = $user->sel_verified_by_userID();
 
             if ($id_user === false || $id_user === null)
             {
@@ -104,7 +104,7 @@
 
             // check if 2FA isset
 
-            if ($user->sel2FAFromID() === null)
+            if ($user->sel_2FA_by_userID() === null)
             {
                 session_destroy();
                 httpResponse::serverError(500);

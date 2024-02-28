@@ -22,16 +22,16 @@
          *
          * @return void
          */
-        public static function initializeUploadSession($args)
+        public static function initializeUploadSession($upload_space_required)
         {
             $user = new UserModel(id_user: $_SESSION['ID_USER']);
 
-            if ($user->enoughStorage($args['upload_space_required']) === 0)
+            if ($user->enoughStorage($upload_space_required) === 0)
             {
                 httpResponse::clientError(400, "Storage space available exceeded, delete files first");
             }
             
-            UploadSession::initialize($args['upload_space_required']);
+            UploadSession::initialize($upload_space_required);
 
             httpResponse::successful
             (

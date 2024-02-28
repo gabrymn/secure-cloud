@@ -21,7 +21,7 @@
             $router->POST('/clouddrive/upload/initialize', ['upload_space_required'], function($args) {
                 
                 AuthController::checkProtectedArea(redirect: false);
-                FileUploaderController::initializeUploadSession($args);
+                FileUploaderController::initializeUploadSession($args['upload_space_required']);
             }); 
             
             $router->POST('/clouddrive/upload', ['file', 'upload_session_id', 'filename', 'mimetype', 'chunk_index', 'chunks_len'], function($args) {

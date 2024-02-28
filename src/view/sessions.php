@@ -41,6 +41,7 @@
                 echo "<script>let sessionRefs = new Map();</script>";
 
                 $i = 0;
+                
                 foreach ($sessions as $session)
                 {
                     $loc = $session['city'] . ', ' . $session['country'];
@@ -53,7 +54,7 @@
                     echo "<td>{$session['browser']}</td>";
                     echo "<td>{$session['ip']}</td>";
                     echo "<td>{$loc}</td>";
-                    echo "<td>{$session['recent_activity']}</td>";
+                    echo "<td>{$session['recent_activity_date']}</td>";
                     echo "<td id=id_sess_status_$i>{$session['status']}</td>";
                     
                     if ($session['status'] !== 'Expired')

@@ -1,6 +1,9 @@
 <?php
 
     require_once __DIR__ . '/model.php';
+    require_once __DIR__ . '/../../resource/myDateTime.php';
+    require_once __DIR__ . '/../../resource/storage/myPDO.php';
+    require_once __DIR__ . '/../../resource/http/client.php';
 
     class SessionModel extends Model
     {
@@ -10,25 +13,15 @@
         private string $browser;
         private int $id_user;
 
-        private $start;
-        private $end;
-        private $recent_activity;
+        public const ID_SESSION_LEN = 32;
 
-        private const ID_SESSION_LEN = 32;
-
-        public function __construct($id_session=null, $ip=null, $os=null, $browser=null, $start=null, $end=null, $recent_activity=null, $id_user=null)
+        public function __construct($id_session=null, $ip=null, $os=null, $browser=null, $id_user=null)
         {
-            date_default_timezone_set(parent::TZ);
-
             $this->setSessionID($id_session ? $id_session : parent::DEFAULT_STR);
             
             $this->setIP($ip ? $ip : parent::DEFAULT_STR);
             $this->setOS($os ? $os : parent::DEFAULT_STR);
             $this->setBrowser($browser ? $browser: parent::DEFAULT_STR);
-
-            $this->setDateStart($start ? $start : parent::DEFAULT_STR);
-            $this->setDateEnd($end ? $end : parent::DEFAULT_STR);
-            $this->setRecentActivity($recent_activity ? $recent_activity : parent::DEFAULT_STR);
 
             $this->setUserID($id_user ? $id_user : parent::DEFAULT_INT);
         }
@@ -82,46 +75,6 @@
             return $this->browser;
         }
 
-        public function setDateStart($start = false): void
-        {
-            if (!$start)
-                $start = MyDatetime::now();
-                
-            $this->start = $start;
-        }
-
-        public function getDateStart()
-        {
-            return $this->start;
-        }
-
-        // if nothing is passet, date end in equals to now
-        public function setDateEnd($end = false): void
-        {
-            if (!$end)
-                $end = MyDatetime::now();
-
-            $this->end = $end;
-        }
-
-        public function getDateEnd()
-        {
-            return $this->end;
-        }
-
-        public function setRecentActivity($recent_activity = false): void
-        {
-            if (!$recent_activity)
-                $recent_activity = MyDatetime::now();
-            
-            $this->recent_activity = $recent_activity;
-        }
-
-        public function getRecentActivity()
-        {
-            return $this->recent_activity;
-        }
-
         public function setUserID($id_user)
         {
             $this->id_user = $id_user;
@@ -132,7 +85,7 @@
             return $this->id_user;
         }
 
-        public function toAssocArray($id_session=false, $ip=false, $os=false, $browser=false, $start=false, $end=false, $recent_activity=false, $id_user=false) : array
+        public function toAssocArray($id_session=false, $ip=false, $os=false, $browser=false, $id_user=false) : array
         {
             $params = array();
             
@@ -148,15 +101,6 @@
             if ($browser)
                 $params["browser"] = $this->getBrowser();
             
-            if ($start)
-                $params["start"] = $this->getDateStart();
-
-            if ($end)
-                $params["end"] = $this->getDateEnd();
-
-            if ($recent_activity)
-                $params["recent_activity"] = $this->getRecentActivity();
-        
             if ($id_user)
                 $params["id_user"] = $this->getUserID();
 
@@ -166,30 +110,32 @@
         public static function getSessionsOf($id_user, $id_session)
         {
             $s = new SessionModel(id_user:$id_user, id_session:$id_session);
+
             $sessions = $s->sel_sessions_by_userID_sessionID();
+
             $actual_client_timezone = Client::getTimezone();
 
             foreach ($sessions as &$session)
             {
                 $ip_info_session = Client::getIPInfoLimited($session['ip']);
 
-                $client_date = MyDatetime::getClientDateTime($session['recent_activity'], $actual_client_timezone);
+                $client_date = MyDatetime::getClientDateTime($session['recent_activity_date'], $actual_client_timezone);
                 
-                $session['recent_activity'] = $client_date;
+                $session['recent_activity_date'] = $client_date;
 
                 $session = array_merge($session, $ip_info_session);
 
                 if ($session['id_session'] === $id_session)
                     $session['status'] = "Actual";
                 else
-                    if ($session['end'] === null)
+                    if ($session['end_date'] === null)
                         $session['status'] = "Active";
                     else
                         $session['status'] = "Expired";
 
                 unset($session['id_user']);
-                unset($session['start']);
-                unset($session['end']);
+                unset($session['start_date']);
+                unset($session['end_date']);
             }
 
             return $sessions;
@@ -197,34 +143,11 @@
 
         public function ins()
         {
-            $qry_1 = "INSERT INTO `sessions` (`id_session`, `ip`, `os`, `browser`, `id_user`) VALUES (:id_session, :ip, :os, :browser, :id_user)";
-            $qry_2 = "INSERT INTO session_dates (`start`, `recent_activity`, `id_session`) VALUES (:start, :recent_activity, :id_session)";
+            $qry = "INSERT INTO `sessions` (`id_session`, `ip`, `os`, `browser`, `id_user`) VALUES (:id_session, :ip, :os, :browser, :id_user)";
 
             MyPDO::connect('insert');
 
-            try 
-            {
-                MyPDO::beginTransaction();
-
-                $status_qry_1 = MyPDO::qryExec($qry_1, $this->toAssocArray(id_session:true, ip:true, os:true, browser:true, id_user:true));
-                $status_qry_2 = MyPDO::qryExec($qry_2, $this->toAssocArray(start:true, recent_activity:true, id_session:true));
-
-                if ($status_qry_1 && $status_qry_2)
-                {
-                    MyPDO::commit();
-                    return true;
-                }
-                else
-                {
-                    MyPDO::rollBack();
-                    return false;
-                }
-            }
-            catch(Exception $e)
-            {
-                MyPDO::rollBack();
-                return $e->getMessage();
-            }
+            return MyPDO::qryExec($qry, $this->toAssocArray(id_session:true, ip:true, os:true, browser:true, id_user:true));
         }
         
         public function sel_sessionID_by_UserID_clientIP()
@@ -238,7 +161,7 @@
                 (
                     SELECT id_session
                     FROM session_dates
-                    WHERE end IS NULL
+                    WHERE end_date IS NULL
                 )"
             );
             
@@ -319,7 +242,7 @@
                         ELSE 1 
                     END,
                     CASE 
-                        WHEN session_dates.end IS NULL THEN 0 
+                        WHEN session_dates.end_date IS NULL THEN 0 
                         ELSE 1 
                     END,
                     sessions.id_session"
@@ -328,74 +251,6 @@
             MyPDO::connect('select');
 
             return MyPDO::qryExec($qry, $this->toAssocArray(id_session:true, id_user:true));
-        }
-
-        public function upd_recentActivity_by_sessionID()
-        {
-            $qry = "UPDATE session_dates 
-            SET recent_activity = :recent_activity
-            WHERE id_session = :id_session";
-    
-            MyPDO::connect('update');
-
-            return MyPDO::qryExec($qry, $this->toAssocArray(id_session:true, recent_activity:true));
-        }
-
-        // This query expire only sessions of the user :id_user
-        public function expire_by_sessionID_userID()
-        {
-            $qry = 
-            "UPDATE session_dates 
-            SET end = :end 
-            WHERE id_session = 
-            (
-                SELECT id_session 
-                FROM sessions 
-                WHERE id_user = :id_user
-                AND id_session = :id_session
-            )";
-
-            MyPDO::connect('update');
-
-            try 
-            {
-                $status = MyPDO::qryExec($qry, $this->toAssocArray(id_session:true, end:true, id_user:true));
-                return $status;
-            }
-            catch (PDOException $e)
-            {
-                // session already expired ('end' != NULL), the query is tryin' to update 'end' to now(), 
-                //but 'end' is already setted to a value != NULL, so since there is an active SQL trigger, 
-                // it throws an exception
-
-                return -1;
-            }
-        }
-
-        public function is_expired_by_sessionID() : int|bool
-        {
-            $qry =
-            "SELECT *
-            FROM sessions
-            WHERE id_user = :id_user
-            AND id_session =
-            (
-                SELECT id_session
-                FROM session_dates
-                WHERE id_session = :id_session
-                AND end IS NULL
-            )";
-
-            MyPDO::connect('select');
-
-            $res = MyPDO::qryExec($qry, $this->toAssocArray(id_session:true, id_user:true));
-                
-            if ($res === false)
-                return false;
-            else if ($res === array())
-                return 1;
-            else
-                return 0;
         }
     }
 ?>

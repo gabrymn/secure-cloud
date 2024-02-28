@@ -71,15 +71,14 @@
 
             self::check($redirect, 'LOGGED');
             
-            $s = new SessionModel
+            $sd = new SessionDatesModel
             (
                 id_session: $_SESSION['CURRENT_ID_SESSION'], 
-                id_user:    $_SESSION['ID_USER']
             );
             
-            $session_expired = $s->is_expired_by_sessionID();
+            $session_expired = $sd->is_expired_by_sessionID();
             
-            if ($session_expired)
+            if ($session_expired === 1)
             {
                 self::handleResponse($redirect);
             }

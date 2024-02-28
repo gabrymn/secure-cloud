@@ -116,7 +116,7 @@
             return MyPDO::qryExec($qry, $this->toAssocArray(id_file:true, fullpath_encrypted:true, size:true, mimetype:true, id_user:true));
         }
 
-        public function selFileNameBy_UserID_fileID()
+        public function sel_fileName_by_userID_fileID()
         {
             $qry = "SELECT fullpath_encrypted FROM files WHERE id_user = :id_user AND id_file = :id_file";
 
@@ -135,7 +135,7 @@
             }
         }
 
-        public static function selFileNamesBy_UserID($id_user)
+        public static function sel_fileNames_by_userID($id_user)
         {
             $file = new FileModel(id_user: $id_user);
 

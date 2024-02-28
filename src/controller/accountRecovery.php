@@ -19,7 +19,7 @@
                 HttpResponse::clientError(400, "Invalid email format");
 
             $user = new UserModel(email: $email);
-            $user->selIDByEmail($user->getEmail());
+            $user->sel_userID_by_email($user->getEmail());
             
             $us = new UserSecurityModel(id_user: $user->getUserID());
             

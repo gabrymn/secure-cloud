@@ -57,7 +57,7 @@
         {
             $file = new FileModel(id_file: $id_file, id_user: $_SESSION['ID_USER']);
 
-            $filename_encrypted = $file->selFileNameBy_userID_fileID();
+            $filename_encrypted = $file->sel_fileName_By_userID_fileID();
 
             return $filename_encrypted;
         }

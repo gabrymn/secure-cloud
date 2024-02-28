@@ -127,7 +127,7 @@
             return MyPDO::qryExec($qry, $this->toAssocArray(email:true,name:true,surname:true));
         }
 
-        public function selIDByEmail()
+        public function sel_userID_by_email()
         {
             $qry = "SELECT id_user FROM users WHERE email = :email";
 
@@ -157,9 +157,9 @@
          *   0 if the email is available, 
          *   1 if the email is already taken.
          */
-        public function emailIsTaken() : int|bool
+        public function email_is_taken() : int|bool
         {
-            $id_user = $this->selIDByEmail();
+            $id_user = $this->sel_userID_by_email();
             
             if ($id_user === false)
                 return false;
@@ -169,7 +169,7 @@
                 return 1;
         }
 
-        public function sel2FAFromID() : int|bool
+        public function sel_2FA_by_userID() : int|bool
         {
             $qry = "SELECT 2fa FROM users WHERE id_user = :id_user";
 
@@ -187,7 +187,7 @@
             }
         }
 
-        public function selVerifiedByID() : int|bool
+        public function sel_verified_by_userID() : int|bool
         {
             $qry = "SELECT verified FROM users WHERE id_user = :id_user";
 
@@ -205,7 +205,7 @@
             }
         }
 
-        public function selEmailByID()
+        public function sel_email_by_userID()
         {
             $qry = "SELECT email FROM users WHERE id_user = :id_user";
 
@@ -223,7 +223,7 @@
             }
         }
 
-        public function updUserToVerified()
+        public function upd_user_to_verified()
         {
             $qry = "UPDATE users SET verified = 1 WHERE id_user = :id_user";
             MyPDO::connect('update');

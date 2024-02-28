@@ -40,6 +40,10 @@
 
         <div class="uploader"><button id="ID_UPLOAD" type="button" class="btn btn-primary btn-lg btn-block">Upload File <i class="fa fa-cloud-upload" aria-hidden="true"></i></i></button></div>
 
+        <br><br><br>
+
+        <?php echo $clouddrive_icons; ?>
+
         <br><br>
         <h1 id="ID_NFS" class="nfs" style="display:none">...<h1>
 
@@ -53,35 +57,6 @@
         <input type="file" id="ID_FILE_UPLOADER" style="display:none" multiple>
 
         <br><br><br><br><br>
-
-        <table border="1">
-            <thead>
-                <tr>
-                    <th>Icon</th>
-                    <th>Name</th>
-                    <th>Type</th>
-                </tr>
-            </thead>
-            <tbody>
-                <tr>
-                    <td><i class="fas fa-folder"></i></td>
-                    <td>Directory 1</td>
-                    <td>Directory</td>
-                </tr>
-                <tr>
-                    <td><i class="fas fa-file"></i></td>
-                    <td>File 1.txt</td>
-                    <td>File</td>
-                </tr>
-                <tr>
-                    <td><i class="fas fa-file"></i></td>
-                    <td>File 2.png</td>
-                    <td>File</td>
-                </tr>
-                <!-- Add more rows as needed -->
-            </tbody>
-        </table>
-
 
         <script src="//cdnjs.cloudflare.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
         <script src="//maxcdn.bootstrapcdn.com/bootstrap/4.1.1/js/bootstrap.min.js"></script>
