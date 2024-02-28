@@ -4,6 +4,7 @@
     require_once __DIR__ . '/../src/controller/auth.php';
     require_once __DIR__ . '/../src/controller/clouddrive.php';
     require_once __DIR__ . '/../src/controller/fileUploader.php';
+    require_once __DIR__ . '/../src/controller/fileDownloader.php';
 
     abstract class clouddrive implements RoutesInterface
     {
@@ -29,10 +30,10 @@
                 FileUploaderController::handleUploadStreaming($args);
             }); 
     
-            $router->GET('/clouddrive/download', ['id_file'], function($args) {
+            $router->GET('/clouddrive/download', ['fileid'], function($args) {
                 
                 AuthController::checkProtectedArea(redirect: false);
-                CloudDriveController::handleDownloadOf($args['id_file']);
+                FileDownloaderController::processDownload($args['fileid']);
             }); 
     
             return $router->getRoutes();

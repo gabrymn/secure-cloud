@@ -3,7 +3,7 @@
     require_once __DIR__ . '/../../resource/http/httpResponse.php';
     require_once __DIR__ . '/../../resource/security/cryptoRNDString.php';
     require_once __DIR__ . '/../view/assets/navbar.php';
-
+    
     class EmailVerifyController
     {
         public static function renderVerifyPage()

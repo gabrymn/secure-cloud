@@ -18,7 +18,7 @@
             });
     
             $router->POST('/sessions/expire', ['id_session'], function($args) {
-    
+                
                 AuthController::checkProtectedarea(false);
                 SessionController::expireSession($args['id_session']);
             });

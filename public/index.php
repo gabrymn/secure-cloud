@@ -5,7 +5,7 @@
     require_once __DIR__ . '/../routes/routes.php';
 
     $router = new Router($_GET, $_POST, $_FILES);
-
+    
     $router->addRoutes
     (
         array_merge

@@ -18,7 +18,7 @@
             if ($id_file === null)
                 $this->setFileIDRandom();
             else
-                $this->setFileID(parent::DEFAULT_STR);
+                $this->setFileID($id_file);
 
             $this->setFullPathEncrypted($fullpath_encrypted ? $fullpath_encrypted : parent::DEFAULT_STR);
             $this->setSize($size ? $size : parent::DEFAULT_INT);
@@ -116,7 +116,26 @@
             return MyPDO::qryExec($qry, $this->toAssocArray(id_file:true, fullpath_encrypted:true, size:true, mimetype:true, id_user:true));
         }
 
-        public static function selFileNamesFromUserID($id_user)
+        public function selFileNameBy_UserID_fileID()
+        {
+            $qry = "SELECT fullpath_encrypted FROM files WHERE id_user = :id_user AND id_file = :id_file";
+
+            MyPDO::connect('select');
+
+            $res = MyPDO::qryExec($qry, $this->toAssocArray(id_user: true, id_file: true));
+
+            if ($res === false)
+                return false;
+            else if ($res === array())
+                return -1;
+            else
+            {
+                $fullpath_encrypted = $res[0]['fullpath_encrypted'];
+                return $fullpath_encrypted;
+            }
+        }
+
+        public static function selFileNamesBy_UserID($id_user)
         {
             $file = new FileModel(id_user: $id_user);
 

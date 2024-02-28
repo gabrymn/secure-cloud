@@ -9,7 +9,7 @@
 
         protected const TZ = 'Europe/Rome';
         protected const DATE_FORMAT = 'Y-m-d H:i:s';
-
+        
         abstract public function toAssocArray();
 
         abstract public function ins();

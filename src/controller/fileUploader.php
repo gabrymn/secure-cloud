@@ -14,7 +14,6 @@
     {
         private const ROOT_STORAGE_DIR = __DIR__ . '/../../storage';
 
-
         /**
          * Initialize an upload session for a user with the specified upload space requirements.
          *

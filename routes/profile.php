@@ -10,13 +10,13 @@
         public static function getRoutes()
         {
             $router = new Router();
-        
+            
             $router->GET('/profile', [], function() {
-    
+                
                 AuthController::checkProtectedArea();
                 ProfileController::renderProfilePage();
             });
-    
+            
             return $router->getRoutes();
         }
     }

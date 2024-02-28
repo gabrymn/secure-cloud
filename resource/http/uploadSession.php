@@ -106,7 +106,7 @@
 
             return  $final_dir;
         }
-
+        
         public static function uploadIsCompleted()
         {
             $space_used = self::getSpaceUsed();

@@ -70,7 +70,7 @@
                 session_start();
 
             self::check($redirect, 'LOGGED');
-    
+            
             $s = new SessionModel
             (
                 id_session: $_SESSION['CURRENT_ID_SESSION'], 
