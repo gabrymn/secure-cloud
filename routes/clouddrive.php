@@ -25,13 +25,13 @@
             }); 
             
             $router->POST('/clouddrive/upload', ['file', 'upload_session_id', 'filename', 'mimetype', 'chunk_index', 'chunks_len'], function($args) {
-                    
+                
                 AuthController::checkProtectedArea(redirect: false);
                 FileUploaderController::handleUploadStreaming($args);
             }); 
     
             $router->GET('/clouddrive/download', ['fileid'], function($args) {
-                
+
                 AuthController::checkProtectedArea(redirect: false);
                 FileDownloaderController::processDownload($args['fileid']);
             }); 

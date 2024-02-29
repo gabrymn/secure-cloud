@@ -135,11 +135,11 @@
             }
         }
 
-        public static function sel_fileNames_by_userID($id_user)
+        public static function sel_fileIDs_fileNames_by_userID($id_user)
         {
             $file = new FileModel(id_user: $id_user);
 
-            $qry = "SELECT fullpath_encrypted FROM files WHERE id_user = :id_user";
+            $qry = "SELECT id_file, fullpath_encrypted FROM files WHERE id_user = :id_user";
 
             MyPDO::connect('select');
 
@@ -149,7 +149,18 @@
                 return false;
             else
             {
-                return array_column($res, 'fullpath_encrypted');
+                $file_data = [];
+
+                foreach ($res as $row) 
+                {
+                    $file_data[] = 
+                    [
+                        'id_file' => $row['id_file'],
+                        'fullpath_encrypted' => $row['fullpath_encrypted']
+                    ];
+                }
+
+                return $file_data;
             }
         }
     }

@@ -30,21 +30,20 @@
         {
             $cipherkey = UserKeysController::getCipherKey();
 
-            $file_names = FileModel::sel_fileNames_by_userID($id_user);
+            $files = FileModel::sel_fileIDs_fileNames_by_userID($id_user);
 
-            for($i=0; $i<count($file_names); $i++)
+            foreach ($files as &$file)
             {
-                $file_name = Crypto::decrypt($file_names[$i], $cipherkey);
+                $file['fullpath'] = Crypto::decrypt($file['fullpath_encrypted'], $cipherkey);
+                unset($file['fullpath_encrypted']);
 
-                if (in_array($file_name, $file_names))
+                /*if (in_array($file_name, array_column($file_names, 'fullpath_encrypted')))
                 {
                     FileSysHandler::handleFilenameExists($file_name);
-                }
-
-                $file_names[$i] = $file_name;
+                }*/
             }
 
-            return $file_names;
+            return $files;
         }
     }
 

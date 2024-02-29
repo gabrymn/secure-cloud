@@ -3,6 +3,7 @@
     class FileDownloaderController
     {
         private const ROOT_STORAGE_DIR = __DIR__ . '/../../storage';
+        public const DOWNLOAD_API_URL = '/clouddrive/download?fileid=';
 
         /**
          * Processes the request to download a file.

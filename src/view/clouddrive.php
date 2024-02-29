@@ -73,7 +73,14 @@
     
         $(document).ready(() => {
            // setInterval(checkSessionStatus, <?php echo SessionController::SESSION_STATUS_CHECK_MS; ?>);
+            
         })
+
+        const downloadFile = (fileid) => {
+
+            const URL = '/clouddrive/download?fileid='+fileid;
+            window.location.href = URL;
+        }
 
     </script>
 

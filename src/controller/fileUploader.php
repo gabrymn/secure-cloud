@@ -85,12 +85,17 @@
 
             $response_msg = "Chunk uploaded";
 
+            $response_array = ['filename' => $args['filename']];
+
+
             // This if is true when a single file is 100% uploaded.
             if (UploadSession::fileUploadIsCompleted($args['filename'], $args['chunks_len']))
             {
                 self::concatChunks($args['filename']);
                 self::processFileEncryption($args['filename'], $filename_encrypted);
-                self::storeFileMetaData($args['filename'], $filename_encrypted, $args['mimetype']);
+                self::storeFileMetaData($args['filename'], $filename_encrypted, $args['mimetype'], $fileid);
+
+                $response_array['fileid'] = $fileid;
 
                 $response_msg = "File " . $args['filename'] . " uploaded successfully";
 
@@ -105,7 +110,7 @@
                 }
             }
 
-            httpResponse::successful(200, $response_msg);
+            httpResponse::successful(200, $response_msg, $response_array);
         }
 
 
@@ -118,7 +123,7 @@
          *
          * @return bool
          */
-        private static function storeFileMetaData($filename, $filename_encrypted, $mimetype) : bool
+        private static function storeFileMetaData($filename, $filename_encrypted, $mimetype, &$fileid) : bool
         {
             $final_dir = UploadSession::getFinalDir();
 
@@ -144,6 +149,7 @@
 
             if ($file->ins()===true && $file_transfer->ins()===true)
             {
+                $fileid = $file->getFileID();
                 mypdo::commit();
                 return true;
             }

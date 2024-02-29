@@ -8,12 +8,14 @@
         private ?array $get_array;
         private ?array $post_array;
         private ?array $files_array;
+        private ?array $files_array_keys;
 
         public function __construct($get_array = null, $post_array = null, $files = null)
         {
             $this->get_array = $get_array;
             $this->post_array = $post_array;
             $this->files_array = $files;
+            $this->files_array_keys = $files === null ? null : array_keys($files);
 
             $this->routes = array();
         }
@@ -86,7 +88,7 @@
             {
                 $res = $this->matchPath($route['path'], $parsed_path);
 
-                if ($res['status'] && $route['method'] === $method && array_diff($request_arg_keys, $route['args']) === [])
+                if ($res['status'] && $route['method'] === $method && $this->cmpArgs($request_arg_keys, $route['args'])===true)
                 {
                     $this->sanitaizeUserInputs($method_array);
                     
@@ -122,6 +124,17 @@
                 return $this->files_array;
 
             return array_merge($method_array, $this->files_array); 
+        }
+
+        private function cmpArgs($request_arg_keys, $route_args)
+        {
+            if ($this->files_array_keys !== [])
+                $request_arg_keys = array_merge($this->files_array_keys, $request_arg_keys);
+
+            if (count($request_arg_keys) !== count($route_args))
+                return false;
+
+            return (array_diff($request_arg_keys, $route_args) === []);
         }
 
         private function getMethodArray($method) : array

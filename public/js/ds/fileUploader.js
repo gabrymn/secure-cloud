@@ -8,7 +8,7 @@ export default class FileUploader {
     {
         this.files = files;
         this.uploadSessionID = "";
-        this.chunkSize = -1; 
+        this.chunkSize = -1;
     }
 
     async initUploadSession() 
@@ -103,7 +103,19 @@ export default class FileUploader {
                 contentType: false,  
                 
                 success: (response) => {
+
                     console.log(response);
+
+                    if (response.fileid !== undefined && response.filename !== undefined)
+                    {
+                        this.addFileIcon(response.fileid, response.filename);
+                        localStorage.setItem(response.fileid, response.filename);
+                        
+                        $('#' + response.fileid).on('click', () => {
+                            
+                            downloadFile(response.fileid);
+                        });
+                    }
                 },
                 error: (xhr) => {
                     alert(xhr.responseJSON.status_message);
@@ -112,6 +124,16 @@ export default class FileUploader {
         })
 
         return true;
+    }
+
+    addFileIcon(fileid, filename) 
+    {
+        $('#fileicons').append(
+            `<tr id=${fileid}>
+                <td><img src=img/fileicon.svg alt=Immagine></td>
+                <td>${filename}</td>
+            </tr>`
+        );
     }
 
     setFiles(files)

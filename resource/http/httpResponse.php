@@ -131,10 +131,15 @@
             if (!file_exists($file_path))
                 self::clientError(404, "File not found");
 
+            header('Content-Description: File Transfer');
             header('Content-Type: ' . self::CTS['OCTET_STREAM']);
             header("Content-Transfer-Encoding: Binary");
             header("Content-disposition: attachment; filename=\"" . basename($file_path) . "\"");
-            
+            header('Expires: 0');
+            header('Cache-Control: must-revalidate');
+            header('Pragma: public');
+            header('Content-Length: ' . filesize($file_path));
+
             $file = fopen($file_path, 'rb');
     
             while (!feof($file)) 
