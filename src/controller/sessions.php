@@ -15,14 +15,14 @@
             include __DIR__ . '/../view/sessions.php';
         }
 
-        public static function initSession($ip_client, $id_user)
+        public static function initSession($ip, $os, $browser, $id_user)
         {
             $_SESSION['LOGGED'] = true;
 
-            $session = new SessionModel(ip: $ip_client, id_user: $id_user);
+            $session = new SessionModel(ip: $ip, id_user: $id_user, os: $os, browser: $browser);
             $session_dates = new SessionDatesModel();
 
-            $id_session = $session->sel_sessionID_by_userID_clientIP();
+            $id_session = $session->sel_sessionID_by_clientInfo();
 
             if ($id_session === -1)
             {

@@ -150,24 +150,27 @@
             return MyPDO::qryExec($qry, $this->toAssocArray(id_session:true, ip:true, os:true, browser:true, id_user:true));
         }
         
-        public function sel_sessionID_by_UserID_clientIP()
+        public function sel_sessionID_by_clientInfo()
         {
             $qry = (
                 "SELECT id_session
-                FROM sessions
-                WHERE id_user = :id_user 
-                AND ip = :ip
-                AND id_session = 
-                (
+                FROM session_dates
+                WHERE end_date IS NULL
+                AND id_session = (
+                    
                     SELECT id_session
-                    FROM session_dates
-                    WHERE end_date IS NULL
+                    FROM sessions
+                    WHERE id_user = :id_user
+                    AND ip = :ip
+                    AND os = :os
+                    AND browser = :browser
+                    LIMIT 1
                 )"
             );
             
             MyPDO::connect('select');
 
-            $res = MyPDO::qryExec($qry, $this->toAssocArray(id_user:true, ip:true));
+            $res = MyPDO::qryExec($qry, $this->toAssocArray(id_user:true, ip:true, os:true, browser:true));
 
             if ($res === false)
                 return false;

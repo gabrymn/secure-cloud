@@ -133,8 +133,7 @@
 
             // ------------ END 2FA PROCESS -----------
 
-
-            SessionController::initSession(Client::getIP(), $user->getUserID());
+            SessionController::initSession(Client::getIP(), Client::getOS(), Client::getBrowser(), $user->getUserID());
 
             httpResponse::successful
             (

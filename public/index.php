@@ -2,6 +2,7 @@
 
     require_once __DIR__ . '/../resource/router.php';
     require_once __DIR__ . '/../resource/http/httpResponse.php';
+    require_once __DIR__ . '/../resource/http/client.php';
     require_once __DIR__ . '/../routes/routes.php';
 
     $router = new Router($_GET, $_POST, $_FILES);
