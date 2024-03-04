@@ -1,6 +1,7 @@
 <?php
 
     require_once __DIR__ .  '/../../resource/http/httpResponse.php';
+    require_once __DIR__ .  '/../../resource/myDateTime.php';
     require_once __DIR__ . '/../view/assets/navbar.php';
     require_once __DIR__ . '/../model/session.php';
     require_once __DIR__ . '/../model/sessionDates.php';
@@ -15,39 +16,42 @@
             include __DIR__ . '/../view/sessions.php';
         }
 
-        public static function initSession($ip, $os, $browser, $id_user)
+        public static function initSession(array $client, int $id_user, string $keepsigned)
         {
-            $_SESSION['LOGGED'] = true;
+            $_SESSION['SIGNED_IN'] = true;
 
-            $session = new SessionModel(ip: $ip, id_user: $id_user, os: $os, browser: $browser);
-            $session_dates = new SessionDatesModel();
+            $session = new SessionModel(ip: $client['ip'], os: $client['os'], browser: $client['browser'], id_user: $id_user);
+            $session_dates = new SessionDatesModel(session_token: $session->getSessionToken());
 
-            $id_session = $session->sel_sessionID_by_clientInfo();
-
-            if ($id_session === -1)
+            if ($keepsigned === 'on')
             {
-                // create session
-                $session->setSessionIDRandom();
-                $session->setOS(client::getOS());
-                $session->setBrowser(client::getBrowser());
-
-                $_SESSION['CURRENT_ID_SESSION'] = $session->getSessionID();
-
-                $session_dates->setSessionID($session->getSessionID());
-
-                $session_dates->setStartDateNow();
-                $session_dates->setRecentActivityDateNow();
-
-                self::storeSessionInfo($session, $session_dates);
+                $session_dates->setEnd(MyDatetime::addHours(SessionModel::SESSION_HRS_RANGE_KEEPSIGNED));
+                
+                setcookie(
+                    name:                "session_token", 
+                    value:               $session->getSessionToken(), 
+                    expires_or_options:  time()+3600, 
+                    path:                '/'
+                    //secure:              true,
+                    //httponly:            true
+                );
             }
             else
             {
-                // load session
-                $_SESSION['CURRENT_ID_SESSION'] = $id_session;
+                $session_dates->setEnd(MyDatetime::addHours(SessionModel::SESSION_HRS_RANGE_STD));
+            }
 
-                $session_dates->setSessionID($session->getSessionID());
-                $session_dates->setRecentActivityDateNow();
-                $session_dates->upd_recentActivity_by_sessionID();
+            $_SESSION['SESSION_TOKEN'] = $session->getSessionToken();
+
+            myPDO::connect('insert');
+            myPDO::beginTransaction();
+
+            if ($session->ins() && $session_dates->ins())
+                mypdo::commit();
+            else
+            {
+                mypdo::rollBack();
+                HttpResponse::serverError();
             }
 
             $user = new UserModel(id_user: $_SESSION['ID_USER']);
@@ -58,19 +62,19 @@
             return true;
         }
 
-        public static function expireSession($id_session)
+        public static function expireSession($session_token)
         {   
-            $sd = new SessionDatesModel(id_session: $id_session);
+            $session = new SessionModel(session_token: $session_token);
 
-            $sd->setEndDateNow();
+            $session->expire_by_sessionToken();
 
-            $session_expired = $sd->expire_by_sessionID();
+            $session_expired = $session->expire_by_sessionToken();
 
             if ($session_expired === false)
-                httpResponse::clientError(400, "Invalid session ID");
+                httpResponse::clientError(400, "Invalid session token");
 
-            // User has sent the id_session, if it equals of the current id session => signout()
-            if ($sd->getSessionID() === $_SESSION['CURRENT_ID_SESSION'])
+            // User has sent the session token, if it equals to the current session token => signout()
+            if ($session->getSessionToken() === $_SESSION['SESSION_TOKEN'])
             {
                 session_destroy();
                 httpResponse::successful
@@ -82,33 +86,6 @@
             }
             
             httpResponse::successful(200);
-        }
-
-        private static function storeSessionInfo(SessionModel $s, SessionDatesModel $sd)
-        {
-            myPDO::connect('insert');
-
-            try {
-
-                myPDO::beginTransaction();
-
-                $status_qry1 = $s->ins();
-                $status_qry2 = $sd->ins();
-
-                if ($status_qry1 && $status_qry2)
-                {
-                    myPDO::commit();
-                    return true;
-                }
-                
-                myPDO::rollBack();
-
-            } catch (Exception $e)
-            {
-                myPDO::rollBack();
-            }
-
-            return false;
         }
     }
 

@@ -3,7 +3,8 @@ $('#signin_form').on('submit', async (e) => {
     e.preventDefault();
     
     var formData = new FormData(document.getElementById('signin_form'));
-    
+
+
     try {   
             const response = await fetch('/signin', 
             {
@@ -14,8 +15,8 @@ $('#signin_form').on('submit', async (e) => {
             if (response.ok)
             {
                 // debug
-                console.log(await response.text());
-                return false;
+                //console.log(await response.text());
+                //return false;
                 
                 const json = await response.json();
                 window.location.href = json.redirect;

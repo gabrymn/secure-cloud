@@ -4,6 +4,7 @@
     require_once __DIR__ . '/../resource/router.php';
     require_once __DIR__ . '/../src/controller/signin.php';
     require_once __DIR__ . '/../src/controller/emailVerify.php';
+    require_once __DIR__ . '/../src/controller/auth.php';
 
     abstract class signin implements RoutesInterface
     {
@@ -13,12 +14,13 @@
 
             $router_signin->GET('/signin', [], function() {
 
+                AuthController::checkSignedIn();
                 SigninController::renderSigninPage();
             });
 
-            $router_signin->POST('/signin', ['email', 'pwd'], function($args) {
-                
-                SigninController::processSignin($args['email'], $args['pwd']);
+            $router_signin->POST('/signin', ['email', 'pwd', 'keepsigned'], function($args) {
+
+                SigninController::processSignin($args['email'], $args['pwd'], $args['keepsigned']);
             });
             
             $router_signin->GET('/signin', ['token'], function($args) {

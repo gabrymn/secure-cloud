@@ -19,7 +19,7 @@
             include __DIR__ . "/../view/signin.php";
         }
 
-        public static function processSignin($email, $pwd)
+        public static function processSignin($email, $pwd, $keepsigned)
         {
             if (!filter_var($email, FILTER_VALIDATE_EMAIL))
                 httpResponse::clientError(400, "Invalid email format");
@@ -29,7 +29,7 @@
             // ------------ BEGIN User PROCESS -----------
 
             $user = new UserModel(email:$email);
-
+            
             // There's no email in db that is equals to $user->get_email()
             if ($user->sel_userID_by_email() === -1)
                 httpResponse::clientError(400, "That email doesn't exists in our system");
@@ -87,7 +87,8 @@
                 $_SESSION['AUTH_1FA'] = true;
                 $_SESSION['ID_USER'] = $user->getUserID();
 
-                if (isset($_SESSION['VERIFY_PAGE_STATUS'])) unset($_SESSION['VERIFY_PAGE_STATUS']);
+                if (isset($_SESSION['VERIFY_PAGE_STATUS'])) 
+                    unset($_SESSION['VERIFY_PAGE_STATUS']);
             }
 
 
@@ -110,7 +111,7 @@
                 httpResponse::serverError(500);
             }
 
-            // Set DKEY (a key derived from password and a random salt) to a session variable
+            // Set MASTER_KEY (a key derived from password and a random salt) to a session variable
 
             $us->setUserID($user->getUserID());
             $masterkey_salt = $us->sel_mKeySalt_by_userID();
@@ -120,6 +121,7 @@
             if ($user->get2FA() === 1)
             {
                 $_SESSION['OTP_CHECKING'] = true;
+                $_SESSION['KEEP_SIGNED'] = $keepsigned;
 
                 httpResponse::successful
                 (
@@ -133,7 +135,12 @@
 
             // ------------ END 2FA PROCESS -----------
 
-            SessionController::initSession(Client::getIP(), Client::getOS(), Client::getBrowser(), $user->getUserID());
+            SessionController::initSession
+            (
+                Client::getInfo(), 
+                $user->getUserID(), 
+                $keepsigned
+            );
 
             httpResponse::successful
             (
@@ -143,15 +150,20 @@
             );
         }
 
-        
-
         public static function processSignout()
         {
             if (session_status() == PHP_SESSION_NONE)                
                 session_start();
 
+            $session = new SessionModel(session_token: $_SESSION['SESSION_TOKEN']);
+            $session->expire_by_sessionToken();
+            unset($session);
+
             $_SESSION = [];
             session_destroy();
+
+            if (isset($_COOKIE['session_token']))
+                setcookie('session_token', "", time()-3600, '/');
 
             httpResponse::redirect('/signin');
         }

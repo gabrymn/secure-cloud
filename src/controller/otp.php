@@ -47,7 +47,9 @@
             $_SESSION['AUTH_2FA'] = true;
             unset($_SESSION['OTP_CHECKING']);
 
-            SessionController::initSession(Client::getIP(), $user->getUserID());
+            SessionController::initSession(Client::getInfo(), $user->getUserID(), $_SESSION['KEEP_SIGNED']);
+
+            unset($_SESSION['KEEP_SIGNED']);
 
             httpResponse::successful
             (

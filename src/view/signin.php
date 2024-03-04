@@ -46,6 +46,20 @@
                                             <input name="pwd" type="password" id="pwd" class="form-control" placeholder="••••••" minlength="2"  required>
                                         </div>
                                     </div>
+
+
+                                    <input type="hidden" name="keepsigned" value="off">
+                                    <div class="form-group row">
+                                    <div class="col-md-6 offset-md-4">
+                                        <div class="form-check">
+                                            <input class="form-check-input" type="checkbox" name="keepsigned" id="remember">
+                                            <label class="form-check-label" for="remember">
+                                                Remember me
+                                            </label>
+                                        </div>
+                                    </div>
+                                    </div>
+
                                     <div class="col-md-6 offset-md-4">
                                         <button type="submit" class="btn btn-primary">
                                             Submit

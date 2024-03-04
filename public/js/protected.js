@@ -2,11 +2,9 @@ const checkSessionStatus = () => {
 
     $.ajax({
         
-        url: '/sessions/status', 
+        url: '/sessions/current/status', 
         method: 'GET',
-        success: function(response) {
-            console.log(response)
-        },
+        success: function(response) {},
         error: function(xhr, status, error) {
             
             if (xhr.status !== undefined && parseInt(xhr.status) === 401)

@@ -10,12 +10,14 @@
             $router = new Router();
 
             $router->GET('/signup', [], function() {
-    
+                
+                AuthController::checkSignedIn();
                 SignupController::renderSignupPage();
             });
         
             $router->GET('/signup/success', [], function() {
                 
+                AuthController::checkSignedIn();
                 StaticPagesController::renderPage('signupSuccess');
             });
     

@@ -74,6 +74,22 @@
 
             return date($date_format, time());
         }
+
+
+        public static function addHours($hours, $date_format = self::SERVER_DT_FORMAT, $tz = self::UTC_TZ): string|bool 
+        {
+            $currentDateTime = self::now($date_format, $tz);
+    
+            if ($currentDateTime) 
+            {
+                $dateTime = new DateTime($currentDateTime);
+                $dateTime->modify("+{$hours} hours");
+    
+                return $dateTime->format($date_format);
+            }
+    
+            return false;
+        }
     }
 
 

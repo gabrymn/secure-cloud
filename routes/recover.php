@@ -12,6 +12,7 @@
 
             $router->GET('/recover', [], function() {
 
+                AuthController::checkSignedIn();
                 AccountRecoveryController::renderRecoverPage();
             }); 
 

@@ -1,6 +1,7 @@
 <?php
 
     require_once __DIR__ . '/../../resource/http/httpResponse.php';
+    require_once __DIR__ . '/../../resource/storage/fileSysHandler.php';
     require_once __DIR__ . '/../model/session.php';
     
     class AuthController
@@ -69,18 +70,44 @@
             if (session_status() === PHP_SESSION_NONE) 
                 session_start();
 
-            self::check($redirect, 'LOGGED');
-            
-            $sd = new SessionDatesModel
-            (
-                id_session: $_SESSION['CURRENT_ID_SESSION'], 
-            );
-            
-            $session_expired = $sd->is_expired_by_sessionID();
+            self::check($redirect, 'SIGNED_IN');
+
+            $session = new SessionModel(session_token: $_SESSION['SESSION_TOKEN']);
+            $session_expired = $session->isExpired_by_sessionToken();
             
             if ($session_expired === 1)
             {
                 self::handleResponse($redirect);
+            }
+        }
+
+        public static function checkSignedIn()
+        {
+            if (session_status() === PHP_SESSION_NONE) 
+                session_start();
+
+            if (isset($_COOKIE['session_token']))
+            {
+                $session = new SessionModel(session_token: $_COOKIE['session_token']);
+
+                $_SESSION['SIGNED_IN'] = true;
+                $_SESSION['SESSION_TOKEN'] = $session->getSessionToken();
+                    
+                $userID = $session->sel_userID_by_sessionToken();
+                $user = new UserModel(id_user: $userID);
+                
+                $user->sel_email_by_userID();   
+
+                $_SESSION['USER_DIR'] = FileSysHandler::getUserDir($user->getUserID(), $user->getEmail());
+
+                HttpResponse::redirect('/clouddrive');
+            }
+            else
+            {
+                if (isset($_SESSION['SESSION_TOKEN']))
+                {
+                    HttpResponse::redirect('/clouddrive');
+                }
             }
         }
     }

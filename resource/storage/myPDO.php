@@ -159,10 +159,10 @@
 
         public static function beginTransaction()
         {
-            if (self::$conn === null)
-                return false;
-            else
+            if (self::$conn !== null)
                 return self::$conn->beginTransaction();
+            else
+                return false;
         }
 
         public static function commit()
