@@ -1,7 +1,7 @@
 <?php
 
     require_once __DIR__ . '/../view/assets/navbar.php';
-    require_once __DIR__ . '/../model/userSecurity.php';
+    require_once __DIR__ . '/../model/userSecrets.php';
     require_once __DIR__ . '/../../resource/http/httpResponse.php';
     require_once __DIR__ . '/../../resource/security/userKeysHandler.php';
 
@@ -21,7 +21,7 @@
             $user = new UserModel(email: $email);
             $user->sel_userID_by_email($user->getEmail());
             
-            $us = new UserSecurityModel(id_user: $user->getUserID());
+            $us = new UserSecretsModel(id_user: $user->getUserID());
             
             $us->sel_rKeyHash_by_userID();
 
@@ -45,7 +45,7 @@
             $ukh = UserKeysHandler::getInstanceFromPassword($password);
             $ukh->setRecoveryKey($_SESSION['RECOVERY_KEY']);
 
-            $us = new UserSecurityModel
+            $us = new UserSecretsModel
             (
                 password_hash:         $ukh->getPasswordHashed(),
                 recoverykey_encrypted: $ukh->getRecoveryKeyEncrypted(),

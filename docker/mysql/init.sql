@@ -9,7 +9,7 @@ CREATE DATABASE IF NOT EXISTS `secure_cloud` DEFAULT CHARACTER SET utf8mb4 COLLA
 USE `secure_cloud`;
 
 SOURCE ../database/structure/tables/users.sql;
-SOURCE ../database/structure/tables/user_security.sql;
+SOURCE ../database/structure/tables/user_secrets.sql;
 SOURCE ../database/structure/tables/email_verify.sql;
 SOURCE ../database/structure/tables/sessions.sql;
 SOURCE ../database/structure/tables/session_dates.sql;

@@ -23,7 +23,7 @@
                 SessionController::expireSession($args['id_session']);
             });
     
-            $router->GET('/sessions/current/expire', [], function() {
+            $router->GET('/sessions/current/status', [], function() {
     
                 AuthController::checkProtectedarea(false);
     

@@ -1,32 +1,61 @@
 Encryption System Analysis  
 
-client: 
+Keys Description:
 
-    pwd = input()
-  
-server:
+    MasterKey:
+        The MasterKey is obtained using the PBKDF2 key derivation algorithm, taking the user's password and a random salt as input, which is saved in the database. 
+        This key is not directly stored in the database but is calculated at every login through the PBKDF2 algorithm. In case the user chooses to access in 
+        remember-me mode, initializing a session lasting 14 days (avoiding the need to log in each time), the MasterKey will be encrypted by the SessionKey and 
+        saved in the database. In this scenario, saving the MasterKey in the database is mandatory, as the user does not enter the password when opening the app, 
+        making it impossible to obtain the MasterKey.
 
-    dkey_salt = random_salt : base64
+    SessionKey:
+        The SessionKey is obtained through the PBKDF2 algorithm, taking a random salt (saved in the database) and the session token as input. Its purpose is to 
+        encrypt/decrypt the MasterKey each time the app is opened when the user initially logs in using remember-me mode. If the user logs in without selecting 
+        remember-me, this key is not used.
 
-    dkey = PKBF2(pwd, dkey_salt) : hex
+    RecoveryKey:
+        The RecoveryKey is randomly generated during registration and is used to recover the account in case of a forgotten password. This key is also used to 
+        encrypt/decrypt the CipherKey and the 2FA secret. In the database, it is saved in two formats: hashed and encrypted. The hash is used to verify that 
+        the RecoveryKey is correct when the user wants to recover the account in case of a forgotten password.
 
-    rkey = random_AES_key() : base64
-    ckey = random_AES_key() : base64
+    CipherKey:
+        The CipherKey is randomly generated during registration and is used to encrypt the user's sensitive information, such as all files, file metadata, 
+        and more. It is encrypted by the RecoveryKey and saved in the database.
 
-    secret_2fa = random_2FA_secret() : str
+    Secret2FA:
+        The 2FA secret is randomly generated during registration and is used to generate OTP codes through applications like Google Authenticator. It is encrypted 
+        by the RecoveryKey and saved in the database.
 
-    pwd_hash = PASSWORD_HASH(pwd, ARGON2ID) : str
-    rkey_hash = PASSWORD_HASH(rkey, ARGON2ID) : str
 
-    ckey_encrypted = encrypt_AES_GCM(ckey) with (rkey)
-    rkey_encrypted = encrypt_AES_GCM (rkey) with (dkey) 
-    secret_2fa_encrypted = encrypt_AES_GCM(secret_2fa) with (rkey)
+Pseudocode:
 
-    store on db:
+    client: 
 
-        pwd_hash
-        rkey_hash
-        rkey_encrypted
-        ckey_encrypted
-        secret_2fa_encrypted
-        dkey_salt
+        pwd = input()
+    
+    server:
+
+        master_key_salt = random_salt()
+        master_key = PBKDF2(pwd, master_key_salt)
+
+        recovery_key = random_AES_key()
+        cipher_key = random_AES_key()
+        secret_2fa = random_2FA_secret()
+
+        pwd_hash = PASSWORD_HASH(pwd, ARGON2ID)
+        recovery_key_hash = PASSWORD_HASH(recovery_key, ARGON2ID)
+
+        cipher_key_encrypted = encrypt_AES_GCM (cipher_key) with (recovery_key)
+        recovery_key_encrypted = encrypt_AES_GCM (recovery_key) with (master_key) 
+        secret_2fa_encrypted = encrypt_AES_GCM (secret_2fa) with (recovery_key)
+
+        
+        store on database: (user_secrets table)
+            
+            pwd_hash
+            recovery_key_hash
+            recovery_key_encrypted
+            cipher_key_encrypted
+            secret_2fa_encrypted
+            master_key_salt

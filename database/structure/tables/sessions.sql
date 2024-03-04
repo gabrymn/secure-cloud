@@ -5,6 +5,7 @@ CREATE TABLE `sessions` (
   `os` varchar(255) NOT NULL,
   `browser` varchar(255) NOT NULL,
   `expired` tinyint(1) NOT NULL CHECK (`expired` IN (0, 1)),
+  `session_key_salt` varchar(255) DEFAULT NULL,
   `id_user` int(11) NOT NULL,
   PRIMARY KEY (`session_token`),
   KEY `id_user` (`id_user`),

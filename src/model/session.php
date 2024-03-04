@@ -12,6 +12,7 @@
         private string $os;
         private string $browser;
         private int $expired;
+        private string $session_key_salt;
         private int $id_user;
 
         public const SESSION_TOKEN_LEN = 50;
@@ -20,7 +21,7 @@
         public const SESSION_HRS_RANGE_STD = 2;
         public const SESSION_HRS_RANGE_KEEPSIGNED = 24*14;
 
-        public function __construct($session_token=null, $ip=null, $os=null, $browser=null, $expired=null, $id_user=null)
+        public function __construct($session_token=null, $ip=null, $os=null, $browser=null, $expired=null, $session_key_salt=null, $id_user=null)
         {
             if ($session_token === null)
                 $this->setSessionToken($this->generateUID(self::SESSION_TOKEN_LEN));
@@ -32,6 +33,9 @@
             $this->setBrowser($browser ? $browser : parent::DEFAULT_STR);
 
             $this->setExpired($expired ? $expired : self::DEFAULT_EXPIRED);
+
+            $this->setSessionKeySalt($session_key_salt ? $session_key_salt : parent::DEFAULT_STR);
+
             $this->setUserID($id_user ? $id_user : parent::DEFAULT_INT);
         }
 
@@ -94,6 +98,16 @@
             return $this->id_user;
         }
 
+        public function setSessionKeySalt($session_key_salt)
+        {
+            $this->session_key_salt = $session_key_salt;
+        }
+
+        public function getSessionKeySalt()
+        {
+            return $this->session_key_salt;
+        }
+
         public function setExpired(int $expired) : void
         {
             $this->expired = $expired;
@@ -104,7 +118,7 @@
             return $this->expired;
         }
 
-        public function toAssocArray($session_token=false, $ip=false, $os=false, $browser=false, $expired=false, $id_user=false) : array
+        public function toAssocArray($session_token=false, $ip=false, $os=false, $browser=false, $expired=false, $session_key_salt=false, $id_user=false) : array
         {
             $params = array();
             
@@ -123,6 +137,9 @@
             if ($expired)
                 $params["expired"] = $this->getExpired();
             
+            if ($session_key_salt)
+                $params["session_key_salt"] = $this->getSessionKeySalt();
+
             if ($id_user)
                 $params["id_user"] = $this->getUserID();
 
@@ -131,11 +148,11 @@
 
         public function ins()
         {
-            $qry = "INSERT INTO `sessions` (`session_token`, `ip`, `os`, `browser`, `expired`, `id_user`) VALUES (:session_token, :ip, :os, :browser, :expired, :id_user)";
+            $qry = "INSERT INTO `sessions` (`session_token`, `ip`, `os`, `browser`, `expired`, `session_key_salt`,`id_user`) VALUES (:session_token, :ip, :os, :browser, :expired, :session_key_salt, :id_user)";
 
             MyPDO::connect('insert');
 
-            return MyPDO::qryExec($qry, $this->toAssocArray(session_token:true, ip:true, os:true, browser:true, expired:true, id_user:true));
+            return MyPDO::qryExec($qry, $this->toAssocArray(session_token:true, ip:true, os:true, browser:true, expired:true, session_key_salt:true, id_user:true));
         }
 
         public static function getSessionsOf($id_user, $session_token)
@@ -289,6 +306,36 @@
 
             $id_user = $res[0]['id_user'];
             return $id_user;
+        }
+
+        public function sel_sessionKeySalt_by_sessionToken()
+        {
+            $qry = "SELECT session_key_salt FROM sessions WHERE session_token = :session_token";
+
+            myPDO::connect('select');
+
+            $res = myPDO::qryExec($qry, $this->toAssocArray(session_token:true));
+
+            if ($res === false)
+                return false;
+            
+            else if ($res === array())
+                return -1;
+            
+            else
+            {
+                $session_key_salt = $res[0]['session_key_salt'];
+                return $session_key_salt;
+            }
+        }
+
+        public function ins_sessionKeySalt_by_SessionToken()
+        {
+            $qry = "UPDATE sessions SET session_key_salt = :session_key_salt WHERE session_token = :session_token";
+
+            MyPDO::connect('update');
+
+            return MyPDO::qryExec($qry, $this->toAssocArray(session_token:true, session_key_salt:true));
         }
     }
 ?>

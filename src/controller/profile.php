@@ -14,7 +14,7 @@
             $user = new UserModel(id_user: $_SESSION['ID_USER']);
             $user->sel_email_by_userID();
 
-            $us = new UserSecurityModel(id_user: $user->getUserID());
+            $us = new UserSecretsModel(id_user: $user->getUserID());
 
             $us->sel_secret2faEnc_by_userID();
             $us->sel_rKeyEnc_by_userID();

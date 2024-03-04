@@ -10,7 +10,7 @@
     require_once __DIR__ . '/../view/assets/navbar.php';
     require_once __DIR__ . '/../model/user.php';
     require_once __DIR__ . '/../model/emailVerify.php';
-    require_once __DIR__ . '/../model/userSecurity.php';
+    require_once __DIR__ . '/../model/userSecrets.php';
     
     class SignupController
     {
@@ -71,7 +71,7 @@
 
             $user_keys = UserKeysHandler::getInstanceFromPassword($pwd);
             
-            $user_security_data = new UserSecurityModel
+            $user_secrets_data = new UserSecretsModel
             (
                 password_hash:         $user_keys->getPasswordHashed(),
                 recoverykey_hash:      $user_keys->getRecoveryKeyHashed(),
@@ -82,7 +82,7 @@
                 id_user:               $user->getUserID()
             );
 
-            if (!$user_security_data->ins())
+            if (!$user_secrets_data->ins())
             {
                 MyPDO::rollBack();
                 httpResponse::serverError();

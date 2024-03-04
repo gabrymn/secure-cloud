@@ -7,6 +7,7 @@
     require_once __DIR__ . '/../../resource/myDateTime.php';
     require_once __DIR__ . '/../../resource/http/client.php';
     require_once __DIR__ . '/../model/user.php';
+    require_once __DIR__ . '/../model/userSecrets.php';
     require_once __DIR__ . '/../model/emailVerify.php';
     require_once __DIR__ . '/../model/session.php';
     require_once __DIR__ . '/../view/assets/navbar.php';
@@ -38,9 +39,9 @@
 
 
 
-            // ------------ BEGIN UserSecurity PROCESS -----------
+            // ------------ BEGIN UserSecrets PROCESS -----------
 
-            $us = new UserSecurityModel(id_user: $user->getUserID());
+            $us = new UserSecretsModel(id_user: $user->getUserID());
             
             // there's no record in user_security that has that id_user, server error 
             if (!$us->sel_pwdHash_by_userID())
@@ -50,7 +51,7 @@
             if (!password_verify($pwd, $us->getPasswordHash()))
                 httpResponse::clientError(400, "Password is wrong");
 
-            // ------------ END UserSecurity PROCESS -----------
+            // ------------ END UserSecrets PROCESS -----------
 
             
 

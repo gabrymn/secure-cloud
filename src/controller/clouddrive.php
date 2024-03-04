@@ -17,7 +17,7 @@
             
             $clouddrive_icons = FileIcons::get($filenames);
             $navbar = Navbar::getPrivate('clouddrive');
-
+            
             include __DIR__ . '/../view/clouddrive.php';
         }
 

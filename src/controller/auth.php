@@ -79,6 +79,23 @@
             {
                 self::handleResponse($redirect);
             }
+            else if ($session_expired === 0)
+            {
+                if (isset($_SESSION['AUTH_BY_COOKIE']))
+                {
+                    $master_key_plaintext = UserKeysController::getMasterKeyByUserIDSessionToken(
+                        $_SESSION['ID_USER'],
+                        $_SESSION['SESSION_TOKEN']
+                    );
+                    
+                    $_SESSION['MASTER_KEY'] = $master_key_plaintext;
+                }
+            }
+            else
+            {
+                HttpResponse::serverError();
+            }
+
         }
 
         public static function checkSignedIn()
@@ -90,17 +107,24 @@
             {
                 $session = new SessionModel(session_token: $_COOKIE['session_token']);
 
-                $_SESSION['SIGNED_IN'] = true;
-                $_SESSION['SESSION_TOKEN'] = $session->getSessionToken();
-                    
                 $userID = $session->sel_userID_by_sessionToken();
-                $user = new UserModel(id_user: $userID);
-                
-                $user->sel_email_by_userID();   
 
-                $_SESSION['USER_DIR'] = FileSysHandler::getUserDir($user->getUserID(), $user->getEmail());
+                if ($userID !== -1 && $userID !== false)
+                {
+                    $user = new UserModel(id_user: $userID);
 
-                HttpResponse::redirect('/clouddrive');
+                    $user->sel_email_by_userID();   
+
+                    $_SESSION['USER_DIR'] = FileSysHandler::getUserDir($user->getUserID(), $user->getEmail());
+
+                    $_SESSION['SIGNED_IN'] = true;
+                    $_SESSION['ID_USER'] = $user->getUserID();
+                    $_SESSION['SESSION_TOKEN'] = $session->getSessionToken();
+
+                    $_SESSION['AUTH_BY_COOKIE'] = true;
+ 
+                    HttpResponse::redirect('/clouddrive');         
+                } 
             }
             else
             {

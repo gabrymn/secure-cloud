@@ -22,19 +22,38 @@
 
             $session = new SessionModel(ip: $client['ip'], os: $client['os'], browser: $client['browser'], id_user: $id_user);
             $session_dates = new SessionDatesModel(session_token: $session->getSessionToken());
+            
+            MyPDO::connect('insert');
+            MyPDO::beginTransaction();
 
             if ($keepsigned === 'on')
             {
                 $session_dates->setEnd(MyDatetime::addHours(SessionModel::SESSION_HRS_RANGE_KEEPSIGNED));
                 
                 setcookie(
-                    name:                "session_token", 
+                    name:                'session_token', 
                     value:               $session->getSessionToken(), 
-                    expires_or_options:  time()+3600, 
+                    expires_or_options:  time()+SessionModel::SESSION_HRS_RANGE_KEEPSIGNED, 
                     path:                '/'
                     //secure:              true,
                     //httponly:            true
                 );
+
+                $session->setSessionKeySalt(Crypto::genSalt());
+                $session_key = Crypto::deriveKey($session->getSessionToken(), $session->getSessionKeySalt());
+
+                $masterkey_encrypted = Crypto::encrypt($_SESSION['MASTER_KEY'], $session_key);
+
+                $us = new UserSecretsModel(
+                    masterkey_encrypted: $masterkey_encrypted, 
+                    id_user:             $_SESSION['ID_USER']
+                );
+
+                if ($us->ins_mKeyEnc_by_userID() === false)
+                {
+                    MyPDO::rollBack();
+                    HttpResponse::serverError();
+                }
             }
             else
             {
@@ -42,9 +61,6 @@
             }
 
             $_SESSION['SESSION_TOKEN'] = $session->getSessionToken();
-
-            myPDO::connect('insert');
-            myPDO::beginTransaction();
 
             if ($session->ins() && $session_dates->ins())
                 mypdo::commit();
