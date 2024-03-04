@@ -1,7 +1,7 @@
 <?php
 
     require_once __DIR__ . '/model.php';
-    require_once __DIR__ . '/../../resource/myDateTime.php';
+    require_once __DIR__ . '/../../resource/mydatetime.php';
 
     class FileTransferModel extends Model
     {

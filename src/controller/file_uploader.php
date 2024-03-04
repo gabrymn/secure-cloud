@@ -1,14 +1,14 @@
 <?php
 
-    require_once __DIR__ . '/../../resource/http/httpResponse.php';
-    require_once __DIR__ . '/../../resource/http/uploadSession.php';
-    require_once __DIR__ . '/../../resource/storage/myPDO.php';
-    require_once __DIR__ . '/../../resource/storage/fileSysHandler.php';
+    require_once __DIR__ . '/../../resource/http/http_response.php';
+    require_once __DIR__ . '/../../resource/http/upload_session.php';
+    require_once __DIR__ . '/../../resource/storage/mypdo.php';
+    require_once __DIR__ . '/../../resource/storage/file_sys_handler.php';
     require_once __DIR__ . '/../../resource/security/crypto.php';
     require_once __DIR__ . '/../model/user.php';
     require_once __DIR__ . '/../model/file.php';
-    require_once __DIR__ . '/../model/fileTransfer.php';
-    require_once __DIR__ . '/userKeys.php';
+    require_once __DIR__ . '/../model/file_transfer.php';
+    require_once __DIR__ . '/user_keys.php';
 
     class FileUploaderController
     {

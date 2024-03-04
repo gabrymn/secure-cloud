@@ -3,7 +3,7 @@
     require_once __DIR__ . '/../view/assets/navbar.php';
     require_once __DIR__ . '/../model/user.php';
     require_once __DIR__ . '/../../resource/security/crypto.php';
-    require_once __DIR__ . '/../../resource/security/myTFA.php';
+    require_once __DIR__ . '/../../resource/security/my_tfa.php';
     
     class ProfileController
     {

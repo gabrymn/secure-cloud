@@ -1,6 +1,6 @@
 <?php
 
-    require_once __DIR__ . '/routesInterface.php';
+    require_once __DIR__ . '/routes_interface.php';
     require_once __DIR__ . '/../src/controller/otp.php';
 
     abstract class auth2 implements RoutesInterface

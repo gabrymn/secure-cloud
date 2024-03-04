@@ -1,14 +1,14 @@
 <?php
 
 
-    require_once __DIR__ . '/../../resource/http/httpResponse.php';
+    require_once __DIR__ . '/../../resource/http/http_response.php';
     require_once __DIR__ . '/../../resource/security/crypto.php';
-    require_once __DIR__ . '/../../resource/storage/myPDO.php';
-    require_once __DIR__ . '/../../resource/myDateTime.php';
+    require_once __DIR__ . '/../../resource/storage/mypdo.php';
+    require_once __DIR__ . '/../../resource/mydatetime.php';
     require_once __DIR__ . '/../../resource/http/client.php';
     require_once __DIR__ . '/../model/user.php';
-    require_once __DIR__ . '/../model/userSecrets.php';
-    require_once __DIR__ . '/../model/emailVerify.php';
+    require_once __DIR__ . '/../model/user_secrets.php';
+    require_once __DIR__ . '/../model/email_verify.php';
     require_once __DIR__ . '/../model/session.php';
     require_once __DIR__ . '/../view/assets/navbar.php';
     

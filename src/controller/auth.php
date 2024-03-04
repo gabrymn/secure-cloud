@@ -1,7 +1,7 @@
 <?php
 
-    require_once __DIR__ . '/../../resource/http/httpResponse.php';
-    require_once __DIR__ . '/../../resource/storage/fileSysHandler.php';
+    require_once __DIR__ . '/../../resource/http/http_response.php';
+    require_once __DIR__ . '/../../resource/storage/file_sys_handler.php';
     require_once __DIR__ . '/../model/session.php';
     
     class AuthController

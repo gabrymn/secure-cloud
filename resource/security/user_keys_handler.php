@@ -1,8 +1,8 @@
 <?php
 
     require_once __DIR__ . '/crypto.php';
-    require_once __DIR__ . '/myTFA.php';
-    require_once __DIR__ . '/../dataStructure.php';
+    require_once __DIR__ . '/my_tfa.php';
+    require_once __DIR__ . '/../data_structure.php';
 
     class UserKeysHandler extends DataStructure
     {

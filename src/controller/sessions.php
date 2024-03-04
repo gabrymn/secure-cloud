@@ -1,10 +1,10 @@
 <?php
 
-    require_once __DIR__ .  '/../../resource/http/httpResponse.php';
-    require_once __DIR__ .  '/../../resource/myDateTime.php';
+    require_once __DIR__ .  '/../../resource/http/http_response.php';
+    require_once __DIR__ .  '/../../resource/mydatetime.php';
     require_once __DIR__ . '/../view/assets/navbar.php';
     require_once __DIR__ . '/../model/session.php';
-    require_once __DIR__ . '/../model/sessionDates.php';
+    require_once __DIR__ . '/../model/session_dates.php';
 
     class SessionController
     {

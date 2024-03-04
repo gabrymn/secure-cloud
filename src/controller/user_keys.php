@@ -1,6 +1,6 @@
 <?php
 
-    require_once __DIR__ . '/../model/userSecrets.php';
+    require_once __DIR__ . '/../model/user_secrets.php';
     require_once __DIR__ . '/../../resource/security/crypto.php';
 
     class UserKeysController

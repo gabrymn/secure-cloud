@@ -1,8 +1,8 @@
 <?php
 
     require_once __DIR__ . '/model.php';
-    require_once __DIR__ . '/../../resource/myDateTime.php';
-    require_once __DIR__ . '/../../resource/storage/myPDO.php';
+    require_once __DIR__ . '/../../resource/mydatetime.php';
+    require_once __DIR__ . '/../../resource/storage/mypdo.php';
     require_once __DIR__ . '/../../resource/http/client.php';
 
     class SessionModel extends Model

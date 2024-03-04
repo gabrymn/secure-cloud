@@ -1,7 +1,7 @@
 <?php
 
-    require_once __DIR__ . '/../security/cryptoRNDString.php';
-    require_once __DIR__ . '/../storage/fileSysHandler.php';
+    require_once __DIR__ . '/../security/crypto_rnd_string.php';
+    require_once __DIR__ . '/../storage/file_sys_handler.php';
 
     class UploadSession extends DataStructure
     {

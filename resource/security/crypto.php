@@ -1,6 +1,6 @@
 <?php
 
-    require_once __DIR__ . '/../dataStructure.php';
+    require_once __DIR__ . '/../data_structure.php';
 
     class Crypto extends DataStructure
     {

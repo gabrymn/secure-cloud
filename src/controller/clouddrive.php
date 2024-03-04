@@ -1,10 +1,10 @@
 <?php
 
     require_once __DIR__ . '/../model/file.php';
-    require_once __DIR__ . '/../controller/userKeys.php';
-    require_once __DIR__ . '/../../resource/http/httpResponse.php';
-    require_once __DIR__ . '/../../resource/storage/fileSysHandler.php';
-    require_once __DIR__ . '/../../resource/security/userKeysHandler.php';
+    require_once __DIR__ . '/../controller/user_keys.php';
+    require_once __DIR__ . '/../../resource/http/http_response.php';
+    require_once __DIR__ . '/../../resource/storage/file_sys_handler.php';
+    require_once __DIR__ . '/../../resource/security/user_keys_handler.php';
     require_once __DIR__ . '/../../resource/security/crypto.php';
     require_once __DIR__ . '/../view/assets/navbar.php';
     require_once __DIR__ . '/../view/assets/fileicons.php';
