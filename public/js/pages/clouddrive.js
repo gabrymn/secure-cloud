@@ -1,4 +1,4 @@
-import FileUploader from "../ds/fileUploader.js";
+import FileUploader from "../ds/file_uploader.js";
 
 $("#ID_UPLOAD").on('click', () => {
     $('#ID_FILE_UPLOADER').trigger('click');
