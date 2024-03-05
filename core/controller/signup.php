@@ -65,7 +65,7 @@
 
 
             
-            // ----------- BEGIN User-Security CREATION -------------
+            // ----------- BEGIN User-Secrets CREATION -------------
 
             $user->sel_userID_by_email();
 
@@ -88,7 +88,7 @@
                 httpResponse::serverError();
             }
 
-            // ----------- END User-Security CREATION -------------
+            // ----------- END User-Secrets CREATION -------------
 
 
 

@@ -3,16 +3,22 @@
     require_once __DIR__ .  '/../../resource/http/http_response.php';
     require_once __DIR__ .  '/../../resource/mydatetime.php';
     require_once __DIR__ . '/../view/assets/navbar.php';
+    require_once __DIR__ . '/../view/assets/sessions_view.php';
     require_once __DIR__ . '/../model/session.php';
     require_once __DIR__ . '/../model/session_dates.php';
-
+    
     class SessionController
     {
         public const SESSION_STATUS_CHECK_MS = 4000;
 
         public static function renderSessionsPage()
-        {
+        {   
             $navbar = Navbar::getPrivate('sessions');
+
+            $sessions = SessionModel::sel_sessions_by_userID_sessionToken_filtered(session_token: $_SESSION['SESSION_TOKEN'], id_user: $_SESSION['ID_USER']);
+
+            $sessions_view = SessionsView::get($sessions);
+
             include __DIR__ . '/../view/sessions.php';
         }
 

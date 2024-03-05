@@ -130,7 +130,7 @@
 
         public function getRecoveryKeyHashed($algo = PASSWORD_ARGON2ID)
         {
-            return password_hash($this->master_key, $algo);
+            return password_hash($this->recovery_key, $algo);
         }
 
         public function getRecoveryKeyEncrypted()

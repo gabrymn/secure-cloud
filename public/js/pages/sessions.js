@@ -1,9 +1,9 @@
 const expireSession = (id) => {
     
     id = String(id)
-    const id_session = sessionRefs.get(id);
+    const session_token = sessionRefs.get(id);
 
-    if (id_session === CURRENT_ID_SESSION)
+    if (session_token === CURRENT_SESSION_TOKEN)
     {
         const userResponse = confirm("You're about to expire the current session. Do you want to continue?")
         if (!userResponse) return
@@ -14,7 +14,7 @@ const expireSession = (id) => {
         url: '/sessions/expire', 
         method: 'POST',
         data: {
-            id_session: id_session,
+            session_token: session_token,
         },
         success: function(response) {
             

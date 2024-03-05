@@ -7,7 +7,7 @@
     require_once __DIR__ . '/../../resource/security/user_keys_handler.php';
     require_once __DIR__ . '/../../resource/security/crypto.php';
     require_once __DIR__ . '/../view/assets/navbar.php';
-    require_once __DIR__ . '/../view/assets/fileicons.php';
+    require_once __DIR__ . '/../view/assets/file_icons_view.php';
 
     class CloudDriveController
     {

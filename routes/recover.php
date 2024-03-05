@@ -1,8 +1,8 @@
 <?php
 
     require_once __DIR__ . '/routes_interface.php';
-    require_once __DIR__ . '/../src/controller/auth.php';
-    require_once __DIR__ . '/../src/controller/account_recovery.php';
+    require_once __DIR__ . '/../core/controller/auth.php';
+    require_once __DIR__ . '/../core/controller/account_recovery.php';
 
     abstract class recover implements RoutesInterface
     {
@@ -22,8 +22,8 @@
             });
         
             $router->POST('/recover', ['pwd'], function($args) {
-        
-                AuthController::check(false, 'RECOVERING_ACCOUNT', 'ID_USER', 'RKEY');
+                
+                AuthController::check(false, 'RECOVERING_ACCOUNT', 'ID_USER', 'RECOVERY_KEY');
                 AccountRecoveryController::processPasswordReset($args['pwd']);
             });
 

@@ -1,7 +1,7 @@
 <?php
 
     require_once __DIR__ . '/routes_interface.php';
-    require_once __DIR__ . '/../src/controller/signup.php';
+    require_once __DIR__ . '/../core/controller/signup.php';
 
     abstract class signup implements RoutesInterface
     {
@@ -18,7 +18,7 @@
             $router->GET('/signup/success', [], function() {
                 
                 AuthController::checkSignedIn();
-                StaticPagesController::renderPage('signupSuccess');
+                StaticPagesController::renderPage('signup_success');
             });
     
             $router->POST('/signup', ['email', 'pwd', 'name', 'surname'], function($args) {

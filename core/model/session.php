@@ -155,11 +155,11 @@
             return MyPDO::qryExec($qry, $this->toAssocArray(session_token:true, ip:true, os:true, browser:true, expired:true, session_key_salt:true, id_user:true));
         }
 
-        public static function getSessionsOf($id_user, $session_token)
+        public static function sel_sessions_by_userID_sessionToken_filtered($id_user, $session_token)
         {
-            $s = new SessionModel(id_user:$id_user, session_token:$session_token);
+            $s = new SessionModel(session_token:$session_token, id_user:$id_user);
 
-            $sessions = $s->sel_sessions_by_userID_sessionToken();
+            $sessions = SessionModel::sel_sessions_by_userID_sessionToken($id_user, $session_token);
 
             $actual_client_timezone = Client::getTimezone();
 
@@ -173,7 +173,7 @@
 
                 $session = array_merge($session, $ip_info_session);
 
-                if ($session['session_token'] === $session_token)
+                if ($session['session_token'] === $s->getSessionToken())
                     $session['status'] = "Actual";
                 else
                     if ($session['end'] === null)
@@ -216,8 +216,10 @@
          *
          * @return array An array containing the result of the query.
         */
-        public function sel_sessions_by_userID_sessionToken() : array
+        public static function sel_sessions_by_userID_sessionToken($id_user, $session_token) : array
         {
+            $s = new SessionModel(session_token:$session_token, id_user:$id_user);
+
             $qry = 
             (
                 "SELECT sessions.*, session_dates.*
@@ -238,7 +240,7 @@
 
             MyPDO::connect('select');
 
-            return MyPDO::qryExec($qry, $this->toAssocArray(session_token:true, id_user:true));
+            return MyPDO::qryExec($qry, $s->toAssocArray(session_token:true, id_user:true));
         }
 
         public function expire_by_sessionToken()

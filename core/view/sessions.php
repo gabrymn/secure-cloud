@@ -26,54 +26,14 @@
                 <th scope="col">Browser</th>
                 <th scope="col">IP Address</th>
                 <th scope="col">Location</th>
-                <th scope="col">Recent Activity</th>
+                <th scope="col">Last Activity</th>
                 <th scope="col">Status</th>
                 <th scope="col">Edit</th>
             </tr>
         </thead>
         <tbody id="ID_TBL_BODY">
             
-            <!-- this PHP add all the sessions related to the current user -->
-            <?php
-
-                $sessions = SessionModel::getSessionsOf($_SESSION['ID_USER'], $_SESSION['CURRENT_ID_SESSION']);
-                
-                echo "<script>let sessionRefs = new Map();</script>";
-
-                $i = 0;
-                
-                foreach ($sessions as $session)
-                {
-                    $loc = $session['city'] . ', ' . $session['country'];
-                    
-                    unset($session['city']);
-                    unset($session['country']);
-
-                    echo "<tr>";
-                    echo "<td>{$session['os']}</td>";
-                    echo "<td>{$session['browser']}</td>";
-                    echo "<td>{$session['ip']}</td>";
-                    echo "<td>{$loc}</td>";
-                    echo "<td>{$session['recent_activity_date']}</td>";
-                    echo "<td id=id_sess_status_$i>{$session['status']}</td>";
-                    
-                    if ($session['status'] !== 'Expired')
-                        echo 
-                        "<td id=id_td_expire_{$i}>
-                            <button onclick=expireSession({$i}) class='close-sess-btn'>Close</button>
-                        </td>";
-
-                    echo "</tr>";
-
-                    echo 
-                    "<script>
-                        sessionRefs.set('{$i}', '{$session['id_session']}')
-                    </script>";
-
-                    $i++;
-                } 
-
-            ?>
+            <?php echo $sessions_view; ?>
 
         </tbody>
     </table>
@@ -90,7 +50,7 @@
 </body>
 
 <script>
-    const CURRENT_ID_SESSION = '<?php echo $_SESSION['CURRENT_ID_SESSION']; ?>';
+    const CURRENT_SESSION_TOKEN = '<?php echo $_SESSION['SESSION_TOKEN']; ?>';
 
     $(document).ready(() => {
         setInterval(checkSessionStatus, <?php echo SessionController::SESSION_STATUS_CHECK_MS; ?>);

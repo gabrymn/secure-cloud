@@ -10,7 +10,7 @@ services:
     ports:
       - "80:80"
     volumes:
-      - ../src:/app/src
+      - ../core:/app/core
       - ../resource:/app/resource
       - ../public:/app/public
       - ../storage:/app/storage
@@ -31,7 +31,7 @@ services:
     command: sh -c "chmod -R a+rw ../../../app && php-fpm -F -R"
     restart: always
     volumes:
-      - ../src:/app/src
+      - ../core:/app/core
       - ../resource:/app/resource
       - ../public:/app/public
       - ../storage:/app/storage

@@ -23,7 +23,7 @@
 
         <br>
 
-        <center><h5><strong>RECOVERY KEY: </strong></h5><?php echo $rkey; ?></center>
+        <center><h5><strong>RECOVERY KEY: </strong></h5><?php echo $recoverykey; ?></center>
 
         <br><br>
 

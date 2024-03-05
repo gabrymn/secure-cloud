@@ -1,10 +1,10 @@
 <?php
 
     require_once __DIR__ . '/routes_interface.php';
-    require_once __DIR__ . '/../src/controller/auth.php';
-    require_once __DIR__ . '/../src/controller/clouddrive.php';
-    require_once __DIR__ . '/../src/controller/file_uploader.php';
-    require_once __DIR__ . '/../src/controller/file_downloader.php';
+    require_once __DIR__ . '/../core/controller/auth.php';
+    require_once __DIR__ . '/../core/controller/clouddrive.php';
+    require_once __DIR__ . '/../core/controller/file_uploader.php';
+    require_once __DIR__ . '/../core/controller/file_downloader.php';
 
     abstract class clouddrive implements RoutesInterface
     {

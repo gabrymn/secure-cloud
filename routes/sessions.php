@@ -1,8 +1,8 @@
 <?php
 
     require_once __DIR__ . '/routes_interface.php';
-    require_once __DIR__ . '/../src/controller/auth.php';
-    require_once __DIR__ . '/../src/controller/sessions.php';
+    require_once __DIR__ . '/../core/controller/auth.php';
+    require_once __DIR__ . '/../core/controller/sessions.php';
     require_once __DIR__ . '/../resource/http/http_response.php';
 
     abstract class sessions implements RoutesInterface
@@ -17,10 +17,10 @@
                 SessionController::renderSessionsPage();
             });
     
-            $router->POST('/sessions/expire', ['id_session'], function($args) {
+            $router->POST('/sessions/expire', ['session_token'], function($args) {
                 
                 AuthController::checkProtectedarea(false);
-                SessionController::expireSession($args['id_session']);
+                SessionController::expireSession($args['session_token']);
             });
     
             $router->GET('/sessions/current/status', [], function() {
