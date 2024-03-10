@@ -58,7 +58,17 @@
             if (!$user->ins())
             {
                 MyPDO::rollBack();
-                httpResponse::serverError(500);
+                httpResponse::serverError();
+            }
+
+            $user->sel_userID_by_email();
+
+            // Creation of User Storage dir 
+            $user_dir_created = FileSysHandler::makeUserDir($user->getUserID(), $user->getEmail());
+            if (!$user_dir_created)
+            {
+                MyPDO::rollBack();
+                HttpResponse::serverError();
             }
             
             // ----------- END User CREATION -------------
@@ -67,7 +77,6 @@
             
             // ----------- BEGIN User-Secrets CREATION -------------
 
-            $user->sel_userID_by_email();
 
             $user_keys = UserKeysHandler::getInstanceFromPassword($pwd);
             
@@ -105,15 +114,16 @@
             
             // ----------- END Email-Verify CREATION -------------
 
-            MyPDO::commit();
+            
 
-            FileSysHandler::makeUserDir($user->getUserID(), $user->getEmail());
+
+            // Transaction OK
+            MyPDO::commit();
 
             httpResponse::successful
             (
-                201, 
-                false, 
-                array("redirect" => '/signup/success')
+                status_code:    201, 
+                response_array: ["redirect" => '/signup/success']
             );
         }
     }

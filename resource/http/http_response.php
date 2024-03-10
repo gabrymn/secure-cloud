@@ -29,7 +29,7 @@
             501 => "Not Implemented"
         ];
 
-        public static function clientError(int $status_code = 400, $status_msg = false, array $array = array())
+        public static function clientError(int $status_code = 400, $status_msg = false, array $response_array = array())
         {
             if (!self::statusCodeValid($status_code, 400)) 
                 self::clientError(400);
@@ -49,7 +49,7 @@
                         'status_code' => $status_code,
                         'status_message' => $status_msg
                     ), 
-                    $array
+                    $response_array
                 ), 
                 JSON_PRETTY_PRINT
             );
@@ -60,7 +60,7 @@
             exit;
         }
 
-        public static function serverError(int $status_code = 500, $status_msg = false, array $array = array())
+        public static function serverError(int $status_code = 500, $status_msg = false, array $response_array = array())
         {
             if (!self::statusCodeValid($status_code, 500)) 
                 self::serverError(500);
@@ -77,7 +77,7 @@
                         'status_code' => $status_code,
                         'status_message' => $status_msg
                     ), 
-                    $array
+                    $response_array
                 ), 
                 JSON_PRETTY_PRINT
             );
@@ -88,7 +88,7 @@
             exit;
         }
 
-        public static function successful(int $status_code = 200, $status_msg = false, array $array = array())
+        public static function successful(int $status_code = 200, $status_msg = false, array $response_array = array())
         {
             if (!self::statusCodeValid($status_code, 200)) 
                 HttpResponse::serverError(500);
@@ -108,7 +108,7 @@
                         'status_code' => $status_code,
                         'status_message' => $status_msg
                     ), 
-                    $array
+                    $response_array
                 ), 
                 JSON_PRETTY_PRINT
             );

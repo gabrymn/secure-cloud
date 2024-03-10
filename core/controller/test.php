@@ -10,16 +10,7 @@
     {
         public static function processTest()
         {
-            $session = new SessionModel
-            (
-                ip: client::getIP(), 
-                os:client::getOS(), 
-                browser: client::getBrowser(),
-                expired: 2
-            );
-
-            $session->ins();
-
+            include __DIR__ . '/../view/test.php';
         }
     }
 

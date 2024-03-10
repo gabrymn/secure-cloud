@@ -8,17 +8,32 @@
         public const DOWNLOADS_DIRNAME =  '.downloads_buffer';
         private const HASH_ALGO = "sha256";
 
-        public static function getUserDir($id_user, $email_user)
+        public static function getUserDirName($id_user, $email_user)
         {
             return hash(self::HASH_ALGO, ($id_user . $email_user));
         }
 
+        /**
+         * Creates a directory structure for a user in the storage system.
+         *
+         * This function creates a directory structure for a user, including the main storage directory
+         * and a subdir for the user data and temp dirs for uploads, and downloads. 
+         * The main directory is created by hashing the userID and email using SHA-256.
+         *
+         * @param int    $id_user     Unique ID of the user.
+         * @param string $email_user  User's email address.
+         *
+         * @return bool Returns true if the directory structure is successfully created,
+         *              false on failure.
+         *
+         * @throws Exception If any issues arise during directory creation.
+         */
         public static function makeUserDir($id_user, $email_user)
         {
             if (!is_dir(self::ROOT_STORAGE_DIR))
                 mkdir(self::ROOT_STORAGE_DIR);
 
-            $user_dir_root = self::ROOT_STORAGE_DIR . '/' . self::getUserDir($id_user, $email_user);
+            $user_dir_root = self::ROOT_STORAGE_DIR . '/' . self::getUserDirName($id_user, $email_user);
 
             $user_dir_data = $user_dir_root . '/' . self::DATA_DIRNAME;
             $user_dir_uploads = $user_dir_root . '/' . self::UPLOADS_DIRNAME;
