@@ -153,7 +153,7 @@
             );
         }
 
-        public function getSecret2FA_Encrypted()
+        public function getSecret2FAEncrypted()
         {
             return crypto::encrypt
             (

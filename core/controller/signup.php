@@ -86,7 +86,7 @@
                 recoverykey_hash:      $user_keys->getRecoveryKeyHashed(),
                 recoverykey_encrypted: $user_keys->getRecoveryKeyEncrypted(),
                 cipherkey_encrypted:   $user_keys->getCipherKeyEncrypted(),
-                secret2fa_encrypted:   $user_keys->getSecret2FA_encrypted(),
+                secret2fa_encrypted:   $user_keys->getSecret2FAEncrypted(),
                 masterkey_salt:        $user_keys->getMasterKeySalt(),
                 id_user:               $user->getUserID()
             );

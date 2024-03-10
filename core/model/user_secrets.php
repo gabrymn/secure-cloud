@@ -70,7 +70,7 @@
             $this->secret2fa_encrypted = $secret2fa_encrypted;
         }
 
-        public function getSecret2faEncrypted() : string
+        public function getSecret2FAEncrypted() : string
         {
             return $this->secret2fa_encrypted;
         }
@@ -122,7 +122,7 @@
                 $params["cipherkey_encrypted"] = $this->getCipherKeyEncrypted();
             
             if ($secret2fa_encrypted)
-                $params["secret2fa_encrypted"] = $this->getSecret2faEncrypted();
+                $params["secret2fa_encrypted"] = $this->getSecret2FAEncrypted();
 
             if ($masterkey_salt)
                 $params["masterkey_salt"] = $this->getMasterKeySalt();
@@ -197,7 +197,7 @@
             {
                 $secret2fa_encrypted = $res[0]['secret2fa_encrypted'];
                 $this->setSecret2faEncrypted($secret2fa_encrypted);
-                return $this->getSecret2faEncrypted();
+                return $this->getSecret2FAEncrypted();
             }
         }
         
