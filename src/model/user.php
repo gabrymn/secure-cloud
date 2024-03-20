@@ -123,7 +123,7 @@
         {
             $qry = "INSERT INTO users (email,name,surname) VALUES (:email,:name,:surname)";
 
-            MyPDO::connect('insert');
+            MyPDO::connect(MyPDO::EDIT);
             return MyPDO::qryExec($qry, $this->toAssocArray(email:true,name:true,surname:true));
         }
 
@@ -131,7 +131,7 @@
         {
             $qry = "SELECT id_user FROM users WHERE email = :email";
 
-            MyPDO::connect('select');
+            MyPDO::connect(MyPDO::SELECT);
 
             $res = MyPDO::qryExec($qry, $this->toAssocArray(email:true));
 
@@ -173,7 +173,7 @@
         {
             $qry = "SELECT 2fa FROM users WHERE id_user = :id_user";
 
-            MyPDO::connect('select');
+            MyPDO::connect(MyPDO::SELECT);
 
             $res = MyPDO::qryExec($qry, $this->toAssocArray(id_user:true));
 
@@ -191,7 +191,7 @@
         {
             $qry = "SELECT verified FROM users WHERE id_user = :id_user";
 
-            MyPDO::connect('select');
+            MyPDO::connect(MyPDO::SELECT);
 
             $res = MyPDO::qryExec($qry, $this->toAssocArray(id_user:true));
 
@@ -209,7 +209,7 @@
         {
             $qry = "SELECT email FROM users WHERE id_user = :id_user";
 
-            MyPDO::connect('select');
+            MyPDO::connect(MyPDO::SELECT);
 
             $res = MyPDO::qryExec($qry, $this->toAssocArray(id_user:true));
 
@@ -226,7 +226,7 @@
         public function upd_user_to_verified()
         {
             $qry = "UPDATE users SET verified = 1 WHERE id_user = :id_user";
-            MyPDO::connect('update');
+            MyPDO::connect(MyPDO::EDIT);
             return MyPDO::qryExec($qry, $this->toAssocArray(id_user:true));
         }
 

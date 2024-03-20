@@ -2,9 +2,9 @@
 
     require_once __DIR__ . '/routes_interface.php';
     require_once __DIR__ . '/../resource/router.php';
-    require_once __DIR__ . '/../core/controller/signin.php';
-    require_once __DIR__ . '/../core/controller/email_verify.php';
-    require_once __DIR__ . '/../core/controller/auth.php';
+    require_once __DIR__ . '/../src/controller/signin.php';
+    require_once __DIR__ . '/../src/controller/email_verify.php';
+    require_once __DIR__ . '/../src/controller/auth.php';
 
     abstract class signin implements RoutesInterface
     {

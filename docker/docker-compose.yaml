@@ -1,16 +1,17 @@
 version: '3.8'
-# docker compose dev
+
 services:
+
   nginx:
     build:
       context: ./nginx
-      dockerfile: Dockerfile.dev
+      dockerfile: Dockerfile
     container_name: nginx_container
     restart: always
     ports:
       - "80:80"
     volumes:
-      - ../core:/app/core
+      - ../src:/app/src
       - ../resource:/app/resource
       - ../public:/app/public
       - ../storage:/app/storage
@@ -28,14 +29,13 @@ services:
       context: ./php
       dockerfile: Dockerfile
     container_name: php_container
-    command: sh -c "chmod -R a+rw ../../../app && php-fpm -F -R"
     restart: always
     volumes:
-      - ../core:/app/core
-      - ../resource:/app/resource
+      - ../src:/app/src
       - ../public:/app/public
-      - ../storage:/app/storage
       - ../routes:/app/routes
+      - ../resource:/app/resource
+      - ../storage:/app/storage
       - ../vendor:/app/vendor
       - ../composer.json:/app/composer.json
       - ../composer.lock:/app/composer.lock
@@ -43,6 +43,7 @@ services:
     env_file:
       - ../.env
       - ../.env.mail
+      - ./mysql/.env
     links:
       - mysql
     networks: 
@@ -54,15 +55,13 @@ services:
       dockerfile: Dockerfile
     container_name: mysql_container
     restart: unless-stopped
-
-    volumes:
+    #volumes:
     #  - ../database/data:/var/lib/mysql
-      - ../database/structure/:/database/structure
     environment:
       - MYSQL_ROOT_PASSWORD=root
     networks: 
       - int3rnal
-      
+
   adminer:
     image: adminer:latest
     restart: always

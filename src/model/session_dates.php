@@ -120,7 +120,7 @@
         {
             $qry = "INSERT INTO session_dates (`start`, `last_activity`, `end`, `session_token`) VALUES (:start, :last_activity, :end, :session_token)";
             
-            myPDO::connect('insert');
+            myPDO::connect(MyPDO::EDIT);
 
             return myPDO::qryExec($qry, $this->toAssocArray(start:true, last_activity:true, end:true, session_token:true));
         }
@@ -131,7 +131,7 @@
             SET last_activity = :last_activity
             WHERE session_token = :session_token";
     
-            MyPDO::connect('update');
+            MyPDO::connect(MyPDO::EDIT);
 
             return MyPDO::qryExec($qry, $this->toAssocArray(session_token:true, last_activity:true));
         }

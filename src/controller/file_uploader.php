@@ -144,7 +144,7 @@
                 id_file:       $file->getFileID()
             );
 
-            mypdo::connect('insert');
+            mypdo::connect(mypdo::EDIT);
             mypdo::beginTransaction();
 
             if ($file->ins()===true && $file_transfer->ins()===true)

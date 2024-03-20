@@ -158,7 +158,7 @@
         {
             $qry = "INSERT INTO email_verify (token_hash, expires, id_user) VALUES (:token_hash, :expires, :id_user)";
 
-            MyPDO::connect('insert');
+            MyPDO::connect(MyPDO::EDIT);
 
             return MyPDO::qryExec
             (
@@ -171,7 +171,7 @@
         {
             $qry = "SELECT id_user FROM email_verify WHERE token_hash = :token_hash";
 
-            MyPDO::connect('select');
+            MyPDO::connect(MyPDO::SELECT);
 
             $res = MyPDO::qryExec($qry, $this->toAssocArray(token_hash:true));
 
@@ -191,7 +191,7 @@
         {
             $qry = "DELETE FROM email_verify WHERE token_hash = :token_hash OR id_user = :id_user";
 
-            MyPDO::connect('delete');
+            MyPDO::connect(MyPDO::EDIT);
 
             return MyPDO::qryExec($qry, $this->toAssocArray(token_hash:true, id_user:true));
         }

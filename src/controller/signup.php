@@ -52,7 +52,7 @@
             else
                 httpResponse::serverError();
 
-            MyPDO::connect('insert');
+            MyPDO::connect(MyPDO::EDIT);
             MyPDO::beginTransaction();
             
             if (!$user->ins())

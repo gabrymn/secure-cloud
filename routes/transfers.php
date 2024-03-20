@@ -1,8 +1,8 @@
 <?php
 
     require_once __DIR__ . '/routes_interface.php';
-    require_once __DIR__ . '/../core/controller/auth.php';
-    require_once __DIR__ . '/../core/controller/transfers.php';
+    require_once __DIR__ . '/../src/controller/auth.php';
+    require_once __DIR__ . '/../src/controller/transfers.php';
 
     abstract class transfers implements RoutesInterface
     {

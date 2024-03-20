@@ -150,7 +150,7 @@
         {
             $qry = "INSERT INTO `sessions` (`session_token`, `ip`, `os`, `browser`, `expired`, `session_key_salt`,`id_user`) VALUES (:session_token, :ip, :os, :browser, :expired, :session_key_salt, :id_user)";
 
-            MyPDO::connect('insert');
+            MyPDO::connect(MyPDO::EDIT);
 
             return MyPDO::qryExec($qry, $this->toAssocArray(session_token:true, ip:true, os:true, browser:true, expired:true, session_key_salt:true, id_user:true));
         }
@@ -238,7 +238,7 @@
                     sessions.session_token"
             );
 
-            MyPDO::connect('select');
+            MyPDO::connect(MyPDO::SELECT);
 
             return MyPDO::qryExec($qry, $s->toAssocArray(session_token:true, id_user:true));
         }
@@ -251,7 +251,7 @@
                 WHERE session_token = :session_token"
             );
 
-            MyPDO::connect('update');
+            MyPDO::connect(MyPDO::EDIT);
 
             try 
             {
@@ -275,7 +275,7 @@
                 AND s.session_token = :session_token"
             );
 
-            mypdo::connect('select');
+            mypdo::connect(MyPDO::SELECT);
 
             $res = mypdo::qryExec($qry, $this->toAssocArray(session_token:true));
 
@@ -296,7 +296,7 @@
                 WHERE session_token = :session_token"
             );
 
-            mypdo::connect('select');
+            mypdo::connect(MyPDO::SELECT);
 
             $res = mypdo::qryExec($qry, $this->toAssocArray(session_token:true));
 
@@ -314,7 +314,7 @@
         {
             $qry = "SELECT session_key_salt FROM sessions WHERE session_token = :session_token";
 
-            myPDO::connect('select');
+            myPDO::connect(MyPDO::SELECT);
 
             $res = myPDO::qryExec($qry, $this->toAssocArray(session_token:true));
 
@@ -335,7 +335,7 @@
         {
             $qry = "UPDATE sessions SET session_key_salt = :session_key_salt WHERE session_token = :session_token";
 
-            MyPDO::connect('update');
+            MyPDO::connect(MyPDO::EDIT);
 
             return MyPDO::qryExec($qry, $this->toAssocArray(session_token:true, session_key_salt:true));
         }

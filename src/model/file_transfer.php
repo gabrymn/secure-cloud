@@ -80,7 +80,7 @@
         {
             $qry = "INSERT INTO `file_transfers` (`transfer_date`, `transfer_type`, `id_file`) VALUES (:transfer_date, :transfer_type, :id_file)";
         
-            MyPDO::connect('insert');
+            MyPDO::connect(MyPDO::EDIT);
 
             return MyPDO::qryExec
             (

@@ -111,7 +111,7 @@
         {
             $qry = "INSERT INTO `files` (`id_file`, `fullpath_encrypted`, `size`, `mimetype`, `id_user`) VALUES (:id_file, :fullpath_encrypted, :size, :mimetype, :id_user)";
 
-            MyPDO::connect('insert');
+            MyPDO::connect(MyPDO::EDIT);
 
             return MyPDO::qryExec($qry, $this->toAssocArray(id_file:true, fullpath_encrypted:true, size:true, mimetype:true, id_user:true));
         }
@@ -120,7 +120,7 @@
         {
             $qry = "SELECT fullpath_encrypted FROM files WHERE id_user = :id_user AND id_file = :id_file";
 
-            MyPDO::connect('select');
+            MyPDO::connect(MyPDO::SELECT);
 
             $res = MyPDO::qryExec($qry, $this->toAssocArray(id_user: true, id_file: true));
 
@@ -141,7 +141,7 @@
 
             $qry = "SELECT id_file, fullpath_encrypted FROM files WHERE id_user = :id_user";
 
-            MyPDO::connect('select');
+            MyPDO::connect(MyPDO::SELECT);
 
             $res = MyPDO::qryExec($qry, $file->toAssocArray(id_user: true));
 

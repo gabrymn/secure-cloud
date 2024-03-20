@@ -1,7 +1,7 @@
 <?php
 
     require_once __DIR__ . '/routes_interface.php';
-    require_once __DIR__ . '/../core/controller/signup.php';
+    require_once __DIR__ . '/../src/controller/signup.php';
 
     abstract class signup implements RoutesInterface
     {

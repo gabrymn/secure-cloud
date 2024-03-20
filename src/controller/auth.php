@@ -115,7 +115,7 @@
 
                     $user->sel_email_by_userID();   
 
-                    $_SESSION['USER_DIR'] = FileSysHandler::getUserDir($user->getUserID(), $user->getEmail());
+                    $_SESSION['USER_DIR'] = FileSysHandler::getUserDirName($user->getUserID(), $user->getEmail());
 
                     $_SESSION['SIGNED_IN'] = true;
                     $_SESSION['ID_USER'] = $user->getUserID();

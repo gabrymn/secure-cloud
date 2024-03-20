@@ -2,24 +2,32 @@
 
     class MyPDO
     {
-        private static string|null $operation_type = self::OPERATION_TYPES[0];
+        private static string|null $operation_type = null;
         private static PDO|null $conn = null;
         private static PDOStatement|null $stmt = null;
 
-        private const OPERATION_TYPES = ['select', 'insert', 'update', 'delete'];
+        public const SELECT = 'select';
+        public const EDIT = 'edit';
+        private const OPERATION_TYPES = [self::SELECT, self::EDIT];
 
-        public static function connect($operation_type = self::OPERATION_TYPES[0], $user='root', $host="mysql_container", $dbname="secure_cloud", array $options = null)
+        public static function connect($operation_type, $host=null, $dbname=null, array $options = null)
         {
             if (!in_array($operation_type, self::OPERATION_TYPES))
                 return false;
 
+            if ($host === null)
+                $host = $_ENV['DATABASE_HOST'];
+
+            if ($dbname === null)
+                $dbname = $_ENV['DATABASE_NAME'];
+
             self::setOperationType($operation_type);
             
             // already connected
-            if (self::$conn !== null)
+            if (self::$conn !== null && self::$operation_type === $operation_type)
                 return true;
 
-            $credentials = self::getCredentials($user);
+            $credentials = self::getCredentials($operation_type);
 
             try 
             {
@@ -27,7 +35,7 @@
                 (
                     "mysql:host=$host;dbname=$dbname", 
                     $credentials['username'], 
-                    $credentials['pwd'], 
+                    $credentials['password'], 
                     $options
                 );
 
@@ -63,7 +71,7 @@
 
             $response = null;
 
-            if (self::getOperationType() !== 'select')
+            if (self::getOperationType() !== self::SELECT)
                 $response = $qry_status;
             else
                 $response =  self::$stmt->fetchAll(PDO::FETCH_ASSOC);
@@ -95,61 +103,33 @@
             }
         }
 
-        private static function getCredentials($user) : array|null
+        private static function getCredentials(string $operation_type) : array|false
         {
             $credentials =
             [
                 'username' => null,
-                'pwd' => null
+                'password' => null
             ];
 
-            switch (strtolower($user))
+            switch (strtolower($operation_type))
             {
-                case 'admin':
+                case self::SELECT:
                 {
-                    $credentials['username'] = 'USER_ADMIN';
-                    $credentials['pwd'] = $_ENV['USER_ADMIN_PWD'];
+                    $credentials['username'] = $_ENV['USER_SELECT_USERNAME'];
+                    $credentials['password'] = $_ENV['USER_SELECT_PASSWORD'];
                     break;
                 };
 
-                case 'root':
+                case self::EDIT:
                 {
-                    $credentials['username'] = 'root';
-                    $credentials['pwd'] = 'root';
-                    break;
-                };
-
-                case 'select':
-                {
-                    $credentials['username'] = 'USER_SEL';
-                    $credentials['pwd'] = $_ENV['USER_SEL_PWD'];
-                    break;
-                };
-
-                case 'insert':
-                {
-                    $credentials['username'] = 'USER_INS';
-                    $credentials['pwd'] = $_ENV['USER_INS_PWD'];
-                    break;
-                };
-
-                case 'update':
-                {
-                    $credentials['username'] = 'USER_UPD';
-                    $credentials['pwd'] = $_ENV['USER_UPD_PWD'];
-                    break;
-                };
-
-                case 'delete':
-                {
-                    $credentials['username'] = 'USER_DEL';
-                    $credentials['pwd'] = $_ENV['USER_DEL_PWD'];
+                    $credentials['username'] = $_ENV['USER_EDIT_USERNAME'];
+                    $credentials['password'] = $_ENV['USER_EDIT_PASSWORD'];
                     break;
                 };
 
                 default:
                 {
-                    $credentials = null;
+                    $credentials = false;
                     break;
                 }
             }

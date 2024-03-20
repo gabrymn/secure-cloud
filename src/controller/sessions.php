@@ -29,7 +29,7 @@
             $session = new SessionModel(ip: $client['ip'], os: $client['os'], browser: $client['browser'], id_user: $id_user);
             $session_dates = new SessionDatesModel(session_token: $session->getSessionToken());
             
-            MyPDO::connect('insert');
+            MyPDO::connect(MyPDO::EDIT);
             MyPDO::beginTransaction();
 
             if ($keepsigned === 'on')
@@ -79,7 +79,7 @@
             $user = new UserModel(id_user: $_SESSION['ID_USER']);
             $user->sel_email_By_userID();
 
-            $_SESSION['USER_DIR'] = FileSysHandler::getUserDir($user->getUserID(), $user->getEmail());
+            $_SESSION['USER_DIR'] = FileSysHandler::getUserDirName($user->getUserID(), $user->getEmail());
 
             return true;
         }

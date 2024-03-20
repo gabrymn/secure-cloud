@@ -1,8 +1,8 @@
 <?php
 
     require_once __DIR__ . '/routes_interface.php';
-    require_once __DIR__ . '/../core/controller/static_pages.php';
-    require_once __DIR__ . '/../core/controller/auth.php';
+    require_once __DIR__ . '/../src/controller/static_pages.php';
+    require_once __DIR__ . '/../src/controller/auth.php';
 
     abstract class root implements RoutesInterface
     {

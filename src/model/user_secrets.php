@@ -143,7 +143,7 @@
             VALUES 
             (:password_hash, :recoverykey_hash, :recoverykey_encrypted, :cipherkey_encrypted, :secret2fa_encrypted, :masterkey_salt, :id_user)";
     
-            MyPDO::connect('insert');
+            MyPDO::connect(MyPDO::EDIT);
 
             return MyPDO::qryExec
             (
@@ -165,7 +165,7 @@
         {
             $qry = "SELECT password_hash FROM user_secrets WHERE id_user = :id_user";
 
-            MyPDO::connect('select');
+            MyPDO::connect(MyPDO::SELECT);
 
             $res = MyPDO::qryExec($qry, $this->toAssocArray(id_user:true));
 
@@ -185,7 +185,7 @@
         {
             $qry = "SELECT secret2fa_encrypted FROM user_secrets WHERE id_user = :id_user";
             
-            MyPDO::connect('select');
+            MyPDO::connect(MyPDO::SELECT);
 
             $res = MyPDO::qryExec($qry, $this->toAssocArray(id_user:true));
 
@@ -205,7 +205,7 @@
         {
             $qry = "SELECT recoverykey_encrypted FROM user_secrets WHERE id_user = :id_user";
 
-            MyPDO::connect('select');
+            MyPDO::connect(MyPDO::SELECT);
 
             $res = MyPDO::qryExec($qry, $this->toAssocArray(id_user:true));
 
@@ -225,7 +225,7 @@
         {
             $qry = "SELECT cipherkey_encrypted FROM user_secrets WHERE id_user = :id_user";
 
-            MyPDO::connect('select');
+            MyPDO::connect(MyPDO::SELECT);
 
             $res = MyPDO::qryExec($qry, $this->toAssocArray(id_user:true));
 
@@ -245,7 +245,7 @@
         {
             $qry = "SELECT masterkey_salt FROM user_secrets WHERE id_user = :id_user";
 
-            MyPDO::connect('select');
+            MyPDO::connect(MyPDO::SELECT);
 
             $res = MyPDO::qryExec($qry, $this->toAssocArray(id_user:true));
 
@@ -268,7 +268,7 @@
             FROM user_secrets 
             WHERE id_user = :id_user";
             
-            MyPDO::connect('select');
+            MyPDO::connect(MyPDO::SELECT);
 
             $res = MyPDO::qryExec($qry, $this->toAssocArray(id_user: true));
 
@@ -290,7 +290,7 @@
             SET password_hash = :password_hash, recoverykey_encrypted = :recoverykey_encrypted, masterkey_salt = :masterkey_salt 
             WHERE id_user = :id_user";
 
-            MyPDO::connect('update');
+            MyPDO::connect(MyPDO::EDIT);
 
             return MyPDO::qryExec
             (
@@ -309,7 +309,7 @@
         {
             $qry = "SELECT masterkey_encrypted FROM user_secrets WHERE id_user = :id_user";
 
-            myPDO::connect('select');
+            myPDO::connect(MyPDO::SELECT);
 
             $res = myPDO::qryExec($qry, $this->toAssocArray(id_user:true));
 
@@ -329,7 +329,7 @@
         public function ins_mKeyEnc_by_userID()
         {
             $qry = "UPDATE user_secrets SET masterkey_encrypted = :masterkey_encrypted WHERE id_user = :id_user";
-            myPDO::connect('update');
+            myPDO::connect(MyPDO::EDIT);
 
             return myPDO::qryExec($qry, $this->toAssocArray(masterkey_encrypted:true, id_user:true));
         }
