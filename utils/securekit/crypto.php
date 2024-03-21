@@ -2,7 +2,7 @@
 
     require_once __DIR__ . '/../data_structure.php';
 
-    class Crypto extends DataStructure
+    class Crypto
     {
         private const FILE_ENCRYPTION_BLOCKS = 10000;
         private const AES_256_GCM_IV_LEN = 16;

@@ -1,7 +1,7 @@
 <?php
 
     require_once __DIR__ . '/routes_interface.php';
-    require_once __DIR__ . '/../resource/router.php';
+    require_once __DIR__ . '/../utils/httpkit/router.php';
     require_once __DIR__ . '/../src/controller/auth.php';
     require_once __DIR__ . '/../src/controller/profile.php';
     

@@ -1,6 +1,5 @@
 <?php
 
-
     require_once __DIR__ . '/../data_structure.php';
 
     /**
@@ -8,7 +7,7 @@
      * It generates cryptographically-strong-random strings
      */
 
-    class CryptoRNDString extends DataStructure
+    class CryptoRNDString
     {
         private string $alphabet;
         private int $alphabet_len;

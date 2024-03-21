@@ -14,8 +14,12 @@
         public static function renderSessionsPage()
         {   
             $navbar = Navbar::getPrivate('sessions');
-
-            $sessions = SessionModel::sel_sessions_by_userID_sessionToken_filtered(session_token: $_SESSION['SESSION_TOKEN'], id_user: $_SESSION['ID_USER']);
+            
+            $sessions = SessionModel::sel_sessions_by_userID_sessionToken_filtered
+            (
+                session_token: $_SESSION['SESSION_TOKEN'], 
+                id_user:       $_SESSION['ID_USER']
+            );
 
             $sessions_view = SessionsView::get($sessions);
 
@@ -29,9 +33,9 @@
             $session = new SessionModel(ip: $client['ip'], os: $client['os'], browser: $client['browser'], id_user: $id_user);
             $session_dates = new SessionDatesModel(session_token: $session->getSessionToken());
             
-            MyPDO::connect(MyPDO::EDIT);
+            \MyLib\Storage\MyPDO::connect($_ENV['SEL_USERNAME'], $_ENV['SEL_PASSWORD'], $_ENV['DB_HOST'], $_ENV['DB_NAME']);
             MyPDO::beginTransaction();
-
+            
             if ($keepsigned === 'on')
             {
                 $session_dates->setEnd(MyDatetime::addHours(SessionModel::SESSION_HRS_RANGE_KEEPSIGNED));
@@ -41,8 +45,8 @@
                     value:               $session->getSessionToken(), 
                     expires_or_options:  time()+SessionModel::SESSION_HRS_RANGE_KEEPSIGNED, 
                     path:                '/'
-                    //secure:              true,
-                    //httponly:            true
+                    //secure:            true,
+                    //httponly:          true
                 );
 
                 $session->setSessionKeySalt(Crypto::genSalt());
@@ -57,7 +61,7 @@
 
                 if ($us->ins_mKeyEnc_by_userID() === false)
                 {
-                    MyPDO::rollBack();
+                    MyPDO::rollback();
                     HttpResponse::serverError();
                 }
             }
@@ -69,10 +73,10 @@
             $_SESSION['SESSION_TOKEN'] = $session->getSessionToken();
 
             if ($session->ins() && $session_dates->ins())
-                mypdo::commit();
+                MyPDO::commit();
             else
             {
-                mypdo::rollBack();
+                MyPDO::rollBack();
                 HttpResponse::serverError();
             }
 

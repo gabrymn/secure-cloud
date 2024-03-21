@@ -88,7 +88,7 @@
 
             $mail_header = $ev->getMailHeader();
             $mail_body = $ev->getMailBody();
-
+            
             $mymail = new MyMail();
 
             if (!$mymail->sendArray(array_merge($mail_header, $mail_body)))

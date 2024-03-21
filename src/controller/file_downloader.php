@@ -77,7 +77,7 @@
         {
             $source_filepath = self::ROOT_STORAGE_DIR .'/';
             $source_filepath .= $_SESSION['USER_DIR'] . '/';
-            $source_filepath .= FileSysHandler::DATA_DIRNAME . '/'; 
+            $source_filepath .= UserModel::DATA_DIRNAME . '/'; 
             $source_filepath .= $filename_encrypted; 
 
             return $source_filepath;
@@ -98,7 +98,7 @@
         {
             $download_filepath = self::ROOT_STORAGE_DIR . '/';
             $download_filepath .= $_SESSION['USER_DIR'] . '/';
-            $download_filepath .= FileSysHandler::DOWNLOADS_DIRNAME . '/';
+            $download_filepath .= UserModel::DOWNLOADS_DIRNAME . '/';
             $download_filepath .= $filename_plaintext;
 
             return $download_filepath;

@@ -14,6 +14,10 @@
         private const DEFAULT_2FA = 0;
         private const DEFAULT_VERIFIED = 0;
 
+        public const DATA_DIRNAME =  'data';
+        public const UPLOADS_DIRNAME =  '.uploads_buffer';
+        public const DOWNLOADS_DIRNAME =  '.downloads_buffer';
+
         public function __construct($id_user = null, $email = null, $name = null, $surname = null, $p2fa = null, $verified = null)
         {
             self::setUserID($id_user ? $id_user : parent::DEFAULT_INT);
@@ -22,6 +26,12 @@
             self::setSurname($surname ? $surname : parent::DEFAULT_STR);
             self::set2FA($p2fa ? $p2fa : self::DEFAULT_2FA);
             self::setVerified($verified ? $verified : self::DEFAULT_VERIFIED);
+        }
+
+        public function getDirName()
+        {
+            $algo = "sha256";
+            return hash($algo, ($this->id_user . $this->email));
         }
 
         private function formatName($name)
@@ -123,7 +133,7 @@
         {
             $qry = "INSERT INTO users (email,name,surname) VALUES (:email,:name,:surname)";
 
-            MyPDO::connect(MyPDO::EDIT);
+            MyPDO::connect($_ENV['EDIT_USERNAME'], $_ENV['EDIT_PASSWORD'], $_ENV['DB_HOST'], $_ENV['DB_NAME']);
             return MyPDO::qryExec($qry, $this->toAssocArray(email:true,name:true,surname:true));
         }
 
@@ -131,7 +141,7 @@
         {
             $qry = "SELECT id_user FROM users WHERE email = :email";
 
-            MyPDO::connect(MyPDO::SELECT);
+            MyPDO::connect($_ENV['SEL_USERNAME'], $_ENV['SEL_PASSWORD'], $_ENV['DB_HOST'], $_ENV['DB_NAME']);
 
             $res = MyPDO::qryExec($qry, $this->toAssocArray(email:true));
 
@@ -173,7 +183,7 @@
         {
             $qry = "SELECT 2fa FROM users WHERE id_user = :id_user";
 
-            MyPDO::connect(MyPDO::SELECT);
+            MyPDO::connect($_ENV['SEL_USERNAME'], $_ENV['SEL_PASSWORD'], $_ENV['DB_HOST'], $_ENV['DB_NAME']);
 
             $res = MyPDO::qryExec($qry, $this->toAssocArray(id_user:true));
 
@@ -191,7 +201,7 @@
         {
             $qry = "SELECT verified FROM users WHERE id_user = :id_user";
 
-            MyPDO::connect(MyPDO::SELECT);
+            MyPDO::connect($_ENV['SEL_USERNAME'], $_ENV['SEL_PASSWORD'], $_ENV['DB_HOST'], $_ENV['DB_NAME']);
 
             $res = MyPDO::qryExec($qry, $this->toAssocArray(id_user:true));
 
@@ -209,7 +219,7 @@
         {
             $qry = "SELECT email FROM users WHERE id_user = :id_user";
 
-            MyPDO::connect(MyPDO::SELECT);
+            MyPDO::connect($_ENV['SEL_USERNAME'], $_ENV['SEL_PASSWORD'], $_ENV['DB_HOST'], $_ENV['DB_NAME']);
 
             $res = MyPDO::qryExec($qry, $this->toAssocArray(id_user:true));
 
@@ -226,7 +236,7 @@
         public function upd_user_to_verified()
         {
             $qry = "UPDATE users SET verified = 1 WHERE id_user = :id_user";
-            MyPDO::connect(MyPDO::EDIT);
+            MyPDO::connect($_ENV['EDIT_USERNAME'], $_ENV['EDIT_PASSWORD'], $_ENV['DB_HOST'], $_ENV['DB_NAME']);
             return MyPDO::qryExec($qry, $this->toAssocArray(id_user:true));
         }
 

@@ -1,9 +1,9 @@
 <?php
 
-    require_once __DIR__ . '/../../resource/http/http_response.php';
-    require_once __DIR__ . '/../../resource/storage/file_sys_handler.php';
+    require_once __DIR__ . '/../../utils/http/http_response.php';
+    require_once __DIR__ . '/../../utils/storage/file_sys_handler.php';
     require_once __DIR__ . '/../model/session.php';
-    
+
     class AuthController
     {
         private const REDIRECT_PAGE = '/signin';
@@ -13,9 +13,9 @@
             session_destroy();
 
             if ($redirect)
-                httpResponse::redirect(self::REDIRECT_PAGE);
+                HttpResponse::redirect(self::REDIRECT_PAGE);
             else
-                httpResponse::clientError(401);
+                HttpResponse::clientError(401);
         }
 
         public static function check(bool $redirect, ...$session_args_required)

@@ -144,7 +144,7 @@
                 id_file:       $file->getFileID()
             );
 
-            mypdo::connect(mypdo::EDIT);
+            mypdo::connect($_ENV['EDIT_USERNAME'], $_ENV['EDIT_PASSWORD'], $_ENV['DB_HOST'], $_ENV['DB_NAME']);
             mypdo::beginTransaction();
 
             if ($file->ins()===true && $file_transfer->ins()===true)

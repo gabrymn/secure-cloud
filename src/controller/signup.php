@@ -1,16 +1,18 @@
 <?php
 
-    require_once __DIR__ . '/../../resource/http/http_response.php';
-    require_once __DIR__ . '/../../resource/storage/file_sys_handler.php';
-    require_once __DIR__ . '/../../resource/security/crypto_rnd_string.php';
-    require_once __DIR__ . '/../../resource/storage/mypdo.php';
-    require_once __DIR__ . '/../../resource/mymail.php';
-    require_once __DIR__ . '/../../resource/security/my_tfa.php';
-    require_once __DIR__ . '/../../resource/security/user_keys_handler.php';
-    require_once __DIR__ . '/../view/assets/navbar.php';
+    require_once __DIR__ . '/../../utils/httpkit/http_response.php';
+    require_once __DIR__ . '/../../utils/file_sys_handler.php';
+    require_once __DIR__ . '/../../utils/mypdo.php';
+    require_once __DIR__ . '/../../utils/mymail.php';
+    require_once __DIR__ . '/../../utils/securekit/crypto_rnd_string.php';
+    require_once __DIR__ . '/../../utils/securekit/my_tfa.php';
+    require_once __DIR__ . '/../../utils/securekit/user_keys_handler.php';
+    
     require_once __DIR__ . '/../model/user.php';
     require_once __DIR__ . '/../model/email_verify.php';
     require_once __DIR__ . '/../model/user_secrets.php';
+    
+    require_once __DIR__ . '/../view/assets/navbar.php';
     
     class SignupController
     {
@@ -52,7 +54,7 @@
             else
                 httpResponse::serverError();
 
-            MyPDO::connect(MyPDO::EDIT);
+            MyPDO::connect($_ENV['EDIT_USERNAME'], $_ENV['EDIT_PASSWORD'], $_ENV['DB_HOST'], $_ENV['DB_NAME']);
             MyPDO::beginTransaction();
             
             if (!$user->ins())
@@ -63,9 +65,7 @@
 
             $user->sel_userID_by_email();
 
-            // Creation of User Storage dir 
-            $user_dir_created = FileSysHandler::makeUserDir($user->getUserID(), $user->getEmail());
-            if (!$user_dir_created)
+            if (self::createUserDirs($user) === false)
             {
                 MyPDO::rollBack();
                 HttpResponse::serverError();
@@ -124,6 +124,43 @@
             (
                 status_code:    201, 
                 response_array: ["redirect" => '/signup/success']
+            );
+        }
+
+
+        /**
+         * Creates a directory structure for a user in the storage system.
+         *
+         * This function creates a directory structure for a user, including the main storage directory
+         * and a subdir for the user data and temp dirs for uploads, and downloads. 
+         * The main directory is created by hashing the userID and email using SHA-256.
+         *
+         * @param UserModel $user
+         *
+         * @return bool Returns true if the directory structure is successfully created,
+         *              false on failure.
+         *
+         * @throws Exception If any issues arise during directory creation.
+         */
+        private static function createUserDirs(UserModel $user)
+        {
+            $root_storage_dir = __DIR__ . '/../../storage';
+
+            if (!is_dir($root_storage_dir))
+                mkdir($root_storage_dir);
+
+            $user_dir_root = $root_storage_dir . '/' . $user->getDirName();
+
+            $user_dir_data = $user_dir_root . '/' . UserModel::DATA_DIRNAME;
+            $user_dir_uploads = $user_dir_root . '/' . UserModel::UPLOADS_DIRNAME;
+            $user_dir_downloads = $user_dir_root . '/' . UserModel::DOWNLOADS_DIRNAME;
+
+            return
+            (
+                mkdir($user_dir_root) &&
+                mkdir($user_dir_data) &&
+                mkdir($user_dir_uploads) &&
+                mkdir($user_dir_downloads)
             );
         }
     }

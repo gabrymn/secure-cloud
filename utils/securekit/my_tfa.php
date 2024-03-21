@@ -4,9 +4,7 @@
 
     require __DIR__ . '/../../vendor/autoload.php';
 
-    use RobThree\Auth\TwoFactorAuth;
-
-    class MyTFA extends TwoFactorAuth
+    class MyTFA extends \RobThree\Auth\TwoFactorAuth
     {
         private string $secret;
         private ?string $email;

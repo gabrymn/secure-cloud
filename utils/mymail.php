@@ -2,32 +2,26 @@
 
     require __DIR__ . '/../vendor/autoload.php';
     
-    use PHPMailer\PHPMailer\PHPMailer;
-    use PHPMailer\PHPMailer\Exception;
-    use PHPMailer\PHPMailer\SMTP;
-
-    use React\Promise\Promise;
-    
     class MyMail
     {
-        private PHPMailer $mailer;
+        private \PHPMailer\PHPMailer\PHPMailer $mailer;
 
-        public function __construct($port = 465)
+        public function __construct($username, $password, $email_host, $port = 465)
         {
             try {
-                $this->mailer = new PHPMailer(true);
+                $this->mailer = new \PHPMailer\PHPMailer\PHPMailer(true);
                 //$this->mailer->SMTPDebug = SMTP::DEBUG_SERVER;
                 $this->mailer->isSMTP();
-                $this->mailer->Host = $_ENV['EMAIL_HOST'];
+                $this->mailer->Host = $email_host;
                 $this->mailer->SMTPAuth = true;
-                $this->mailer->Username = $_ENV['EMAIL_USERNAME'];
-                $this->mailer->Password = $_ENV['EMAIL_PASSWORD'];
+                $this->mailer->Username = $username;
+                $this->mailer->Password = $password;
                 $this->mailer->SMTPSecure = 'ssl';
                 $this->mailer->Port = $port;
-                $this->mailer->setFrom($_ENV['EMAIL_USERNAME']);
+                $this->mailer->setFrom($username);
                 //$this->mailer->Timeout = 5;
                 
-            } catch (Exception $e) {
+            } catch (\PHPMailer\PHPMailer\Exception $e) {
 
                 return $this->mailer->ErrorInfo;
             }
@@ -43,7 +37,7 @@
                 $this->mailer->Body = $body;
                 return $this->mailer->send();
 
-            } catch (Exception $e) {
+            } catch (\PHPMailer\PHPMailer\Exception $e) {
 
                 //return $this->mailer->ErrorInfo;
                 return false;
@@ -56,7 +50,7 @@
                 
                 return $this->mailer->send($mail["dest"], $mail["obj"], $mail["body"]);
 
-            } catch (Exception $e) {
+            } catch (\PHPMailer\PHPMailer\Exception $e) {
 
                 //return $this->mailer->ErrorInfo;
                 return false;

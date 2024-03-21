@@ -2,8 +2,8 @@
 
     require_once __DIR__ . '/model.php';
     require_once __DIR__ . '/session.php';
-    require_once __DIR__ . '/../../resource/mydatetime.php';
-    require_once __DIR__ . '/../../resource/storage/mypdo.php';
+    require_once __DIR__ . '/../../utils/mydatetime.php';
+    require_once __DIR__ . '/../../utils/mypdo.php';
 
     class SessionDatesModel extends Model
     {
@@ -120,7 +120,7 @@
         {
             $qry = "INSERT INTO session_dates (`start`, `last_activity`, `end`, `session_token`) VALUES (:start, :last_activity, :end, :session_token)";
             
-            myPDO::connect(MyPDO::EDIT);
+            myPDO::connect($_ENV['EDIT_USERNAME'], $_ENV['EDIT_PASSWORD'], $_ENV['DB_HOST'], $_ENV['DB_NAME']);
 
             return myPDO::qryExec($qry, $this->toAssocArray(start:true, last_activity:true, end:true, session_token:true));
         }
@@ -131,7 +131,7 @@
             SET last_activity = :last_activity
             WHERE session_token = :session_token";
     
-            MyPDO::connect(MyPDO::EDIT);
+            MyPDO::connect($_ENV['EDIT_USERNAME'], $_ENV['EDIT_PASSWORD'], $_ENV['DB_HOST'], $_ENV['DB_NAME']);
 
             return MyPDO::qryExec($qry, $this->toAssocArray(session_token:true, last_activity:true));
         }

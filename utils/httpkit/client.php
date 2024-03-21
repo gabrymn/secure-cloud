@@ -87,7 +87,7 @@
                 else
                     $ipaddress = self::DEFAULT_PARAMS_VALUE;
             } 
-            catch (Exception $e)
+            catch (\Exception $e)
             {
                 $ipaddress = null;
             }

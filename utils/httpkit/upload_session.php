@@ -3,7 +3,7 @@
     require_once __DIR__ . '/../security/crypto_rnd_string.php';
     require_once __DIR__ . '/../storage/file_sys_handler.php';
 
-    class UploadSession extends DataStructure
+    class UploadSession
     {
         private const UPLOAD_SESSION_ID_LEN = 32;
         public const UPLOAD_CHUNK_SIZE = 1000000; // 1 MB
@@ -124,7 +124,7 @@
         public static function fileUploadIsCompleted($filename, $chunks_len)
         {
             $chunk_dir = self::getChunkDir($filename);
-
+            
             return 
             (
                 FileSysHandler::countFilesOf($chunk_dir) === intval($chunks_len)

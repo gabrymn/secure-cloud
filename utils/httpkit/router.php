@@ -10,6 +10,11 @@
         private ?array $files_array;
         private ?array $files_array_keys;
 
+        private const GET = 'GET';
+        private const POST = 'POST';
+        private const PUT = 'PUT';
+        private const DELETE = 'DELETE';
+
         public function __construct($get_array = null, $post_array = null, $files = null)
         {
             $this->get_array = $get_array;
@@ -40,22 +45,22 @@
 
         public function GET(string $path, array $args, callable $callback)
         {
-            $this->addRoute('GET', $path, $args, $callback);
+            $this->addRoute(self::GET, $path, $args, $callback);
         }
 
         public function POST(string $path, array $args, callable $callback)
         {
-            $this->addRoute('POST', $path, $args, $callback);
+            $this->addRoute(self::POST, $path, $args, $callback);
         }
 
         public function PUT(string $path, array $args, callable $callback)
         {
-            $this->addRoute('PUT', $path, $args, $callback);
+            $this->addRoute(self::PUT, $path, $args, $callback);
         }
 
         public function DELETE(string $path, array $args, callable $callback)
         {
-            $this->addRoute('DELETE', $path, $args, $callback);
+            $this->addRoute(self::DELETE, $path, $args, $callback);
         }
 
         private function addRoute(string $method, string $path, array $args, callable $callback)  : bool
@@ -141,19 +146,19 @@
         {
             switch ($method)
             {
-                case 'GET':
+                case self::GET:
                 {
                     return $this->get_array;
                     break;
                 }
 
-                case 'POST':
+                case self::POST:
                 {
                     return $this->post_array;
                     break;
                 }
 
-                case 'PUT':
+                case self::PUT:
                 {
                     $_PUT = array();
                     parse_str(file_get_contents('php://input'), $_PUT);
@@ -161,7 +166,7 @@
                     break;
                 }
 
-                case 'DELETE':
+                case self::DELETE:
                 {
                     return $this->get_array;
                     break;

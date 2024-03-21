@@ -1,6 +1,6 @@
 <?php
 
-    require_once __DIR__ . '/../../resource/storage/mypdo.php';
+    require_once __DIR__ . '/../../utils/mypdo.php';
     require_once __DIR__ . '/model.php';
 
     class FileModel extends Model
@@ -111,7 +111,7 @@
         {
             $qry = "INSERT INTO `files` (`id_file`, `fullpath_encrypted`, `size`, `mimetype`, `id_user`) VALUES (:id_file, :fullpath_encrypted, :size, :mimetype, :id_user)";
 
-            MyPDO::connect(MyPDO::EDIT);
+            MyPDO::connect($_ENV['EDIT_USERNAME'], $_ENV['EDIT_PASSWORD'], $_ENV['DB_HOST'], $_ENV['DB_NAME']);
 
             return MyPDO::qryExec($qry, $this->toAssocArray(id_file:true, fullpath_encrypted:true, size:true, mimetype:true, id_user:true));
         }
@@ -120,7 +120,7 @@
         {
             $qry = "SELECT fullpath_encrypted FROM files WHERE id_user = :id_user AND id_file = :id_file";
 
-            MyPDO::connect(MyPDO::SELECT);
+            MyPDO::connect($_ENV['SEL_USERNAME'], $_ENV['SEL_PASSWORD'], $_ENV['DB_HOST'], $_ENV['DB_NAME']);
 
             $res = MyPDO::qryExec($qry, $this->toAssocArray(id_user: true, id_file: true));
 
@@ -141,7 +141,7 @@
 
             $qry = "SELECT id_file, fullpath_encrypted FROM files WHERE id_user = :id_user";
 
-            MyPDO::connect(MyPDO::SELECT);
+            MyPDO::connect($_ENV['SEL_USERNAME'], $_ENV['SEL_PASSWORD'], $_ENV['DB_HOST'], $_ENV['DB_NAME']);
 
             $res = MyPDO::qryExec($qry, $file->toAssocArray(id_user: true));
 

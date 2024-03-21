@@ -1,7 +1,7 @@
 <?php
 
     require_once __DIR__ . '/model.php';
-    require_once __DIR__ . '/../../resource/mydatetime.php';
+    require_once __DIR__ . '/../../utils/mydatetime.php';
 
     class FileTransferModel extends Model
     {
@@ -80,7 +80,7 @@
         {
             $qry = "INSERT INTO `file_transfers` (`transfer_date`, `transfer_type`, `id_file`) VALUES (:transfer_date, :transfer_type, :id_file)";
         
-            MyPDO::connect(MyPDO::EDIT);
+            MyPDO::connect($_ENV['EDIT_USERNAME'], $_ENV['EDIT_PASSWORD'], $_ENV['DB_HOST'], $_ENV['DB_NAME']);
 
             return MyPDO::qryExec
             (

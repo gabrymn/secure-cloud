@@ -1,6 +1,6 @@
 <?php
 
-    require_once __DIR__ . '/../../resource/security/crypto_rnd_string.php';
+    require_once __DIR__ . '/../../utils/securekit/crypto_rnd_string.php';
 
     abstract class Model
     {

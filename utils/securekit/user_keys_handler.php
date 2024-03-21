@@ -3,8 +3,8 @@
     require_once __DIR__ . '/crypto.php';
     require_once __DIR__ . '/my_tfa.php';
     require_once __DIR__ . '/../data_structure.php';
-
-    class UserKeysHandler extends DataStructure
+    
+    class UserKeysHandler
     {
         private string $password;
         private string $master_key;
@@ -12,6 +12,8 @@
         private string $cipher_key;
         private string $secret_2fa;
         private string $master_key_salt;
+
+        private const DEFAULT_STR = "DEFAULT_STR_VAL";
 
         public function __construct($password=null, $master_key=null, $recovery_key=null, $cipher_key=null, $secret_2fa=null, $masterkey_salt=null)
         {
@@ -67,7 +69,7 @@
             $password = self::getPassword();
             $master_key_salt = self::getMasterKeySalt();
 
-            if ($password === parent::DEFAULT_STR || $master_key_salt === parent::DEFAULT_STR)
+            if ($password === self::DEFAULT_STR || $master_key_salt === self::DEFAULT_STR)
 
             $master_key = Crypto::deriveKey($password, $master_key_salt);
             self::setMasterKey($master_key);

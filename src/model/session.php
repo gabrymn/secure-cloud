@@ -1,9 +1,9 @@
 <?php
 
     require_once __DIR__ . '/model.php';
-    require_once __DIR__ . '/../../resource/mydatetime.php';
-    require_once __DIR__ . '/../../resource/storage/mypdo.php';
-    require_once __DIR__ . '/../../resource/http/client.php';
+    require_once __DIR__ . '/../../utils/mydatetime.php';
+    require_once __DIR__ . '/../../utils/mypdo.php';
+    require_once __DIR__ . '/../../utils/httpkit/client.php';
 
     class SessionModel extends Model
     {
@@ -150,7 +150,7 @@
         {
             $qry = "INSERT INTO `sessions` (`session_token`, `ip`, `os`, `browser`, `expired`, `session_key_salt`,`id_user`) VALUES (:session_token, :ip, :os, :browser, :expired, :session_key_salt, :id_user)";
 
-            MyPDO::connect(MyPDO::EDIT);
+            MyPDO::connect($_ENV['EDIT_USERNAME'], $_ENV['EDIT_PASSWORD'], $_ENV['DB_HOST'], $_ENV['DB_NAME']);
 
             return MyPDO::qryExec($qry, $this->toAssocArray(session_token:true, ip:true, os:true, browser:true, expired:true, session_key_salt:true, id_user:true));
         }
@@ -238,7 +238,7 @@
                     sessions.session_token"
             );
 
-            MyPDO::connect(MyPDO::SELECT);
+            MyPDO::connect($_ENV['SEL_USERNAME'], $_ENV['SEL_PASSWORD'], $_ENV['DB_HOST'], $_ENV['DB_NAME']);
 
             return MyPDO::qryExec($qry, $s->toAssocArray(session_token:true, id_user:true));
         }
@@ -251,7 +251,7 @@
                 WHERE session_token = :session_token"
             );
 
-            MyPDO::connect(MyPDO::EDIT);
+            MyPDO::connect($_ENV['EDIT_USERNAME'], $_ENV['EDIT_PASSWORD'], $_ENV['DB_HOST'], $_ENV['DB_NAME']);
 
             try 
             {
@@ -275,7 +275,7 @@
                 AND s.session_token = :session_token"
             );
 
-            mypdo::connect(MyPDO::SELECT);
+            mypdo::connect($_ENV['SEL_USERNAME'], $_ENV['SEL_PASSWORD'], $_ENV['DB_HOST'], $_ENV['DB_NAME']);
 
             $res = mypdo::qryExec($qry, $this->toAssocArray(session_token:true));
 
@@ -296,7 +296,7 @@
                 WHERE session_token = :session_token"
             );
 
-            mypdo::connect(MyPDO::SELECT);
+            mypdo::connect($_ENV['SEL_USERNAME'], $_ENV['SEL_PASSWORD'], $_ENV['DB_HOST'], $_ENV['DB_NAME']);
 
             $res = mypdo::qryExec($qry, $this->toAssocArray(session_token:true));
 
@@ -314,7 +314,7 @@
         {
             $qry = "SELECT session_key_salt FROM sessions WHERE session_token = :session_token";
 
-            myPDO::connect(MyPDO::SELECT);
+            myPDO::connect($_ENV['SEL_USERNAME'], $_ENV['SEL_PASSWORD'], $_ENV['DB_HOST'], $_ENV['DB_NAME']);
 
             $res = myPDO::qryExec($qry, $this->toAssocArray(session_token:true));
 
@@ -335,7 +335,7 @@
         {
             $qry = "UPDATE sessions SET session_key_salt = :session_key_salt WHERE session_token = :session_token";
 
-            MyPDO::connect(MyPDO::EDIT);
+            MyPDO::connect($_ENV['EDIT_USERNAME'], $_ENV['EDIT_PASSWORD'], $_ENV['DB_HOST'], $_ENV['DB_NAME']);
 
             return MyPDO::qryExec($qry, $this->toAssocArray(session_token:true, session_key_salt:true));
         }

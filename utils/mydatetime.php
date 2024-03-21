@@ -2,7 +2,7 @@
 
     class MyDatetime 
     {
-        public const UTC_TZ = 'UTC'; // TZ of php and mariadb
+        public const UTC_TZ = 'UTC'; // TZ of php and dbms (mysql)
         public const SERVER_DT_FORMAT = 'Y-m-d H:i:s';
 
         public const DT_FORMAT_24H = 'd/m/Y H:i:s';
@@ -82,7 +82,7 @@
     
             if ($currentDateTime) 
             {
-                $dateTime = new DateTime($currentDateTime);
+                $dateTime = new \DateTime($currentDateTime);
                 $dateTime->modify("+{$hours} hours");
     
                 return $dateTime->format($date_format);

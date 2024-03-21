@@ -91,7 +91,7 @@
         public static function successful(int $status_code = 200, $status_msg = false, array $response_array = array())
         {
             if (!self::statusCodeValid($status_code, 200)) 
-                HttpResponse::serverError(500);
+                self::serverError(500);
             
             http_response_code($status_code);
 
