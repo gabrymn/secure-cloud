@@ -1,8 +1,7 @@
 <?php
 
-    class MyPDO
+    abstract class MyPDO
     {
-        private static ?string $operation_type = null;
         private static ?PDO $conn = null;
         private static ?PDOStatement $stmt = null;
 
