@@ -1,7 +1,7 @@
 <?php
 
-    require_once __DIR__ . '/../security/crypto_rnd_string.php';
-    require_once __DIR__ . '/../storage/file_sys_handler.php';
+    require_once __DIR__ . '/../securekit/crypto_rnd_string.php';
+    require_once __DIR__ . '/../file_sys_handler.php';
 
     class UploadSession
     {
@@ -79,7 +79,7 @@
         {
             $upload_session_dir = self::STORAGE_ROOT_DIR . '/';
             $upload_session_dir .= $_SESSION['USER_DIR'] . '/';
-            $upload_session_dir .= FileSysHandler::UPLOADS_DIRNAME . '/';
+            $upload_session_dir .= UserModel::UPLOADS_DIRNAME . '/';
             $upload_session_dir .= self::getID();
 
             if (!is_dir($upload_session_dir))
@@ -102,7 +102,7 @@
         {
             $final_dir = self::STORAGE_ROOT_DIR . '/';
             $final_dir .= $_SESSION['USER_DIR'] . '/';
-            $final_dir .= FileSysHandler::DATA_DIRNAME;
+            $final_dir .= UserModel::DATA_DIRNAME;
 
             return  $final_dir;
         }

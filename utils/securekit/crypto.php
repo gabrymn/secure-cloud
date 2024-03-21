@@ -1,7 +1,5 @@
 <?php
 
-    require_once __DIR__ . '/../data_structure.php';
-
     class Crypto
     {
         private const FILE_ENCRYPTION_BLOCKS = 10000;

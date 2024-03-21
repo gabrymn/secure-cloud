@@ -1,7 +1,7 @@
 <?php
 
-    require_once __DIR__ .  '/../../resource/http/http_response.php';
-    require_once __DIR__ .  '/../../resource/mydatetime.php';
+    require_once __DIR__ .  '/../../utils/httpkit/http_response.php';
+    require_once __DIR__ .  '/../../utils/mydatetime.php';
     require_once __DIR__ . '/../view/assets/navbar.php';
     require_once __DIR__ . '/../view/assets/sessions_view.php';
     require_once __DIR__ . '/../model/session.php';
@@ -33,7 +33,7 @@
             $session = new SessionModel(ip: $client['ip'], os: $client['os'], browser: $client['browser'], id_user: $id_user);
             $session_dates = new SessionDatesModel(session_token: $session->getSessionToken());
             
-            \MyLib\Storage\MyPDO::connect($_ENV['SEL_USERNAME'], $_ENV['SEL_PASSWORD'], $_ENV['DB_HOST'], $_ENV['DB_NAME']);
+            MyPDO::connect($_ENV['SEL_USERNAME'], $_ENV['SEL_PASSWORD'], $_ENV['DB_HOST'], $_ENV['DB_NAME']);
             MyPDO::beginTransaction();
             
             if ($keepsigned === 'on')
@@ -83,7 +83,7 @@
             $user = new UserModel(id_user: $_SESSION['ID_USER']);
             $user->sel_email_By_userID();
 
-            $_SESSION['USER_DIR'] = FileSysHandler::getUserDirName($user->getUserID(), $user->getEmail());
+            $_SESSION['USER_DIR'] = $user->getDirName();
 
             return true;
         }

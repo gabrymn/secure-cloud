@@ -1,10 +1,10 @@
 <?php
 
-    require_once __DIR__ . '/../../resource/http/http_response.php';
-    require_once __DIR__ . '/../../resource/http/upload_session.php';
-    require_once __DIR__ . '/../../resource/storage/mypdo.php';
-    require_once __DIR__ . '/../../resource/storage/file_sys_handler.php';
-    require_once __DIR__ . '/../../resource/security/crypto.php';
+    require_once __DIR__ . '/../../utils/httpkit/http_response.php';
+    require_once __DIR__ . '/../../utils/httpkit/upload_session.php';
+    require_once __DIR__ . '/../../utils/mypdo.php';
+    require_once __DIR__ . '/../../utils/file_sys_handler.php';
+    require_once __DIR__ . '/../../utils/securekit/crypto.php';
     require_once __DIR__ . '/../model/user.php';
     require_once __DIR__ . '/../model/file.php';
     require_once __DIR__ . '/../model/file_transfer.php';

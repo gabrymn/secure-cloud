@@ -1,7 +1,7 @@
 <?php
 
-    require_once __DIR__ . '/../../utils/http/http_response.php';
-    require_once __DIR__ . '/../../utils/storage/file_sys_handler.php';
+    require_once __DIR__ . '/../../utils/httpkit/http_response.php';
+    require_once __DIR__ . '/../../utils/file_sys_handler.php';
     require_once __DIR__ . '/../model/session.php';
 
     class AuthController
@@ -115,8 +115,7 @@
 
                     $user->sel_email_by_userID();   
 
-                    $_SESSION['USER_DIR'] = FileSysHandler::getUserDirName($user->getUserID(), $user->getEmail());
-
+                    $_SESSION['USER_DIR'] = $user->getDirName();
                     $_SESSION['SIGNED_IN'] = true;
                     $_SESSION['ID_USER'] = $user->getUserID();
                     $_SESSION['SESSION_TOKEN'] = $session->getSessionToken();

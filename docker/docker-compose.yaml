@@ -12,7 +12,7 @@ services:
       - "80:80"
     volumes:
       - ../src:/app/src
-      - ../resource:/app/resource
+      - ../utils:/app/utils
       - ../public:/app/public
       - ../storage:/app/storage
       - ../routes:/app/routes
@@ -34,7 +34,7 @@ services:
       - ../src:/app/src
       - ../public:/app/public
       - ../routes:/app/routes
-      - ../resource:/app/resource
+      - ../utils:/app/utils
       - ../storage:/app/storage
       - ../vendor:/app/vendor
       - ../composer.json:/app/composer.json
