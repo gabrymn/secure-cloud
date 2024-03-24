@@ -139,23 +139,21 @@
 
         public function sel_userID_by_email()
         {
-            $qry = "SELECT id_user FROM users WHERE email = :email";
+            $qry = "SELECT email FROM users WHERE email = :email";
 
             MyPDO::connect($_ENV['SEL_USERNAME'], $_ENV['SEL_PASSWORD'], $_ENV['DB_HOST'], $_ENV['DB_NAME']);
 
-            $res = MyPDO::qryExec($qry, $this->toAssocArray(email:true));
+            $res = MyPDO::qryExec($qry, $this->toAssocArray(email:true), true);
 
             if ($res === false)
                 return false;
             
-            if ($res === array())
+            if ($res === [])
                 return -1;
-            else
-            {
-                $id_user = $res[0]['id_user'];
-                $this->setUserID($id_user);
-                return $this->getUSerID();
-            }
+
+            $id_user = $res[0]['id_user'];
+            $this->setUserID($id_user);
+            return $this->getUSerID();
         }
 
 
@@ -173,10 +171,11 @@
             
             if ($id_user === false)
                 return false;
-            else if ($id_user === -1)
+
+            if ($id_user === -1)
                 return 0;
-            else
-                return 1;
+            
+            return 1;
         }
 
         public function sel_2FA_by_userID() : int|bool
@@ -185,10 +184,10 @@
 
             MyPDO::connect($_ENV['SEL_USERNAME'], $_ENV['SEL_PASSWORD'], $_ENV['DB_HOST'], $_ENV['DB_NAME']);
 
-            $res = MyPDO::qryExec($qry, $this->toAssocArray(id_user:true));
+            $res = MyPDO::qryExec($qry, $this->toAssocArray(id_user:true), true);
 
-            if ($res === array())
-                return null;
+            if ($res === [])
+                return -1;
             else
             {
                 $p2fa = intval($res[0]['2fa']);
@@ -203,10 +202,10 @@
 
             MyPDO::connect($_ENV['SEL_USERNAME'], $_ENV['SEL_PASSWORD'], $_ENV['DB_HOST'], $_ENV['DB_NAME']);
 
-            $res = MyPDO::qryExec($qry, $this->toAssocArray(id_user:true));
+            $res = MyPDO::qryExec($qry, $this->toAssocArray(id_user:true), true);
 
-            if ($res === array())
-                return null;
+            if ($res === [])
+                return -1;
             else
             {
                 $verified = intval($res[0]['verified']);
@@ -221,16 +220,17 @@
 
             MyPDO::connect($_ENV['SEL_USERNAME'], $_ENV['SEL_PASSWORD'], $_ENV['DB_HOST'], $_ENV['DB_NAME']);
 
-            $res = MyPDO::qryExec($qry, $this->toAssocArray(id_user:true));
+            $res = MyPDO::qryExec($qry, $this->toAssocArray(id_user:true), true);
 
-            if ($res === array())
+            if ($res === false)
                 return false;
-            else
-            {
-                $email = $res[0]['email'];
-                $this->setEmail($email);
-                return $this->getEmail();
-            }
+
+            if ($res === [])
+                return -1;
+
+            $email = $res[0]['email'];
+            $this->setEmail($email);
+            return $this->getEmail();
         }
 
         public function upd_user_to_verified()

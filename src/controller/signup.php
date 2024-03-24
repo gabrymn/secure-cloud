@@ -6,16 +6,18 @@
     require_once __DIR__ . '/../../utils/mymail.php';
     require_once __DIR__ . '/../../utils/securekit/crypto_rnd_string.php';
     require_once __DIR__ . '/../../utils/securekit/my_tfa.php';
-
     require_once __DIR__ . '/../model/user_keys_handler.php';
     require_once __DIR__ . '/../model/user.php';
     require_once __DIR__ . '/../model/email_verify.php';
     require_once __DIR__ . '/../model/user_secrets.php';
-    
     require_once __DIR__ . '/../view/assets/navbar.php';
     
     class SignupController
     {
+        private const PASSWORD_MIN_LEN = 2;
+        private const PASSWORD_REGEX = "^\S*(?=\S{8,})(?=\S*[a-z])(?=\S*[A-Z])(?=\S*[\d])\S*$";
+        private const NAME_MIN_LEN = 2;
+
         public static function renderSignupPage()
         {
             $navbar = Navbar::getPublic('signup');
@@ -29,11 +31,21 @@
 
         public static function processSignup($email, $pwd, $name, $surname)
         {
-            if (!filter_var($email, FILTER_VALIDATE_EMAIL))
+            // Server side inputs validation (input sanitization have already been done in /utils/httpkit/router class)
+            // ----------------------------------------------------------------
+
+            if (self::emailValidation($email) === false)
                 httpResponse::clientError(400, "Invalid email format");
 
-            if (strlen($pwd) < 1)
-                httpResponse::clientError(400, "Password too short");
+            if (self::passwordValidation($pwd) === false)
+                httpResponse::clientError(400, "Invalid password format");
+
+            if (self::nameValidation($name) === false)
+                httpResponse::clientError(400, "Invalid name format");
+    
+            if (self::nameValidation($surname) === false)
+                httpResponse::clientError(400, "Invalid surname format");
+            // ----------------------------------------------------------------
 
                 
 
@@ -163,6 +175,21 @@
                 mkdir($user_dir_downloads)
             );
         }
+
+        public static function emailValidation($email) : bool
+        {
+            return filter_var($email, FILTER_VALIDATE_EMAIL);
+        }
+
+        public static function passwordValidation($password)
+        {
+            return strlen($password) >= self::PASSWORD_MIN_LEN;
+        }   
+
+        private static function nameValidation($name)
+        {
+            return strlen($name) >= self::NAME_MIN_LEN;
+        }  
     }
 
 

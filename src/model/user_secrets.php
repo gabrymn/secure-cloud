@@ -167,18 +167,17 @@
 
             MyPDO::connect($_ENV['SEL_USERNAME'], $_ENV['SEL_PASSWORD'], $_ENV['DB_HOST'], $_ENV['DB_NAME']);
 
-            $res = MyPDO::qryExec($qry, $this->toAssocArray(id_user:true));
+            $res = MyPDO::qryExec($qry, $this->toAssocArray(id_user:true), true);
 
             if ($res === false)
                 return false;
-            else if ($res === array())
-                return null;
-            else
-            {
-                $password_hash = $res[0]['password_hash'];
-                $this->setPasswordHash($password_hash);
-                return $this->getPasswordHash();
-            }
+
+            if ($res === [])
+                return -1;
+
+            $password_hash = $res[0]['password_hash'];
+            $this->setPasswordHash($password_hash);
+            return $this->getPasswordHash();
         }
 
         public function sel_secret2faEnc_by_userID()
@@ -187,18 +186,17 @@
             
             MyPDO::connect($_ENV['SEL_USERNAME'], $_ENV['SEL_PASSWORD'], $_ENV['DB_HOST'], $_ENV['DB_NAME']);
 
-            $res = MyPDO::qryExec($qry, $this->toAssocArray(id_user:true));
+            $res = MyPDO::qryExec($qry, $this->toAssocArray(id_user:true), true);
 
             if ($res === false)
                 return false;
-            else if ($res === array())
-                return null;
-            else
-            {
-                $secret2fa_encrypted = $res[0]['secret2fa_encrypted'];
-                $this->setSecret2faEncrypted($secret2fa_encrypted);
-                return $this->getSecret2FAEncrypted();
-            }
+            
+            if ($res === [])
+                return -1;
+    
+            $secret2fa_encrypted = $res[0]['secret2fa_encrypted'];
+            $this->setSecret2faEncrypted($secret2fa_encrypted);
+            return $this->getSecret2FAEncrypted();
         }
         
         public function sel_rKeyEnc_by_userID()
@@ -207,18 +205,17 @@
 
             MyPDO::connect($_ENV['SEL_USERNAME'], $_ENV['SEL_PASSWORD'], $_ENV['DB_HOST'], $_ENV['DB_NAME']);
 
-            $res = MyPDO::qryExec($qry, $this->toAssocArray(id_user:true));
+            $res = MyPDO::qryExec($qry, $this->toAssocArray(id_user:true), true);
 
             if ($res === false)
                 return false;
-            else if ($res === array())
-                return null;
-            else
-            {
-                $recoverykey_encrypted = $res[0]['recoverykey_encrypted'];
-                $this->setRecoveryKeyEncrypted($recoverykey_encrypted);
-                return $this->getRecoveryKeyEncrypted();
-            }
+            
+            if ($res === [])
+                return -1;
+
+            $recoverykey_encrypted = $res[0]['recoverykey_encrypted'];
+            $this->setRecoveryKeyEncrypted($recoverykey_encrypted);
+            return $this->getRecoveryKeyEncrypted();
         }
 
         public function sel_cKeyEnc_by_userID()
@@ -227,18 +224,17 @@
 
             MyPDO::connect($_ENV['SEL_USERNAME'], $_ENV['SEL_PASSWORD'], $_ENV['DB_HOST'], $_ENV['DB_NAME']);
 
-            $res = MyPDO::qryExec($qry, $this->toAssocArray(id_user:true));
+            $res = MyPDO::qryExec($qry, $this->toAssocArray(id_user:true), true);
 
             if ($res === false)
                 return false;
-            else if ($res === array())
-                return null;
-            else
-            {
-                $cipherkey_encrypted = $res[0]['cipherkey_encrypted'];
-                $this->setCipherKeyEncrypted($cipherkey_encrypted);
-                return $this->getCipherkeyEncrypted();
-            }
+
+            if ($res === [])
+                return -1;
+
+            $cipherkey_encrypted = $res[0]['cipherkey_encrypted'];
+            $this->setCipherKeyEncrypted($cipherkey_encrypted);
+            return $this->getCipherkeyEncrypted();
         }
 
         public function sel_mKeySalt_by_userID()
@@ -247,18 +243,17 @@
 
             MyPDO::connect($_ENV['SEL_USERNAME'], $_ENV['SEL_PASSWORD'], $_ENV['DB_HOST'], $_ENV['DB_NAME']);
 
-            $res = MyPDO::qryExec($qry, $this->toAssocArray(id_user:true));
+            $res = MyPDO::qryExec($qry, $this->toAssocArray(id_user:true), true);
 
             if ($res === false)
                 return false;
-            else if ($res === array())
-                return null;
-            else
-            {
-                $masterkey_salt = $res[0]['masterkey_salt'];
-                $this->setMasterKeySalt($masterkey_salt);
-                return $this->getMasterKeySalt();
-            }
+
+            if ($res === [])
+                return -1;
+
+            $masterkey_salt = $res[0]['masterkey_salt'];
+            $this->setMasterKeySalt($masterkey_salt);
+            return $this->getMasterKeySalt();
         }
 
         public function sel_rKeyHash_by_userID()
@@ -270,18 +265,17 @@
             
             MyPDO::connect($_ENV['SEL_USERNAME'], $_ENV['SEL_PASSWORD'], $_ENV['DB_HOST'], $_ENV['DB_NAME']);
 
-            $res = MyPDO::qryExec($qry, $this->toAssocArray(id_user: true));
+            $res = MyPDO::qryExec($qry, $this->toAssocArray(id_user: true), true);
 
             if ($res === false)
                 return false;
-            else if ($res === array())
-                return null;
-            else
-            {
-                $recoverykey_hash = $res[0]['recoverykey_hash'];
-                $this->setRecoveryKeyHash($recoverykey_hash);
-                return $this->getRecoveryKeyHash();
-            }
+            
+            if ($res === [])
+                return -1;
+            
+            $recoverykey_hash = $res[0]['recoverykey_hash'];
+            $this->setRecoveryKeyHash($recoverykey_hash);
+            return $this->getRecoveryKeyHash();
         }
 
         public function upd_pwdHash_rKeyEnc_mKeySalt_by_userID()
@@ -311,19 +305,16 @@
 
             myPDO::connect($_ENV['SEL_USERNAME'], $_ENV['SEL_PASSWORD'], $_ENV['DB_HOST'], $_ENV['DB_NAME']);
 
-            $res = myPDO::qryExec($qry, $this->toAssocArray(id_user:true));
+            $res = myPDO::qryExec($qry, $this->toAssocArray(id_user:true), true);
 
             if ($res === false)
                 return false;
             
-            else if ($res === array())
+            if ($res === [])
                 return -1;
 
-            else
-            {
-                $masterkey_encrypted = $res[0]['masterkey_encrypted'];
-                return $masterkey_encrypted;
-            }
+            $masterkey_encrypted = $res[0]['masterkey_encrypted'];
+            return $masterkey_encrypted;
         }
 
         public function ins_mKeyEnc_by_userID()

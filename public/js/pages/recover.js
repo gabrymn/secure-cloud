@@ -10,7 +10,6 @@ $('#recoverykey_form').on('submit', (e) => {
 
     e.preventDefault();
     validateRecoverykey(); 
-    
 });
 
 function validateRecoverykey() 

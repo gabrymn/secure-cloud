@@ -173,18 +173,17 @@
 
             MyPDO::connect($_ENV['SEL_USERNAME'], $_ENV['SEL_PASSWORD'], $_ENV['DB_HOST'], $_ENV['DB_NAME']);
 
-            $res = MyPDO::qryExec($qry, $this->toAssocArray(token_hash:true));
+            $res = MyPDO::qryExec($qry, $this->toAssocArray(token_hash:true), true);
 
             if ($res === false)
                 return false;
-            else if ($res === array())
+            
+            if ($res === [])
                 return -1;
-            else
-            {
-                $id_user = intval($res[0]['id_user']);
-                $this->setUserID($id_user);
-                return $this->getUserID();
-            }
+
+            $id_user = intval($res[0]['id_user']);
+            $this->setUserID($id_user);
+            return $this->getUserID();
         }
 
         public function del_by_tokenHash()

@@ -60,7 +60,14 @@
 
         public function setIP(string $ip): void
         {
-            $this->ip = $ip;
+            if (filter_var($ip, FILTER_VALIDATE_IP))
+            {
+                $this->ip = $ip;
+            }
+            else
+            {
+                $this->ip = parent::DEFAULT_STR;
+            }
         }
 
         public function getIP(): string
@@ -198,15 +205,13 @@
                 WHERE id_user = :id_user"
             );
 
-            $res = MyPDO::qryExec($qry, $this->toAssocArray(id_user:true));
+            $res = MyPDO::qryExec($qry, $this->toAssocArray(id_user:true), true);
             
             if ($res === false)
                 return false;
-            else
-            {
-                $count = $res[0]['COUNT'];
-                return $count;
-            }
+
+            $count = $res[0]['COUNT'];
+            return $count;
         }
 
         /**
@@ -240,7 +245,7 @@
 
             MyPDO::connect($_ENV['SEL_USERNAME'], $_ENV['SEL_PASSWORD'], $_ENV['DB_HOST'], $_ENV['DB_NAME']);
 
-            return MyPDO::qryExec($qry, $s->toAssocArray(session_token:true, id_user:true));
+            return MyPDO::qryExec($qry, $s->toAssocArray(session_token:true, id_user:true), true);
         }
 
         public function expire_by_sessionToken()
@@ -277,12 +282,12 @@
 
             mypdo::connect($_ENV['SEL_USERNAME'], $_ENV['SEL_PASSWORD'], $_ENV['DB_HOST'], $_ENV['DB_NAME']);
 
-            $res = mypdo::qryExec($qry, $this->toAssocArray(session_token:true));
+            $res = mypdo::qryExec($qry, $this->toAssocArray(session_token:true), true);
 
             if ($res === false)
                 return false;
             
-            if ($res === array())
+            if ($res === [])
                 return 1;
 
             return 0;
@@ -298,12 +303,12 @@
 
             mypdo::connect($_ENV['SEL_USERNAME'], $_ENV['SEL_PASSWORD'], $_ENV['DB_HOST'], $_ENV['DB_NAME']);
 
-            $res = mypdo::qryExec($qry, $this->toAssocArray(session_token:true));
+            $res = mypdo::qryExec($qry, $this->toAssocArray(session_token:true), true);
 
             if ($res === false)
                 return false;
 
-            if ($res === array())
+            if ($res === [])
                 return  -1;
 
             $id_user = $res[0]['id_user'];
@@ -316,19 +321,16 @@
 
             myPDO::connect($_ENV['SEL_USERNAME'], $_ENV['SEL_PASSWORD'], $_ENV['DB_HOST'], $_ENV['DB_NAME']);
 
-            $res = myPDO::qryExec($qry, $this->toAssocArray(session_token:true));
+            $res = myPDO::qryExec($qry, $this->toAssocArray(session_token:true), true);
 
             if ($res === false)
                 return false;
             
-            else if ($res === array())
+            if ($res === [])
                 return -1;
             
-            else
-            {
-                $session_key_salt = $res[0]['session_key_salt'];
-                return $session_key_salt;
-            }
+            $session_key_salt = $res[0]['session_key_salt'];
+            return $session_key_salt;
         }
 
         public function ins_sessionKeySalt_by_SessionToken()

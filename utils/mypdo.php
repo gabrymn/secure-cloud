@@ -45,7 +45,7 @@
         }
 
         
-        public static function qryexec(string $qry, array $params = null, bool $fetch = false)
+        public static function qryexec(string $qry, array $params = null, bool $data_expected = false)
         {
             self::prep($qry);
 
@@ -56,8 +56,8 @@
 
             $response = null;
 
-            if ($fetch === true)
-                $response =  self::$stmt->fetchAll(\PDO::FETCH_ASSOC);
+            if ($data_expected === true)
+                $response =  self::$stmt->fetchAll(PDO::FETCH_ASSOC);
             else
                 $response = $qry_status;
 

@@ -122,17 +122,16 @@
 
             MyPDO::connect($_ENV['SEL_USERNAME'], $_ENV['SEL_PASSWORD'], $_ENV['DB_HOST'], $_ENV['DB_NAME']);
 
-            $res = MyPDO::qryExec($qry, $this->toAssocArray(id_user: true, id_file: true));
+            $res = MyPDO::qryExec($qry, $this->toAssocArray(id_user: true, id_file: true), true);
 
             if ($res === false)
                 return false;
-            else if ($res === array())
+            
+            if ($res === [])
                 return -1;
-            else
-            {
-                $fullpath_encrypted = $res[0]['fullpath_encrypted'];
-                return $fullpath_encrypted;
-            }
+
+            $fullpath_encrypted = $res[0]['fullpath_encrypted'];
+            return $fullpath_encrypted;
         }
 
         public static function sel_fileIDs_fileNames_by_userID($id_user)
@@ -143,25 +142,23 @@
 
             MyPDO::connect($_ENV['SEL_USERNAME'], $_ENV['SEL_PASSWORD'], $_ENV['DB_HOST'], $_ENV['DB_NAME']);
 
-            $res = MyPDO::qryExec($qry, $file->toAssocArray(id_user: true));
+            $res = MyPDO::qryExec($qry, $file->toAssocArray(id_user: true), true);
 
             if ($res === false)
                 return false;
-            else
+            
+            $file_data = [];
+
+            foreach ($res as $row) 
             {
-                $file_data = [];
-
-                foreach ($res as $row) 
-                {
-                    $file_data[] = 
-                    [
-                        'id_file' => $row['id_file'],
-                        'fullpath_encrypted' => $row['fullpath_encrypted']
-                    ];
-                }
-
-                return $file_data;
+                $file_data[] = 
+                [
+                    'id_file' => $row['id_file'],
+                    'fullpath_encrypted' => $row['fullpath_encrypted']
+                ];
             }
+
+            return $file_data;
         }
     }
 

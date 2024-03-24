@@ -4,6 +4,7 @@
     require_once __DIR__ . '/../model/user_secrets.php';
     require_once __DIR__ . '/../model/user_keys_handler.php';
     require_once __DIR__ . '/../../utils/httpkit/http_response.php';
+    require_once __DIR__ . '/signup.php';
 
     class AccountRecoveryController
     {
@@ -15,17 +16,22 @@
 
         public static function processRecoveryKeyCheck($email, $recovery_key)
         {
-            if (!filter_var($email, FILTER_VALIDATE_EMAIL))
+            if (SignupController::emailValidation($email) === false)
                 HttpResponse::clientError(400, "Invalid email format");
 
             $user = new UserModel(email: $email);
-            $user->sel_userID_by_email($user->getEmail());
-            
-            $us = new UserSecretsModel(id_user: $user->getUserID());
-            
-            $us->sel_rKeyHash_by_userID();
 
-            if (!password_verify($recovery_key, $us->getRecoveryKeyHash()))
+            $user_id = $user->sel_userID_by_email($user->getEmail());
+
+            if ($user_id === false)
+                HttpResponse::serverError(500);
+    
+            if ($user_id === -1)
+                HttpResponse::clientError(400, "The provided email does nox exists in our systems");
+
+            $us = new UserSecretsModel(id_user: $user->getUserID());
+
+            if (!password_verify($recovery_key, $us->sel_rKeyHash_by_userID()))
                 HttpResponse::clientError(400, "The provided recovery key is incorrect. Please double-check the key and try again.");
             
             session_start();
@@ -39,8 +45,8 @@
 
         public static function processPasswordReset($password)
         {
-            if (strlen($password) < 2)
-                HttpResponse::clientError(400, "Invalid password format");
+            if (SignupController::passwordValidation($password) === false)
+                HttpResponse::clientError(400, "Invalid email format");
 
             $ukh = UserKeysHandler::getInstanceFromPassword($password);
             $ukh->setRecoveryKey($_SESSION['RECOVERY_KEY']);
@@ -58,9 +64,9 @@
             session_destroy();
             
             if ($status === false)
-                HttpResponse::serverError();
+                HttpResponse::serverError(500);
             else
-                HttpResponse::successful();
+                HttpResponse::successful(200);
         }
     }
 
