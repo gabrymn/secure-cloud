@@ -260,7 +260,7 @@
             }
             catch (PDOException $e)
             {
-                return -1;
+                return false;
             }
         }
 

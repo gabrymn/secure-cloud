@@ -6,6 +6,7 @@
     require_once __DIR__ . '/../view/assets/sessions_view.php';
     require_once __DIR__ . '/../model/session.php';
     require_once __DIR__ . '/../model/session_dates.php';
+    require_once __DIR__ . '/signin.php';
     
     class SessionController
     {
@@ -88,30 +89,24 @@
             return true;
         }
 
-        public static function expireSession($session_token)
+        public static function expireSession(string $session_token)
         {   
             $session = new SessionModel(session_token: $session_token);
 
-            $session->expire_by_sessionToken();
-
-            $session_expired = $session->expire_by_sessionToken();
-
-            if ($session_expired === false)
-                httpResponse::clientError(400, "Invalid session token");
-
-            // User has sent the session token, if it equals to the current session token => signout()
+            // $_SESSION['SESSION_TOKEN'] is the current session token
             if ($session->getSessionToken() === $_SESSION['SESSION_TOKEN'])
             {
-                session_destroy();
-                httpResponse::successful
-                (
-                    200, 
-                    false, 
-                    array("redirect" => '/signin')
-                );
+                SigninController::processSignout();
             }
-            
-            httpResponse::successful(200);
+            else
+            {
+                $session_expired = $session->expire_by_sessionToken();
+
+                if ($session_expired === true)
+                    httpResponse::successful(200);
+                else
+                    httpResponse::clientError(400, "Invalid session token");
+            }
         }
     }
 

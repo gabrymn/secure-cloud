@@ -1,5 +1,4 @@
 version: '3.8'
-
 services:
 
   nginx:
@@ -23,7 +22,7 @@ services:
       - php
     networks: 
       - int3rnal
-  
+      
   php:
     build:
       context: ./php

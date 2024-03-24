@@ -1,7 +1,7 @@
 <?php
 
-    require_once __DIR__ . '/crypto.php';
-    require_once __DIR__ . '/my_tfa.php';
+    require_once __DIR__ . '/../../utils/securekit/crypto.php';
+    require_once __DIR__ . '/../../utils/securekit/my_tfa.php';
     
     class UserKeysHandler
     {

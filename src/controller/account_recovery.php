@@ -2,8 +2,8 @@
 
     require_once __DIR__ . '/../view/assets/navbar.php';
     require_once __DIR__ . '/../model/user_secrets.php';
+    require_once __DIR__ . '/../model/user_keys_handler.php';
     require_once __DIR__ . '/../../utils/httpkit/http_response.php';
-    require_once __DIR__ . '/../../utils/securekit/user_keys_handler.php';
 
     class AccountRecoveryController
     {

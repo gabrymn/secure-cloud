@@ -6,8 +6,8 @@
     require_once __DIR__ . '/../../utils/mymail.php';
     require_once __DIR__ . '/../../utils/securekit/crypto_rnd_string.php';
     require_once __DIR__ . '/../../utils/securekit/my_tfa.php';
-    require_once __DIR__ . '/../../utils/securekit/user_keys_handler.php';
-    
+
+    require_once __DIR__ . '/../model/user_keys_handler.php';
     require_once __DIR__ . '/../model/user.php';
     require_once __DIR__ . '/../model/email_verify.php';
     require_once __DIR__ . '/../model/user_secrets.php';

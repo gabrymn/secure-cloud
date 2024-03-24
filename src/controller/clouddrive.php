@@ -4,7 +4,7 @@
     require_once __DIR__ . '/../controller/user_keys.php';
     require_once __DIR__ . '/../../utils/httpkit/http_response.php';
     require_once __DIR__ . '/../../utils/file_sys_handler.php';
-    require_once __DIR__ . '/../../utils/securekit/user_keys_handler.php';
+    require_once __DIR__ . '/../model/user_keys_handler.php';
     require_once __DIR__ . '/../../utils/securekit/crypto.php';
     require_once __DIR__ . '/../view/assets/navbar.php';
     require_once __DIR__ . '/../view/assets/file_icons_view.php';
