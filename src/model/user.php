@@ -139,7 +139,7 @@
 
         public function sel_userID_by_email()
         {
-            $qry = "SELECT email FROM users WHERE email = :email";
+            $qry = "SELECT id_user FROM users WHERE email = :email";
 
             MyPDO::connect($_ENV['SEL_USERNAME'], $_ENV['SEL_PASSWORD'], $_ENV['DB_HOST'], $_ENV['DB_NAME']);
 
