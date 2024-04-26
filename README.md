@@ -44,8 +44,7 @@ and more. It is encrypted by the RecoveryKey and stored in the database.
 
 ### Secret 2FA
 
-<br />
 The 2FA secret is randomly generated during registration and is used to generate OTP codes through applications like Google Authenticator. It is encrypted 
 by the RecoveryKey and saved in the database.
 
-    
+<br />
