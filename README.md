@@ -11,9 +11,7 @@
 - **Docker Containers:**
     - The application components (Nginx, MySQL, and PHP) are each running in separate Docker containers for ease of deployment and scalability.
 
-<br />
 <hr>
-<br />
 
 ## Security Architecture: Encryption Keys
 
