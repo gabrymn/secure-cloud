@@ -4,13 +4,17 @@
 
 ## Features
 
-- **Front-end:** The user interface is built using HTML, CSS, and JavaScript, providing a seamless experience for interacting with the secure cloud storage service.
+### Front-end 
+The user interface is built using HTML, CSS, and JavaScript, providing a seamless experience for interacting with the secure cloud storage service.
 
-- **Back-end:** The PHP back-end follows the Model-View-Controller (MVC) pattern, enhancing code organization and maintainability. Key components include routers, controllers, models, and views.
+### Back-end
+The PHP back-end follows the Model-View-Controller (MVC) pattern, enhancing code organization and maintainability. Key components include routers, controllers, models, and views.
 
-- **Database:** MySQL is used as the database management system to store and retrieve the meta data.
+### Database 
+MySQL is used as the database management system to store and retrieve the meta data.
 
-- **Docker Containers:** The application components (Nginx, MySQL, and PHP) are each running in separate Docker containers for ease of deployment and scalability.
+### Docker Containers 
+The application components (Nginx, MySQL, and PHP) are each running in separate Docker containers for ease of deployment and scalability.
 
 <br />
 <hr>
