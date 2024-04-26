@@ -1,6 +1,4 @@
-# Secure Cloud Storage App
-
-This repository contains the source code for a cloud storage application with a front-end implemented in HTML/CSS/JS, a PHP back-end following the MVC pattern, MySQL is the dbms, and Nginx acting as a reverse proxy and load balancer.
+# Secure Cloud Project
 
 ## Features
 
