@@ -42,7 +42,7 @@ the RecoveryKey is correct when the user wants to recover the account in case of
 ### Cipher Key
 
 The CipherKey is randomly generated during registration and is used to encrypt the user's sensitive information, such as all files, file metadata, 
-and more. It is encrypted by the RecoveryKey and saved in the database.
+and more. It is encrypted by the RecoveryKey and stored in the database.
 
 ### Secret 2FA
 
