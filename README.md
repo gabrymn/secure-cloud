@@ -17,7 +17,7 @@ This repository contains the source code for a cloud storage application with a 
 <hr>
 <br />
 
-## Security Architecture: key details
+## Security Architecture: Encryption Keys
 
 ### Master Key
 
