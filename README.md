@@ -2,7 +2,7 @@
 
 <br />
 
-## Features
+## Software Architecture
 
 ### Front-end 
 The user interface is built using HTML, CSS, and JavaScript, providing a seamless experience for interacting with the secure cloud storage service.
