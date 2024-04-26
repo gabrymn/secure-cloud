@@ -10,8 +10,7 @@
 
 - **Database:** MySQL is used as the database management system to store and retrieve the meta data.
 
-- **Docker Containers:**
-    - The application components (Nginx, MySQL, and PHP) are each running in separate Docker containers for ease of deployment and scalability.
+- **Docker Containers:** The application components (Nginx, MySQL, and PHP) are each running in separate Docker containers for ease of deployment and scalability.
 
 <br />
 <hr>
